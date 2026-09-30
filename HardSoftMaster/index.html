@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Interaktif Informatika HardSoft Master</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter & Fredoka & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Fredoka', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 35%, #e0e7ff 70%, #fef3c7 100%);
+            background-size: 300% 300%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Bright floating bubbles for visually engaging IFP screen */
+        .bg-bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(8px);
+            z-index: 0;
+            animation: float 12s infinite ease-in-out;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-35px) rotate(12deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-14px); }
+            40%, 80% { transform: translateX(14px); }
+        }
+
+        @keyframes bounce-custom {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .animate-bounce-custom {
+            animation: bounce-custom 0.6s ease-in-out infinite;
+        }
+
+        .letter-box {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            caret-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .letter-box:focus {
+            transform: scale(1.12);
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+        }
+
+        /* Large Touch Key Targets for IFP Touchscreens */
+        .vk-btn {
+            flex: 1 0 auto;
+            min-width: 44px;
+            max-width: 72px;
+            height: 60px;
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-bottom: 5px solid #94a3b8;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 20px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.1s ease;
+            user-select: none;
+            touch-action: manipulation;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .vk-btn:active, .vk-btn.active {
+            transform: translateY(3px);
+            border-bottom-width: 2px;
+            background-color: #e2e8f0;
+        }
+
+        .ifp-btn-shadow {
+            box-shadow: 0 6px 0 0 rgba(0, 0, 0, 0.15);
+            transition: all 0.15s ease;
+        }
+
+        .ifp-btn-shadow:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.15);
+        }
+
+        /* Custom Large Scrollbar for touch dragging */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #818cf8;
+            border-radius: 10px;
+            border: 2px solid #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-3 sm:p-6 lg:p-8 text-slate-800 relative min-h-screen select-none">
+
+    <div class="bg-bubble w-72 h-72 top-10 left-10"></div>
+    <div class="bg-bubble w-96 h-96 bottom-10 right-10"></div>
+    <div class="bg-bubble w-56 h-56 top-1/2 left-1/4"></div>
+
+    <!-- MAIN CONTAINER OPTIMIZED FOR LARGE IFP DISPLAY -->
+    <div id="app" class="w-full max-w-5xl bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border-4 border-white/80 z-10 flex flex-col justify-between min-h-[780px] my-auto transition-all relative">
+
+        <!-- GLOBAL TOP AUDIO & FULLSCREEN TOOLBAR -->
+        <div class="absolute top-4 right-4 z-30 flex items-center gap-3">
+            <button id="fullscreen-toggle-btn" onclick="toggleFullscreen()" class="w-12 h-12 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 flex items-center justify-center text-xl font-bold shadow-md border-2 border-slate-200 transition-all" title="Toggle Fullscreen">
+                <i id="fullscreen-icon" class="fa-solid fa-expand text-indigo-600"></i>
+            </button>
+            <button id="sound-toggle-btn" onclick="toggleAudio()" class="w-12 h-12 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 flex items-center justify-center text-xl font-bold shadow-md border-2 border-slate-200 transition-all" title="Toggle Sound">
+                <i id="sound-icon" class="fa-solid fa-volume-high text-indigo-600"></i>
+            </button>
+        </div>
+
+        <!-- START SCREEN: PLAYER NAME & QUESTION COUNT CONFIG -->
+        <div id="start-screen" class="p-6 sm:p-12 text-center flex-1 flex flex-col justify-center items-center">
+            <div class="w-28 h-28 rounded-3xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-6xl mb-6 shadow-inner border-2 border-indigo-200 animate-bounce-custom">
+                <i class="fa-solid fa-gamepad"></i>
+            </div>
+            
+            <h1 class="text-3xl sm:text-5xl font-black text-slate-800 mb-3 tracking-wide">Game Interaktif HardSoft Master Informatika</h1>
+            <p class="text-slate-600 text-lg sm:text-xl mb-8 max-w-2xl font-medium">Hardware & Software Komputer</p>
+
+            <form onsubmit="handleStartGame(event)" class="w-full max-w-md flex flex-col gap-5">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-indigo-500 text-2xl">
+                        <i class="fa-solid fa-user-astronaut"></i>
+                    </span>
+                    <input type="text" id="player-name-input" required maxlength="18" placeholder="Masukkan Nama Kamu..." 
+                        class="w-full pl-14 pr-6 py-4 rounded-2xl border-4 border-indigo-100 focus:border-indigo-500 focus:outline-none font-bold text-xl sm:text-2xl text-slate-800 transition-all text-center shadow-inner">
+                </div>
+
+                <!-- SELECT QUESTION COUNT -->
+                <div class="text-left bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
+                    <label class="block text-sm font-black text-slate-600 uppercase tracking-wider mb-2 text-center">Jumlah Soal Kuis:</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-indigo-500 text-xl">
+                            <i class="fa-solid fa-list-ol"></i>
+                        </span>
+                        <select id="question-count-select" class="w-full pl-12 pr-10 py-3.5 rounded-xl border-2 border-slate-300 focus:border-indigo-500 focus:outline-none font-extrabold text-lg sm:text-xl text-slate-700 bg-white transition-all text-center appearance-none cursor-pointer">
+                            <option value="5">5 Soal (Sangat Cepat)</option>
+                            <option value="10">10 Soal (Standar)</option>
+                            <option value="15" selected>15 Soal (Rekomendasi)</option>
+                            <option value="20">20 Soal (Panjang)</option>
+                            <option value="25">25 Soal (Tantangan)</option>
+                            <option value="30">30 Soal (Semua Materi)</option>
+                        </select>
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400 text-xl">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit" onclick="playClickSound()" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold py-5 px-8 rounded-2xl transition-all text-2xl ifp-btn-shadow flex items-center justify-center gap-3 mt-2">
+                    <span>MULAI BERMAIN</span>
+                    <i class="fa-solid fa-play text-yellow-300"></i>
+                </button>
+            </form>
+
+            <div class="flex flex-wrap items-center justify-center gap-5 mt-8">
+                <!-- MODAL MODULE LEARNING TRIGGER BUTTON -->
+                <button onclick="playClickSound(); openStudyModal();" class="text-base font-extrabold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 px-6 py-3 rounded-2xl border-2 border-emerald-300 flex items-center gap-2 transition-all shadow-sm active:scale-95">
+                    <i class="fa-solid fa-book-open text-emerald-600 text-xl"></i>
+                    <span>📚 Paduan!</span>
+                </button>
+
+                <button onclick="playClickSound(); showLeaderboardOnly();" class="text-base font-extrabold bg-amber-100 text-amber-800 hover:bg-amber-200 px-6 py-3 rounded-2xl border-2 border-amber-300 flex items-center gap-2 transition-all shadow-sm active:scale-95">
+                    <i class="fa-solid fa-trophy text-amber-600 text-xl"></i> Papan Peringkat
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN QUIZ HEADER (Hidden initially) -->
+        <header id="quiz-header" class="hidden bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 text-white p-5 sm:p-7 shadow-lg relative rounded-b-3xl">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-user-astronaut text-yellow-300"></i>
+                    </div>
+                    <div>
+                        <span class="text-xs uppercase tracking-wider font-extrabold text-indigo-200">Pemain:</span>
+                        <h3 id="player-display-name" class="font-extrabold text-xl sm:text-2xl tracking-wide leading-none">Pemain</h3>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 pr-24 sm:pr-28">
+                    <button onclick="playClickSound(); openStudyModal();" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 px-4 py-2.5 rounded-2xl text-sm font-extrabold flex items-center gap-2 border-2 border-emerald-300 transition-all text-white shadow-md">
+                        <i class="fa-solid fa-book-open text-yellow-300"></i>
+                        <span>Paduan</span>
+                    </button>
+                    <div class="bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-2xl text-lg sm:text-xl font-extrabold flex items-center gap-2 border border-white/30 shadow-inner">
+                        <i class="fa-solid fa-trophy text-yellow-300 text-2xl"></i>
+                        <span id="score-display">Skor: 0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-black/20 rounded-full h-4 overflow-hidden p-0.5 border border-white/20">
+                <div id="progress-bar" class="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500 shadow-lg" style="width: 0%;"></div>
+            </div>
+            <div class="flex justify-between items-center text-sm sm:text-base text-indigo-100 mt-2 font-bold">
+                <span id="question-number">Soal 1 dari 15</span>
+                <span id="category-tag" class="bg-white/20 px-3 py-1 rounded-xl text-xs sm:text-sm uppercase font-black tracking-wider border border-white/30">HARDWARE</span>
+            </div>
+        </header>
+
+        <!-- MAIN QUIZ CARD CONTENT (Hidden initially) -->
+        <main id="quiz-screen" class="hidden p-4 sm:p-8 flex-1 flex flex-col justify-between">
+            <!-- Question Box -->
+            <div class="text-center my-auto py-2">
+                <span class="inline-block bg-indigo-100 text-indigo-800 font-extrabold text-sm sm:text-base px-4 py-1.5 rounded-full mb-3 border-2 border-indigo-200">Fungsi / Deskripsi Perangkat:</span>
+                <h2 id="question-text" class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-800 leading-snug min-h-[90px] flex items-center justify-center px-4">
+                    Pertanyaan akan muncul di sini...
+                </h2>
+            </div>
+
+            <!-- Letter Inputs Container (Sized for IFP Touch Target) -->
+            <div class="my-3">
+                <div id="letter-boxes-container" class="flex flex-wrap justify-center gap-2 sm:gap-3 my-3">
+                    <!-- Dynamic Letter Input Boxes Inserted Here -->
+                </div>
+                <!-- Feedback Message -->
+                <div id="feedback-message" class="text-center font-black text-lg sm:text-2xl mt-2 min-h-[36px]"></div>
+            </div>
+
+            <!-- Action Buttons for IFP -->
+            <div class="flex flex-col gap-3 my-2 max-w-3xl mx-auto w-full">
+                <div class="flex justify-between items-center gap-4">
+                    <button id="hint-btn" onclick="useHint()" class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-black py-4 px-6 rounded-2xl border-2 border-amber-300 transition-all text-base sm:text-lg flex items-center justify-center gap-2 ifp-btn-shadow">
+                        <i class="fa-solid fa-lightbulb text-amber-600 text-2xl"></i>
+                        <span>Gunakan Hint (-5 Poin)</span>
+                    </button>
+                    <button id="check-btn" onclick="checkAnswer()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-6 rounded-2xl transition-all text-base sm:text-lg flex items-center justify-center gap-2 ifp-btn-shadow">
+                        <span>Cek Jawaban</span>
+                        <i class="fa-solid fa-circle-check text-2xl"></i>
+                    </button>
+                </div>
+                <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black py-5 px-6 rounded-2xl transition-all text-xl sm:text-2xl flex items-center justify-center gap-3 ifp-btn-shadow animate-bounce-custom">
+                    <span>Soal Berikutnya</span>
+                    <i class="fa-solid fa-arrow-right text-3xl"></i>
+                </button>
+            </div>
+
+            <!-- On-Screen Virtual Keyboard (Sized Big for IFP Screen Touch) -->
+            <div class="mt-4 pt-4 border-t-2 border-slate-100">
+                <div id="virtual-keyboard" class="flex flex-col gap-2 max-w-3xl mx-auto">
+                    <div class="flex justify-center gap-1.5">
+                        <button onclick="typeVirtualKey('Q')" class="vk-btn">Q</button>
+                        <button onclick="typeVirtualKey('W')" class="vk-btn">W</button>
+                        <button onclick="typeVirtualKey('E')" class="vk-btn">E</button>
+                        <button onclick="typeVirtualKey('R')" class="vk-btn">R</button>
+                        <button onclick="typeVirtualKey('T')" class="vk-btn">T</button>
+                        <button onclick="typeVirtualKey('Y')" class="vk-btn">Y</button>
+                        <button onclick="typeVirtualKey('U')" class="vk-btn">U</button>
+                        <button onclick="typeVirtualKey('I')" class="vk-btn">I</button>
+                        <button onclick="typeVirtualKey('O')" class="vk-btn">O</button>
+                        <button onclick="typeVirtualKey('P')" class="vk-btn">P</button>
+                    </div>
+                    <div class="flex justify-center gap-1.5">
+                        <button onclick="typeVirtualKey('A')" class="vk-btn">A</button>
+                        <button onclick="typeVirtualKey('S')" class="vk-btn">S</button>
+                        <button onclick="typeVirtualKey('D')" class="vk-btn">D</button>
+                        <button onclick="typeVirtualKey('F')" class="vk-btn">F</button>
+                        <button onclick="typeVirtualKey('G')" class="vk-btn">G</button>
+                        <button onclick="typeVirtualKey('H')" class="vk-btn">H</button>
+                        <button onclick="typeVirtualKey('J')" class="vk-btn">J</button>
+                        <button onclick="typeVirtualKey('K')" class="vk-btn">K</button>
+                        <button onclick="typeVirtualKey('L')" class="vk-btn">L</button>
+                    </div>
+                    <div class="flex justify-center gap-1.5">
+                        <button onclick="typeVirtualKey('Z')" class="vk-btn">Z</button>
+                        <button onclick="typeVirtualKey('X')" class="vk-btn">X</button>
+                        <button onclick="typeVirtualKey('C')" class="vk-btn">C</button>
+                        <button onclick="typeVirtualKey('V')" class="vk-btn">V</button>
+                        <button onclick="typeVirtualKey('B')" class="vk-btn">B</button>
+                        <button onclick="typeVirtualKey('N')" class="vk-btn">N</button>
+                        <button onclick="typeVirtualKey('M')" class="vk-btn">M</button>
+                        <button onclick="typeVirtualKey('BACKSPACE')" class="vk-btn !min-width-[80px] !max-w-[120px] bg-rose-100 text-rose-700 border-rose-300 hover:bg-rose-200">
+                            <i class="fa-solid fa-backspace text-2xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- RESULT SCORE & LEADERBOARD SCREEN (Hidden initially) -->
+        <div id="result-screen" class="hidden p-6 sm:p-10 text-center flex-1 flex flex-col justify-between">
+            <div>
+                <div id="result-badge" class="w-24 h-24 rounded-3xl bg-amber-100 text-amber-600 flex items-center justify-center text-5xl mx-auto mb-4 shadow-inner border-2 border-amber-300 animate-bounce-custom">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-800 mb-2">Kuis Selesai!</h2>
+                <p class="text-slate-600 text-lg sm:text-xl mb-6 font-semibold">Poin Kamu: <span id="final-score" class="font-black text-indigo-600 text-3xl">0</span> | Akurasi: <span id="final-percentage" class="font-black text-emerald-600 text-3xl">0%</span></p>
+
+                <!-- Leaderboard Table -->
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-3xl p-5 shadow-sm mb-6 max-h-[320px] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-4 px-2">
+                        <h3 class="font-black text-slate-800 text-lg sm:text-xl flex items-center gap-2">
+                            <i class="fa-solid fa-ranking-star text-yellow-500 text-2xl"></i> Papan Peringkat (Top 10)
+                        </h3>
+                        <button onclick="clearLeaderboard()" class="text-xs sm:text-sm text-rose-600 hover:text-rose-800 font-extrabold underline">
+                            Reset Leaderboard
+                        </button>
+                    </div>
+
+                    <div id="leaderboard-list" class="flex flex-col gap-2.5">
+                        <!-- Dynamic Leaderboard Items -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Restart Options -->
+            <div class="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto w-full">
+                <button onclick="playClickSound(); restartQuiz(false);" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-6 rounded-2xl transition-all ifp-btn-shadow text-lg flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-rotate-right text-xl"></i>
+                    <span>Main Lagi (Nama Sama)</span>
+                </button>
+                <button onclick="playClickSound(); restartQuiz(true);" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black py-4 px-6 rounded-2xl transition-all text-lg flex items-center justify-center gap-3 border-2 border-slate-300">
+                    <i class="fa-solid fa-user-pen text-xl"></i>
+                    <span>Ganti Pemain / Soal</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL POPUP: MODUL AJAR (Hardware & Software) -->
+    <div id="study-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 hidden transition-all duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden border-4 border-white/60 transform transition-all">
+            
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-indigo-600 to-violet-700 p-5 sm:p-7 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl border border-white/30">
+                        <i class="fa-solid fa-book-open text-yellow-300"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-black text-2xl sm:text-3xl leading-tight">Modul Ajar Informatika</h2>
+                        <p class="text-indigo-200 text-sm sm:text-base font-semibold">Ringkasan 30 Perangkat Keras & Perangkat Lunak</p>
+                    </div>
+                </div>
+                <button onclick="playClickSound(); closeStudyModal();" class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all border border-white/20">
+                    <i class="fa-solid fa-xmark text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Search & Filter Control Bar -->
+            <div class="p-4 sm:p-5 bg-slate-50 border-b-2 border-slate-200 shrink-0 flex flex-col sm:flex-row gap-4 justify-between items-center">
+                <!-- Search Input -->
+                <div class="relative w-full sm:w-80">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                    </span>
+                    <input type="text" id="study-search-input" onkeyup="filterStudyModule()" placeholder="Cari perangkat..." 
+                        class="w-full pl-11 pr-4 py-3 text-base rounded-2xl border-2 border-slate-300 focus:border-indigo-500 focus:outline-none bg-white font-bold">
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="flex bg-slate-200 p-1.5 rounded-2xl gap-2 w-full sm:w-auto text-sm sm:text-base font-black text-slate-700">
+                    <button id="filter-btn-all" onclick="playClickSound(); setStudyFilter('all');" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white shadow-md text-indigo-600 transition-all">
+                        Semua (30)
+                    </button>
+                    <button id="filter-btn-hardware" onclick="playClickSound(); setStudyFilter('Hardware');" class="flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all">
+                        Hardware (15)
+                    </button>
+                    <button id="filter-btn-software" onclick="playClickSound(); setStudyFilter('Software');" class="flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all">
+                        Software (15)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Content List (Scrollable for IFP Touch) -->
+            <div id="study-module-list" class="p-5 sm:p-8 overflow-y-auto space-y-4 flex-1">
+                <!-- Dynamic Study Cards Injected Here -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-slate-50 border-t-2 border-slate-200 text-center shrink-0">
+                <p class="text-xs sm:text-sm text-slate-500 font-extrabold">Pelajari materi di atas dengan seksama untuk meraih skor tertinggi pada Game HardSoft Master!</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        /* --- FULLSCREEN CONTROLLER --- */
+        function requestFullscreenMode() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen().catch(err => console.log(err));
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        function exitFullscreenMode() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(err => console.log(err));
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        function toggleFullscreen() {
+            playClickSound();
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                requestFullscreenMode();
+            } else {
+                exitFullscreenMode();
+            }
+        }
+
+        // Update Fullscreen Icon on change
+        document.addEventListener('fullscreenchange', updateFullscreenIcon);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+        document.addEventListener('msfullscreenchange', updateFullscreenIcon);
+
+        function updateFullscreenIcon() {
+            const icon = document.getElementById("fullscreen-icon");
+            if (!icon) return;
+            if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+                icon.className = "fa-solid fa-compress text-indigo-600";
+            } else {
+                icon.className = "fa-solid fa-expand text-indigo-600";
+            }
+        }
+
+        /* --- AUDIO SYNTHESIZER (Web Audio API for zero external dependency) --- */
+        let audioCtx = null;
+        let isAudioMuted = false;
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function toggleAudio() {
+            isAudioMuted = !isAudioMuted;
+            const icon = document.getElementById("sound-icon");
+            const btn = document.getElementById("sound-toggle-btn");
+            if (isAudioMuted) {
+                icon.className = "fa-solid fa-volume-xmark text-rose-500";
+                btn.classList.add("border-rose-300");
+            } else {
+                icon.className = "fa-solid fa-volume-high text-indigo-600";
+                btn.classList.remove("border-rose-300");
+                playClickSound();
+            }
+        }
+
+        function playClickSound() {
+            if (isAudioMuted) return;
+            initAudioContext();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.05);
+
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        }
+
+        function playCorrectSound() {
+            if (isAudioMuted) return;
+            initAudioContext();
+            if (!audioCtx) return;
+
+            const now = audioCtx.currentTime;
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+                gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.2);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.08);
+                osc.stop(now + idx * 0.08 + 0.2);
+            });
+        }
+
+        function playWrongSound() {
+            if (isAudioMuted) return;
+            initAudioContext();
+            if (!audioCtx) return;
+
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.linearRampToValueAtTime(90, now + 0.3);
+
+            gain.gain.setValueAtTime(0.25, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+
+        function playHintSound() {
+            if (isAudioMuted) return;
+            initAudioContext();
+            if (!audioCtx) return;
+
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.exponentialRampToValueAtTime(880, now + 0.2);
+
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.2);
+        }
+
+        function playVictorySound() {
+            if (isAudioMuted) return;
+            initAudioContext();
+            if (!audioCtx) return;
+
+            const now = audioCtx.currentTime;
+            const arpeggio = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+            arpeggio.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+
+                gain.gain.setValueAtTime(0.25, now + idx * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.3);
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.1);
+                osc.stop(now + idx * 0.1 + 0.3);
+            });
+        }
+
+        // Total 30 Complete Dataset (Hardware & Software) with Descriptions
+        const studyModuleData = [
+            // HARDWARE (15 Items)
+            { id: 1, name: "Monitor", category: "Hardware", icon: "fa-desktop", desc: "Layar utama komputer yang berfungsi untuk menampilkan gambaran visual, teks, video, dan antarmuka aplikasi secara jelas." },
+            { id: 2, name: "Keyboard", category: "Hardware", icon: "fa-keyboard", desc: "Perangkat berisikan kumpulan tombol huruf, angka, dan simbol yang digunakan untuk mengetik teks dan memasukkan perintah ke dalam komputer." },
+            { id: 3, name: "Mouse", category: "Hardware", icon: "fa-computer-mouse", desc: "Perangkat penunjuk (pointing device) yang digerakkan di atas meja untuk mengarahkan kursor, mengklik tombol, dan memilih item di layar komputer." },
+            { id: 4, name: "Printer", category: "Hardware", icon: "fa-print", desc: "Perangkat pencetak yang berfungsi untuk mengubah dokumen digital atau gambar dari komputer menjadi bentuk fisik di atas kertas." },
+            { id: 5, name: "Speaker", category: "Hardware", icon: "fa-volume-high", desc: "Perangkat keluaran (output) audio yang mengubah sinyal listrik dari komputer menjadi suara, musik, atau efek audio yang bisa didengar." },
+            { id: 6, name: "CPU", category: "Hardware", icon: "fa-microchip", desc: "Central Processing Unit - Otak utama dari komputer yang bertugas mengolah data, menjalankan instruksi program, dan mengendalikan seluruh sistem komputer." },
+            { id: 7, name: "RAM", category: "Hardware", icon: "fa-memory", desc: "Random Access Memory - Memori tempat menyimpan data aplikasi secara sementara saat komputer sedang dinyalakan atau digunakan." },
+            { id: 8, name: "Harddisk", category: "Hardware", icon: "fa-hard-drive", desc: "Media penyimpanan data utama yang berkapasitas besar untuk menyimpan sistem operasi, program, dan file dokumen secara permanen." },
+            { id: 9, name: "Flashdisk", category: "Hardware", icon: "fa-usb", desc: "Media penyimpanan portabel berukuran kecil yang praktis dicolokkan ke port USB untuk membawa dan memindahkan file antar komputer." },
+            { id: 10, name: "Webcam", category: "Hardware", icon: "fa-video", desc: "Kamera kecil yang terhubung ke komputer untuk mengambil video langsung atau foto, biasa digunakan saat pertemuan daring / video call." },
+            { id: 11, name: "Microphone", category: "Hardware", icon: "fa-microphone", desc: "Perangkat masukan (input) suara yang berfungsi merekam gelombang suara atau vokal pengguna ke dalam komputer." },
+            { id: 12, name: "Scanner", category: "Hardware", icon: "fa-expand", desc: "Perangkat pemindai yang menyalin dokumen fisik atau foto kertas menjadi file digital di dalam komputer." },
+            { id: 13, name: "Projector", category: "Hardware", icon: "fa-fill-drip", desc: "Perangkat pancaran cahaya yang memproyeksikan tampilan layar komputer ke dinding atau layar lebar agar bisa dilihat banyak orang." },
+            { id: 14, name: "Router", category: "Hardware", icon: "fa-wifi", desc: "Perangkat jaringan yang menghubungkan beberapa komputer atau HP ke jaringan internet secara kabel maupun nirkabel (Wi-Fi)." },
+            { id: 15, name: "Motherboard", category: "Hardware", icon: "fa-border-all", desc: "Papan sirkuit utama tempat menempelnya seluruh komponen internal komputer (seperti CPU, RAM, dan VGA) agar saling terhubung." },
+
+            // SOFTWARE (15 Items)
+            { id: 16, name: "Windows", category: "Software", icon: "fa-brands fa-windows", desc: "Sistem operasi buatan Microsoft yang mengelola seluruh perangkat keras dan aplikasi di komputer agar bisa berjalan dengan mudah." },
+            { id: 17, name: "Linux", category: "Software", icon: "fa-brands fa-linux", desc: "Sistem operasi berbasis open-source (gratis dan bebas dikembangkan) yang dikenal sangat aman dan stabil digunakan pada server atau komputer." },
+            { id: 18, name: "Word", category: "Software", icon: "fa-file-word", desc: "Aplikasi pengolah kata (Microsoft Word) yang digunakan untuk mengetik surat, membuat laporan, dan menyusun dokumen." },
+            { id: 19, name: "Excel", category: "Software", icon: "fa-file-excel", desc: "Aplikasi lembar kerja berbentuk tabel (Microsoft Excel) yang berguna untuk mengolah angka, perhitungan otomatis, dan membuat grafik." },
+            { id: 20, name: "PowerPoint", category: "Software", icon: "fa-file-powerpoint", desc: "Aplikasi presentasi (Microsoft PowerPoint) yang digunakan untuk membuat slide berisi teks, gambar, dan animasi untuk bahan presentasi." },
+            { id: 21, name: "Chrome", category: "Software", icon: "fa-brands fa-chrome", desc: "Peramban web (Google Chrome) yang berfungsi untuk menjelajahi situs-situs informasi di internet." },
+            { id: 22, name: "Photoshop", category: "Software", icon: "fa-image", desc: "Aplikasi perancang grafis buatan Adobe yang populer digunakan untuk mengedit foto, memotong gambar, dan membuat ilustrasi digital." },
+            { id: 23, name: "Canvas", category: "Software", icon: "fa-palette", desc: "Platform desain grafis daring (Canva) yang menyediakan berbagai template mudah untuk membuat poster, presentasi, dan konten media sosial." },
+            { id: 24, name: "Antivirus", category: "Software", icon: "fa-shield-halved", desc: "Program keamanan yang dirancang khusus untuk mendeteksi, mencegah, dan menghapus virus atau ancaman berbahaya dari komputer." },
+            { id: 25, name: "Paint", category: "Software", icon: "fa-paint-brush", desc: "Aplikasi bawaan komputer yang sangat sederhana untuk menggambar bebas, mewarnai, dan mengedit gambar tingkat dasar." },
+            { id: 26, name: "Notepad", category: "Software", icon: "fa-note-sticky", desc: "Aplikasi penyunting teks (text editor) ringan tanpa format rumit, biasa digunakan untuk membuat catatan singkat atau kode program dasar." },
+            { id: 27, name: "Zoom", category: "Software", icon: "fa-headset", desc: "Aplikasi pertemuan tatap muka secara virtual (teleconference) yang memungkinkan pengguna berdiskusi melalui video dan suara secara langsung." },
+            { id: 28, name: "VLC", category: "Software", icon: "fa-circle-play", desc: "Pemutar media (media player) yang mendukung pemutaran berbagai format file video dan audio secara cepat dan lancar." },
+            { id: 29, name: "Android", category: "Software", icon: "fa-brands fa-android", desc: "Sistem operasi berbasis seluler buatan Google yang paling banyak digunakan pada smartphone dan tablet saat ini." },
+            { id: 30, name: "Scratch", category: "Software", icon: "fa-code", desc: "Bahasa pemrograman visual berkonsep blok yang sangat ramah anak untuk belajar logika dasar pembuatan game dan animasi." }
+        ];
+
+        // Format dataset into Questions Bank
+        const allQuestionsBank = studyModuleData.map(item => ({
+            question: item.desc,
+            answer: item.name.toUpperCase(),
+            category: item.category
+        }));
+
+        // Game State Variables
+        let playerName = "";
+        let selectedQuestionsCount = 15;
+        let activeQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let isAnswerChecked = false;
+        let currentFocusedIndex = 0;
+        let usedHintInCurrentQuestion = false;
+
+        // Study Module Filter State
+        let currentStudyFilter = 'all';
+
+        // Shuffle Array Helper (Fisher-Yates)
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function openStudyModal() {
+            document.getElementById("study-modal").classList.remove("hidden");
+            renderStudyModule();
+        }
+
+        function closeStudyModal() {
+            document.getElementById("study-modal").classList.add("hidden");
+        }
+
+        function setStudyFilter(filter) {
+            currentStudyFilter = filter;
+            
+            // Toggle active styles on tabs
+            const btnAll = document.getElementById("filter-btn-all");
+            const btnHw = document.getElementById("filter-btn-hardware");
+            const btnSw = document.getElementById("filter-btn-software");
+
+            btnAll.className = filter === 'all' ? "flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white shadow-md text-indigo-600 transition-all" : "flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all";
+            btnHw.className = filter === 'Hardware' ? "flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white shadow-md text-indigo-600 transition-all" : "flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all";
+            btnSw.className = filter === 'Software' ? "flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white shadow-md text-indigo-600 transition-all" : "flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all";
+
+            renderStudyModule();
+        }
+
+        function filterStudyModule() {
+            renderStudyModule();
+        }
+
+        function renderStudyModule() {
+            const searchQuery = document.getElementById("study-search-input").value.toLowerCase().trim();
+            const container = document.getElementById("study-module-list");
+            container.innerHTML = "";
+
+            const filteredData = studyModuleData.filter(item => {
+                const matchesFilter = currentStudyFilter === 'all' || item.category === currentStudyFilter;
+                const matchesSearch = item.name.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery);
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 text-slate-400">
+                        <i class="fa-solid fa-folder-open text-5xl mb-3"></i>
+                        <p class="text-base font-bold">Tidak ada perangkat yang cocok dengan pencarian Anda.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const isHardware = item.category === "Hardware";
+                const card = document.createElement("div");
+                card.className = "p-5 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-indigo-300 transition-all flex items-start gap-4 shadow-sm";
+
+                card.innerHTML = `
+                    <div class="w-14 h-14 rounded-2xl ${isHardware ? 'bg-amber-100 text-amber-600 border-2 border-amber-300' : 'bg-teal-100 text-teal-600 border-2 border-teal-300'} flex items-center justify-center text-2xl shrink-0 mt-0.5">
+                        <i class="fa-solid ${item.icon}"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <h3 class="font-black text-slate-800 text-lg sm:text-xl">${item.name}</h3>
+                            <span class="text-xs uppercase font-black tracking-wider px-3 py-1 rounded-lg ${isHardware ? 'bg-amber-100 text-amber-800' : 'bg-teal-100 text-teal-800'}">
+                                ${item.category}
+                            </span>
+                        </div>
+                        <p class="text-sm sm:text-base text-slate-600 leading-relaxed font-semibold">${item.desc}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function handleStartGame(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById("player-name-input").value.trim();
+            if (!nameInput) return;
+
+            // Trigger Automatic Fullscreen for IFP Touch Screen
+            requestFullscreenMode();
+
+            playerName = nameInput;
+            selectedQuestionsCount = parseInt(document.getElementById("question-count-select").value) || 15;
+            
+            // Randomly select specified number of questions from total 30 bank
+            const shuffledBank = shuffleArray(allQuestionsBank);
+            activeQuestions = shuffledBank.slice(0, selectedQuestionsCount);
+
+            document.getElementById("player-display-name").innerText = playerName;
+
+            // Hide Start Screen & Show Quiz Header + Screen
+            document.getElementById("start-screen").classList.add("hidden");
+            document.getElementById("quiz-header").classList.remove("hidden");
+            document.getElementById("quiz-screen").classList.remove("hidden");
+
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isAnswerChecked = false;
+            usedHintInCurrentQuestion = false;
+            const currentQ = activeQuestions[currentQuestionIndex];
+
+            // Update Header Stats
+            document.getElementById("score-display").innerText = `Skor: ${score}`;
+            document.getElementById("question-number").innerText = `Soal ${currentQuestionIndex + 1} dari ${activeQuestions.length}`;
+            document.getElementById("progress-bar").style.width = `${((currentQuestionIndex + 1) / activeQuestions.length) * 100}%`;
+            document.getElementById("category-tag").innerText = currentQ.category;
+            document.getElementById("category-tag").className = `px-3 py-1 rounded-xl text-xs sm:text-sm uppercase font-black tracking-wider border border-white/30 ${
+                currentQ.category === "Hardware" ? "bg-amber-500/80 text-white" : "bg-teal-500/80 text-white"
+            }`;
+
+            // Reset UI Elements
+            document.getElementById("question-text").innerText = currentQ.question;
+            document.getElementById("feedback-message").innerText = "";
+            document.getElementById("check-btn").classList.remove("hidden");
+            document.getElementById("next-btn").classList.add("hidden");
+            document.getElementById("hint-btn").disabled = false;
+            document.getElementById("hint-btn").classList.remove("opacity-50", "cursor-not-allowed");
+
+            // Build Input Boxes for letters (handling space if word contains space)
+            const boxesContainer = document.getElementById("letter-boxes-container");
+            boxesContainer.innerHTML = "";
+
+            const targetAnswer = currentQ.answer;
+
+            for (let i = 0; i < targetAnswer.length; i++) {
+                const char = targetAnswer[i];
+                if (char === " ") {
+                    const spacer = document.createElement("div");
+                    spacer.className = "w-6 sm:w-8";
+                    boxesContainer.appendChild(spacer);
+                    continue;
+                }
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.maxLength = 1;
+                input.dataset.index = i;
+                input.className = "letter-box w-12 h-14 sm:w-16 sm:h-20 text-center text-2xl sm:text-4xl font-black uppercase rounded-2xl border-4 border-slate-300 bg-slate-50 focus:bg-white focus:border-indigo-600 focus:outline-none shadow-md transition-all";
+                
+                input.addEventListener("keydown", (e) => handleKeydown(e, i));
+                input.addEventListener("input", (e) => handleInput(e, i));
+                input.addEventListener("click", () => { currentFocusedIndex = i; playClickSound(); });
+
+                boxesContainer.appendChild(input);
+            }
+
+            // Auto focus on first box
+            setTimeout(() => {
+                const firstInput = boxesContainer.querySelector(".letter-box");
+                if (firstInput) {
+                    firstInput.focus();
+                    currentFocusedIndex = parseInt(firstInput.dataset.index);
+                }
+            }, 100);
+        }
+
+        function handleInput(e, index) {
+            playClickSound();
+            const val = e.target.value.toUpperCase();
+            e.target.value = val;
+
+            if (val.length === 1) {
+                const inputs = Array.from(document.querySelectorAll(".letter-box"));
+                const currentBoxIdx = inputs.indexOf(e.target);
+                if (currentBoxIdx < inputs.length - 1) {
+                    inputs[currentBoxIdx + 1].focus();
+                    currentFocusedIndex = parseInt(inputs[currentBoxIdx + 1].dataset.index);
+                }
+            }
+            checkAutoSubmit();
+        }
+
+        function handleKeydown(e, index) {
+            const inputs = Array.from(document.querySelectorAll(".letter-box"));
+            const currentBoxIdx = inputs.indexOf(e.target);
+
+            if (e.key === "Backspace") {
+                playClickSound();
+                if (e.target.value === "" && currentBoxIdx > 0) {
+                    inputs[currentBoxIdx - 1].focus();
+                    currentFocusedIndex = parseInt(inputs[currentBoxIdx - 1].dataset.index);
+                }
+            } else if (e.key === "ArrowLeft" && currentBoxIdx > 0) {
+                inputs[currentBoxIdx - 1].focus();
+                currentFocusedIndex = parseInt(inputs[currentBoxIdx - 1].dataset.index);
+            } else if (e.key === "ArrowRight" && currentBoxIdx < inputs.length - 1) {
+                inputs[currentBoxIdx + 1].focus();
+                currentFocusedIndex = parseInt(inputs[currentBoxIdx + 1].dataset.index);
+            } else if (e.key === "Enter") {
+                checkAnswer();
+            }
+        }
+
+        function typeVirtualKey(char) {
+            if (isAnswerChecked) return;
+            playClickSound();
+            
+            const inputs = Array.from(document.querySelectorAll(".letter-box"));
+            if (!inputs.length) return;
+
+            let currentBox = inputs.find(inp => parseInt(inp.dataset.index) === currentFocusedIndex);
+            if (!currentBox) currentBox = inputs[0];
+
+            const currentBoxIdx = inputs.indexOf(currentBox);
+
+            if (char === "BACKSPACE") {
+                if (currentBox.value !== "") {
+                    currentBox.value = "";
+                } else if (currentBoxIdx > 0) {
+                    const prevBox = inputs[currentBoxIdx - 1];
+                    prevBox.focus();
+                    prevBox.value = "";
+                    currentFocusedIndex = parseInt(prevBox.dataset.index);
+                }
+            } else {
+                currentBox.value = char;
+                if (currentBoxIdx < inputs.length - 1) {
+                    const nextBox = inputs[currentBoxIdx + 1];
+                    nextBox.focus();
+                    currentFocusedIndex = parseInt(nextBox.dataset.index);
+                }
+            }
+
+            checkAutoSubmit();
+        }
+
+        function checkAutoSubmit() {
+            const inputs = Array.from(document.querySelectorAll(".letter-box"));
+            const allFilled = inputs.every(input => input.value.trim() !== "");
+            if (allFilled && !isAnswerChecked) {
+                checkAnswer();
+            }
+        }
+
+        function useHint() {
+            if (isAnswerChecked || usedHintInCurrentQuestion) return;
+            playHintSound();
+            
+            usedHintInCurrentQuestion = true;
+            const correctAnswer = activeQuestions[currentQuestionIndex].answer;
+            const firstChar = correctAnswer[0];
+            const inputs = document.querySelectorAll(".letter-box");
+
+            if (inputs.length > 0) {
+                inputs[0].value = firstChar;
+            }
+            
+            const feedbackEl = document.getElementById("feedback-message");
+            feedbackEl.className = "text-center font-black text-lg sm:text-xl mt-2 text-amber-600";
+            feedbackEl.innerText = `💡 Hint Terbuka: Huruf pertamanya "${firstChar}"`;
+
+            document.getElementById("hint-btn").disabled = true;
+            document.getElementById("hint-btn").classList.add("opacity-50", "cursor-not-allowed");
+
+            if (inputs.length > 1) {
+                inputs[1].focus();
+                currentFocusedIndex = parseInt(inputs[1].dataset.index);
+            }
+        }
+
+        function checkAnswer() {
+            if (isAnswerChecked) return;
+
+            const correctAnswer = activeQuestions[currentQuestionIndex].answer;
+            const inputs = document.querySelectorAll(".letter-box");
+
+            let userAnswer = "";
+            let inputIdx = 0;
+            for (let i = 0; i < correctAnswer.length; i++) {
+                if (correctAnswer[i] === " ") {
+                    userAnswer += " ";
+                } else {
+                    userAnswer += inputs[inputIdx] ? inputs[inputIdx].value.toUpperCase() : "";
+                    inputIdx++;
+                }
+            }
+
+            const feedbackEl = document.getElementById("feedback-message");
+            const containerEl = document.getElementById("letter-boxes-container");
+
+            if (userAnswer.replace(/\s/g, "").length < correctAnswer.replace(/\s/g, "").length) {
+                playWrongSound();
+                feedbackEl.className = "text-center font-black text-lg sm:text-xl mt-2 text-amber-600";
+                feedbackEl.innerText = "Isi semua kotak huruf terlebih dahulu!";
+                return;
+            }
+
+            isAnswerChecked = true;
+
+            if (userAnswer === correctAnswer) {
+                playCorrectSound();
+                const pointsEarned = usedHintInCurrentQuestion ? 5 : 10;
+                score += pointsEarned;
+                
+                document.getElementById("score-display").innerText = `Skor: ${score}`;
+                feedbackEl.className = "text-center font-black text-2xl sm:text-3xl mt-2 text-emerald-600 animate-bounce-custom";
+                feedbackEl.innerText = `✨ Luar Biasa! Jawaban Benar (+${pointsEarned} Poin)`;
+
+                inputs.forEach(input => {
+                    input.classList.remove("border-slate-300", "bg-slate-50");
+                    input.classList.add("border-emerald-500", "bg-emerald-100", "text-emerald-800");
+                    input.disabled = true;
+                });
+
+                confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
+                showNextButton();
+            } else {
+                playWrongSound();
+                feedbackEl.className = "text-center font-black text-xl sm:text-2xl mt-2 text-rose-600";
+                feedbackEl.innerText = `❌ Jawaban Kurang Tepat! Kunci: ${correctAnswer}`;
+
+                containerEl.classList.add("animate-shake");
+                setTimeout(() => containerEl.classList.remove("animate-shake"), 500);
+
+                inputs.forEach(input => {
+                    input.classList.remove("border-slate-300", "bg-slate-50");
+                    input.classList.add("border-rose-400", "bg-rose-100", "text-rose-800");
+                    input.disabled = true;
+                });
+
+                showNextButton();
+            }
+        }
+
+        function showNextButton() {
+            document.getElementById("check-btn").classList.add("hidden");
+            document.getElementById("next-btn").classList.remove("hidden");
+            document.getElementById("hint-btn").disabled = true;
+            document.getElementById("hint-btn").classList.add("opacity-50", "cursor-not-allowed");
+        }
+
+        function nextQuestion() {
+            playClickSound();
+            currentQuestionIndex++;
+            if (currentQuestionIndex < activeQuestions.length) {
+                loadQuestion();
+            } else {
+                saveScoreAndShowResults();
+            }
+        }
+
+        function saveScoreAndShowResults() {
+            playVictorySound();
+            confetti({ particleCount: 120, spread: 100, origin: { y: 0.5 } });
+
+            const history = JSON.parse(localStorage.getItem("quiz_leaderboard_ifp") || "[]");
+            const now = new Date();
+            const dateStr = `${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            history.push({
+                name: playerName,
+                score: score,
+                totalQuestions: activeQuestions.length,
+                date: dateStr
+            });
+
+            // Sort Descending by Score
+            history.sort((a, b) => b.score - a.score);
+
+            // Keep Top 20
+            const top20 = history.slice(0, 20);
+            localStorage.setItem("quiz_leaderboard_ifp", JSON.stringify(top20));
+
+            // Hide Quiz Screen & Show Result Screen
+            document.getElementById("quiz-screen").classList.add("hidden");
+            document.getElementById("result-screen").classList.remove("hidden");
+
+            const totalMaxScore = activeQuestions.length * 10;
+            const percentage = Math.round((score / totalMaxScore) * 100);
+
+            document.getElementById("final-score").innerText = score;
+            document.getElementById("final-percentage").innerText = `${percentage}%`;
+
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const history = JSON.parse(localStorage.getItem("quiz_leaderboard_ifp") || "[]");
+            const listContainer = document.getElementById("leaderboard-list");
+            listContainer.innerHTML = "";
+
+            if (history.length === 0) {
+                listContainer.innerHTML = `<div class="text-sm font-bold text-slate-400 py-6">Belum ada catatan peringkat.</div>`;
+                return;
+            }
+
+            history.slice(0, 10).forEach((item, idx) => {
+                let badge = `<span class="w-8 text-center font-black text-slate-500 text-sm">#${idx + 1}</span>`;
+                let bgStyle = "bg-white border-slate-200";
+
+                if (idx === 0) {
+                    badge = `<span class="text-xl">🥇</span>`;
+                    bgStyle = "bg-amber-100 border-amber-300 font-extrabold";
+                } else if (idx === 1) {
+                    badge = `<span class="text-xl">🥈</span>`;
+                    bgStyle = "bg-slate-100 border-slate-300 font-extrabold";
+                } else if (idx === 2) {
+                    badge = `<span class="text-xl">🥉</span>`;
+                    bgStyle = "bg-orange-100 border-orange-300 font-extrabold";
+                }
+
+                const isCurrentPlayer = item.name === playerName && item.score === score;
+
+                const row = document.createElement("div");
+                row.className = `flex justify-between items-center p-3.5 rounded-2xl border-2 ${bgStyle} text-sm sm:text-base ${isCurrentPlayer ? 'ring-4 ring-indigo-500/50' : ''}`;
+                row.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        ${badge}
+                        <div class="flex flex-col text-left">
+                            <span class="truncate font-black text-slate-800 ${isCurrentPlayer ? 'text-indigo-600' : ''}">${escapeHtml(item.name)}</span>
+                            <span class="text-xs text-slate-500 font-bold">${item.totalQuestions ? item.totalQuestions + ' Soal' : 'Kuis'} • ${item.date}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-indigo-600 text-lg sm:text-xl">${item.score} Pts</span>
+                    </div>
+                `;
+                listContainer.appendChild(row);
+            });
+        }
+
+        function showLeaderboardOnly() {
+            document.getElementById("start-screen").classList.add("hidden");
+            document.getElementById("result-screen").classList.remove("hidden");
+            renderLeaderboard();
+        }
+
+        function clearLeaderboard() {
+            if (confirm("Apakah Anda yakin ingin menghapus semua catatan Papan Peringkat?")) {
+                localStorage.removeItem("quiz_leaderboard_ifp");
+                renderLeaderboard();
+            }
+        }
+
+        function restartQuiz(changeSettings = false) {
+            currentQuestionIndex = 0;
+            score = 0;
+
+            document.getElementById("result-screen").classList.add("hidden");
+
+            if (changeSettings) {
+                document.getElementById("quiz-header").classList.add("hidden");
+                document.getElementById("start-screen").classList.remove("hidden");
+            } else {
+                // Re-shuffle with same question count
+                const shuffledBank = shuffleArray(allQuestionsBank);
+                activeQuestions = shuffledBank.slice(0, selectedQuestionsCount);
+
+                document.getElementById("quiz-header").classList.remove("hidden");
+                document.getElementById("quiz-screen").classList.remove("hidden");
+                loadQuestion();
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+</html>
