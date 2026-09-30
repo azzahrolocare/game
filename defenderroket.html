@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Ketik Roket - Defend Sky (Huruf & Kata Jatuh)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #030712;
+            color: #ffffff;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .font-mono-code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Keyboard Key styling */
+        .key-cap {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 0 #020617;
+            transition: all 0.08s ease;
+        }
+
+        .key-cap:active, .key-active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #020617;
+            background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+            border-color: #38bdf8;
+            color: #ffffff;
+        }
+
+        .option-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .option-card:hover {
+            transform: translateY(-2px);
+            border-color: #38bdf8;
+        }
+
+        .option-card.selected {
+            background: rgba(14, 165, 233, 0.2);
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d1f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between items-center p-3 sm:p-5 relative select-none">
+
+    <header class="w-full max-w-5xl flex flex-wrap justify-between items-center gap-3 mb-2 z-10">
+        <div class="flex items-center space-x-3">
+            <div class="p-2.5 bg-gradient-to-tr from-cyan-600 via-indigo-600 to-fuchsia-500 rounded-2xl shadow-lg shadow-cyan-500/20">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-200 to-fuchsia-400">
+                    DEFENDER ROKET
+                </h1>
+                <p class="text-xs text-slate-400 font-medium" id="gameSubtitle">Ketik target yang jatuh sebelum menabrak benteng!</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button id="soundToggleBtn" onclick="toggleAudio()" class="glass-panel hover:bg-slate-800 text-slate-200 px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-slate-700">
+                <span id="soundIcon">🔊</span> <span id="soundText">Suara: ON</span>
+            </button>
+            <button onclick="openSettingsModal()" class="glass-panel hover:bg-slate-800 text-cyan-300 px-3 py-2 rounded-xl text-xs font-bold transition border border-cyan-500/40">
+                ⚙️ Pengaturan
+            </button>
+            <button onclick="restartGame()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-extrabold transition shadow-lg shadow-indigo-600/30 active:scale-95">
+                Main Lagi 🔄
+            </button>
+        </div>
+    </header>
+
+    <main class="w-full max-w-5xl flex-1 flex flex-col gap-3 z-10">
+        <div class="relative w-full h-[380px] sm:h-[440px] rounded-2xl glass-panel overflow-hidden border border-slate-700/60 shadow-2xl">
+            <!-- Game Canvas -->
+            <canvas id="gameCanvas" class="absolute inset-0 w-full h-full cursor-pointer"></canvas>
+
+            <!-- Red Flash Damage Screen Overlay -->
+            <div id="damageOverlay" class="absolute inset-0 bg-red-600/30 pointer-events-none opacity-0 transition-opacity duration-150 rounded-2xl"></div>
+
+            <!-- Top Left HUD (Level & Score) -->
+            <div class="absolute top-3 left-3 flex gap-2 sm:gap-3 z-20">
+                <div class="bg-slate-900/85 backdrop-blur border border-slate-700/80 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl">
+                    <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-extrabold">Level</div>
+                    <div class="text-lg sm:text-2xl font-black text-amber-400 font-mono-code flex items-center gap-1">
+                        <span id="levelVal">1</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/85 backdrop-blur border border-slate-700/80 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl">
+                    <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-extrabold" id="scoreLabel">Skor P1</div>
+                    <div class="text-lg sm:text-2xl font-black text-cyan-400 font-mono-code" id="scoreVal">
+                        0
+                    </div>
+                </div>
+
+                <!-- P2 Score (Shown only in 2 Player Mode) -->
+                <div id="scoreP2Box" class="bg-slate-900/85 backdrop-blur border border-fuchsia-500/50 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl hidden">
+                    <div class="text-[9px] sm:text-[10px] uppercase tracking-wider text-fuchsia-400 font-extrabold">Skor P2</div>
+                    <div class="text-lg sm:text-2xl font-black text-fuchsia-300 font-mono-code" id="scoreP2Val">
+                        0
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Right HUD (Lives / HP & Combo) -->
+            <div class="absolute top-3 right-3 flex flex-col items-end gap-1.5 z-20">
+                <!-- Lives / HP Counter -->
+                <div class="bg-slate-900/85 backdrop-blur border border-slate-700/80 px-3.5 py-1.5 sm:py-2 rounded-xl min-w-[130px] sm:min-w-[160px]">
+                    <div class="flex justify-between items-center text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-extrabold mb-0.5">
+                        <span id="livesLabel">Nyawa Benteng</span>
+                        <span id="hpText" class="text-emerald-400 font-mono-code">5/5</span>
+                    </div>
+                    <div id="livesHeartContainer" class="flex gap-1 text-sm sm:text-base text-red-500">
+                        ❤️❤️❤️❤️❤️
+                    </div>
+                </div>
+
+                <!-- Combo Badge -->
+                <div id="comboBadge" class="bg-slate-900/85 backdrop-blur border border-amber-500/40 px-3 py-1 rounded-xl text-right opacity-0 transition-all duration-200">
+                    <div class="text-xs font-black text-yellow-400 font-mono-code" id="comboVal">0x STREAK!</div>
+                </div>
+            </div>
+
+            <!-- Player Zone Markers (Visible in 2 Player Mode) -->
+            <div id="p1ZoneTag" class="absolute bottom-2 left-4 text-[11px] font-bold text-emerald-400 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-emerald-500/30 hidden">
+                🚀 P1 (Kiri)
+            </div>
+            <div id="p2ZoneTag" class="absolute bottom-2 right-4 text-[11px] font-bold text-fuchsia-400 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-fuchsia-500/30 hidden">
+                🚀 P2 (Kanan)
+            </div>
+
+            <!-- Level Up Announcement Banner -->
+            <div id="levelUpBanner" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-500 via-indigo-600 to-cyan-500 text-white font-black text-xl sm:text-3xl px-8 py-3.5 rounded-2xl shadow-2xl border-2 border-white/40 uppercase tracking-widest pointer-events-none opacity-0 scale-75 transition-all duration-300 z-30">
+                LEVEL UP! 🔥
+            </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl p-3 sm:p-4 border border-slate-700/60 flex flex-col gap-2">
+            <div class="text-xs text-slate-400 font-semibold px-1 flex justify-between items-center">
+                <span id="keyboardInstruction">Papan Ketik (Gunakan keyboard laptop / HP Anda)</span>
+                <span class="text-cyan-400 font-mono-code text-[11px]" id="speedInfo">Kecepatan: Normal</span>
+            </div>
+
+            <!-- Virtual On-screen Keyboard Rows -->
+            <div class="flex flex-col gap-1.5 items-center w-full">
+                <div class="flex gap-1 sm:gap-1.5 justify-center w-full max-w-3xl">
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="Q">Q</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="W">W</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="E">E</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="R">R</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="T">T</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="Y">Y</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="U">U</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="I">I</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="O">O</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="P">P</button>
+                </div>
+                <div class="flex gap-1 sm:gap-1.5 justify-center w-full max-w-2xl px-3">
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="A">A</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="S">S</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="D">D</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="F">F</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="G">G</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="H">H</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="J">J</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="K">K</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="L">L</button>
+                </div>
+                <div class="flex gap-1 sm:gap-1.5 justify-center w-full max-w-xl px-6">
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="Z">Z</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="X">X</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="C">C</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="V">V</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="B">B</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="N">N</button>
+                    <button class="key-cap rounded-lg py-1.5 sm:py-2 flex-1 max-w-[42px] sm:max-w-[50px] font-mono-code font-bold text-xs sm:text-base text-slate-200" data-key="M">M</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="settingsModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50 transition-all duration-300">
+        <div class="glass-panel border border-cyan-500/40 max-w-lg w-full rounded-2xl p-6 sm:p-8 flex flex-col gap-5 shadow-2xl relative overflow-hidden">
+            <div class="text-center">
+                <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide">PENGATURAN GAME ⚙️</h2>
+                <p class="text-xs sm:text-sm text-cyan-300 mt-1">Sesuaikan mode permainan dan tingkat kesulitan</p>
+            </div>
+
+            <!-- Option 1: Player Mode -->
+            <div>
+                <label class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2 block">1. Jumlah Pemain</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div id="opt1P" onclick="selectPlayerMode(1)" class="option-card selected border border-slate-700 p-3 rounded-xl flex items-center gap-3">
+                        <span class="text-2xl">👤</span>
+                        <div>
+                            <div class="text-sm font-bold text-white">1 Pemain</div>
+                            <div class="text-[10px] text-slate-400">Main Sendiri (Solo)</div>
+                        </div>
+                    </div>
+                    <div id="opt2P" onclick="selectPlayerMode(2)" class="option-card border border-slate-700 p-3 rounded-xl flex items-center gap-3">
+                        <span class="text-2xl">👥</span>
+                        <div>
+                            <div class="text-sm font-bold text-white">2 Pemain</div>
+                            <div class="text-[10px] text-slate-400">Co-op / Dual Zone</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 2: Game Content Type -->
+            <div>
+                <label class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2 block">2. Tipe Target Ketik</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <div id="optTypeLetters" onclick="selectContentType('letters')" class="option-card selected border border-slate-700 p-3 rounded-xl flex items-center gap-3">
+                        <span class="text-2xl">🔤</span>
+                        <div>
+                            <div class="text-sm font-bold text-white">Hanya Huruf</div>
+                            <div class="text-[10px] text-slate-400">Refleks A-Z cepat</div>
+                        </div>
+                    </div>
+                    <div id="optTypeWords" onclick="selectContentType('words')" class="option-card border border-slate-700 p-3 rounded-xl flex items-center gap-3">
+                        <span class="text-2xl">📝</span>
+                        <div>
+                            <div class="text-sm font-bold text-white">Kata Motivasi</div>
+                            <div class="text-[10px] text-slate-400">Ketik kata utuh</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Option 3: Lives Setting -->
+            <div>
+                <label class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2 block">3. Jumlah Nyawa (Batas Jatuh)</label>
+                <div class="grid grid-cols-4 gap-2">
+                    <button id="optLives3" onclick="selectLives(3)" class="option-card border border-slate-700 py-2.5 rounded-xl font-bold text-xs text-white">3 ❤️</button>
+                    <button id="optLives5" onclick="selectLives(5)" class="option-card selected border border-slate-700 py-2.5 rounded-xl font-bold text-xs text-white">5 ❤️</button>
+                    <button id="optLives10" onclick="selectLives(10)" class="option-card border border-slate-700 py-2.5 rounded-xl font-bold text-xs text-white">10 ❤️</button>
+                    <button id="optLivesInf" onclick="selectLives(999)" class="option-card border border-slate-700 py-2.5 rounded-xl font-bold text-xs text-amber-400">Santai ♾️</button>
+                </div>
+            </div>
+
+            <!-- Option 4: Speed Setting -->
+            <div>
+                <label class="text-xs font-bold uppercase text-slate-400 tracking-wider mb-2 block">4. Kecepatan Permainan</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="optSpeedSlow" onclick="selectSpeedMode('slow')" class="option-card selected border border-slate-700 py-2.5 rounded-xl font-bold text-xs text-emerald-400">🐢 Pelan / Santai</button>
+                    <button id="optSpeedNormal" onclick="selectSpeedMode('normal')" class="option-card border border-slate-700 py-2.5 rounded-xl font-bold text-xs text-sky-400">🚶 Sedang</button>
+                    <button id="optSpeedFast" onclick="selectSpeedMode('fast')" class="option-card border border-slate-700 py-2.5 rounded-xl font-bold text-xs text-fuchsia-400">⚡ Cepat</button>
+                </div>
+            </div>
+
+            <!-- Start Game Button -->
+            <button onclick="applySettingsAndStart()" class="w-full mt-2 bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-500 hover:from-cyan-400 hover:to-fuchsia-400 text-white font-extrabold py-3.5 px-6 rounded-xl transition shadow-lg shadow-cyan-500/25 active:scale-95 text-sm uppercase tracking-wider">
+                MULAI PERMAINAN 🚀
+            </button>
+        </div>
+    </div>
+
+    <div id="resultModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="glass-panel border border-cyan-500/30 max-w-md w-full rounded-2xl p-6 sm:p-8 text-center flex flex-col items-center gap-5 shadow-2xl relative overflow-hidden">
+            <div class="text-6xl animate-bounce" id="modalEmoji">🚀</div>
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide" id="modalTitle">PERMAINAN SELESAI</h2>
+                <p class="text-xs sm:text-sm text-cyan-300 mt-1 font-semibold" id="modalSubtext">Bagus sekali! Tetap latih ketikanmu!</p>
+            </div>
+
+            <div class="w-full grid grid-cols-2 gap-3 my-1">
+                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                    <div class="text-[10px] text-slate-400 uppercase font-extrabold" id="modalScoreLabel">Skor Akhir</div>
+                    <div class="text-xl font-black text-cyan-400 font-mono-code" id="modalScore">0</div>
+                </div>
+                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                    <div class="text-[10px] text-slate-400 uppercase font-extrabold">Level Dicapai</div>
+                    <div class="text-xl font-black text-amber-400 font-mono-code" id="modalLevel">1</div>
+                </div>
+                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                    <div class="text-[10px] text-slate-400 uppercase font-extrabold">Target Hancur</div>
+                    <div class="text-xl font-black text-emerald-400 font-mono-code" id="modalDestroyed">0</div>
+                </div>
+                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
+                    <div class="text-[10px] text-slate-400 uppercase font-extrabold">Akurasi Ketik</div>
+                    <div class="text-xl font-black text-indigo-400 font-mono-code" id="modalAccuracy">100%</div>
+                </div>
+            </div>
+
+            <button onclick="restartGame(); closeModal();" class="w-full bg-gradient-to-r from-cyan-500 via-indigo-600 to-fuchsia-500 hover:from-cyan-400 hover:to-fuchsia-400 text-white font-extrabold py-3.5 px-6 rounded-xl transition shadow-lg shadow-cyan-500/25 active:scale-95 text-sm uppercase tracking-wider">
+                Main Lagi 🚀
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Canvas & Context Initializations
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Game Options State
+        let configPlayerMode = 1; // 1 or 2 players
+        let configContentType = 'letters'; // 'letters' or 'words'
+        let configMaxLives = 5; // 3, 5, 10, or 999 (infinite)
+        let configSpeedMode = 'slow'; // 'slow' (default pelan), 'normal', 'fast'
+
+        // Active Game State
+        let scoreP1 = 0;
+        let scoreP2 = 0;
+        let livesP1 = 5;
+        let level = 1;
+        let combo = 0;
+        let totalHits = 0;
+        let totalMisses = 0;
+        let destroyedCount = 0;
+        let isGameOver = false;
+        let gameStarted = false;
+
+        // Falling Elements Engine
+        let fallingItems = [];
+        let lasers = [];
+        let particles = [];
+        let stars = [];
+        let lastSpawnTime = 0;
+
+        // Rocket positions
+        let rocketP1X = 0;
+        let rocketP2X = 0;
+        let rocketY = 0;
+
+        // Word Dictionary for Words Mode
+        const motivationalWords = [
+            "ROKET", "BINTANG", "SUKSES", "SEMANGAT", "IMPIAN", "TERBANG", 
+            "JUARA", "HEBAT", "FOKUS", "BELAJAR", "PINTAR", "OPTIMIS", 
+            "USAHA", "MENANG", "CERDAS", "BERANI", "CINTA", "MAMPU", 
+            "BANGKIT", "KARYA", "INOVASI", "MIMPI", "TUJUAN", "PRESTASI"
+        ];
+
+        let audioEnabled = true;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            if (!audioEnabled) return;
+            try {
+                initAudio();
+                const now = audioCtx.currentTime;
+
+                if (type === 'laser') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(800, now);
+                    osc.frequency.exponentialRampToValueAtTime(180, now + 0.08);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'explode') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(140, now);
+                    osc.frequency.exponentialRampToValueAtTime(30, now + 0.18);
+                    gain.gain.setValueAtTime(0.18, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.18);
+                } else if (type === 'damage') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(120, now);
+                    osc.frequency.linearRampToValueAtTime(40, now + 0.25);
+                    gain.gain.setValueAtTime(0.22, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'levelup') {
+                    [320, 480, 640, 800].forEach((freq, i) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + i * 0.06);
+                        gain.gain.setValueAtTime(0.12, now + i * 0.06);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.14);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + i * 0.06);
+                        osc.stop(now + i * 0.06 + 0.14);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            document.getElementById('soundIcon').innerText = audioEnabled ? '🔊' : '🔇';
+            document.getElementById('soundText').innerText = audioEnabled ? 'Suara: ON' : 'Suara: OFF';
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            if (configPlayerMode === 1) {
+                rocketP1X = canvas.width / 2;
+            } else {
+                rocketP1X = canvas.width / 4;
+                rocketP2X = (canvas.width / 4) * 3;
+            }
+            rocketY = canvas.height - 40;
+            initStars();
+        }
+
+        function initStars() {
+            stars = [];
+            const numStars = Math.floor((canvas.width * canvas.height) / 2200);
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.3,
+                    alpha: Math.random() * 0.8 + 0.2,
+                    speed: Math.random() * 0.8 + 0.2
+                });
+            }
+        }
+
+        function selectPlayerMode(mode) {
+            configPlayerMode = mode;
+            document.getElementById('opt1P').className = `option-card border border-slate-700 p-3 rounded-xl flex items-center gap-3 ${mode === 1 ? 'selected' : ''}`;
+            document.getElementById('opt2P').className = `option-card border border-slate-700 p-3 rounded-xl flex items-center gap-3 ${mode === 2 ? 'selected' : ''}`;
+        }
+
+        function selectContentType(type) {
+            configContentType = type;
+            document.getElementById('optTypeLetters').className = `option-card border border-slate-700 p-3 rounded-xl flex items-center gap-3 ${type === 'letters' ? 'selected' : ''}`;
+            document.getElementById('optTypeWords').className = `option-card border border-slate-700 p-3 rounded-xl flex items-center gap-3 ${type === 'words' ? 'selected' : ''}`;
+        }
+
+        function selectLives(count) {
+            configMaxLives = count;
+            [3, 5, 10, 999].forEach(c => {
+                const btn = document.getElementById(`optLives${c === 999 ? 'Inf' : c}`);
+                if (btn) {
+                    if (c === count) {
+                        btn.className = "option-card selected border border-slate-700 py-2.5 rounded-xl font-bold text-xs text-white";
+                    } else {
+                        btn.className = "option-card border border-slate-700 py-2.5 rounded-xl font-bold text-xs text-white";
+                    }
+                }
+            });
+        }
+
+        function selectSpeedMode(mode) {
+            configSpeedMode = mode;
+            ['slow', 'normal', 'fast'].forEach(m => {
+                const btn = document.getElementById(`optSpeed${m.charAt(0).toUpperCase() + m.slice(1)}`);
+                if (btn) {
+                    const colorClass = m === 'slow' ? 'text-emerald-400' : m === 'normal' ? 'text-sky-400' : 'text-fuchsia-400';
+                    btn.className = `option-card ${m === mode ? 'selected' : ''} border border-slate-700 py-2.5 rounded-xl font-bold text-xs ${colorClass}`;
+                }
+            });
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingsModal').classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        function applySettingsAndStart() {
+            document.getElementById('settingsModal').classList.add('opacity-0', 'pointer-events-none');
+            
+            // Adjust HUD based on choices
+            if (configPlayerMode === 2) {
+                document.getElementById('scoreLabel').innerText = "Skor P1";
+                document.getElementById('scoreP2Box').classList.remove('hidden');
+                document.getElementById('p1ZoneTag').classList.remove('hidden');
+                document.getElementById('p2ZoneTag').classList.remove('hidden');
+            } else {
+                document.getElementById('scoreLabel').innerText = "Skor";
+                document.getElementById('scoreP2Box').classList.add('hidden');
+                document.getElementById('p1ZoneTag').classList.add('hidden');
+                document.getElementById('p2ZoneTag').classList.add('hidden');
+            }
+
+            resizeCanvas();
+            restartGame();
+            gameStarted = true;
+        }
+
+        function getSpawnInterval() {
+            let speedFactor = 1.6; // Lebih lama jeda kemunculannya secara bawaan
+            if (configSpeedMode === 'normal') speedFactor = 1.1;
+            if (configSpeedMode === 'fast') speedFactor = 0.75;
+
+            // Memulai dengan interval yang santai (~3.2 detik di mode Pelan)
+            return Math.max(900, (3000 - (level - 1) * 180) * speedFactor);
+        }
+
+        function getFallSpeed() {
+            let baseMult = 0.45; // Kecepatan dasar diturunkan agar jatuh jauh lebih pelan
+            if (configSpeedMode === 'normal') baseMult = 0.75;
+            if (configSpeedMode === 'fast') baseMult = 1.1;
+
+            return baseMult * (0.7 + (level * 0.15));
+        }
+
+        function spawnItem() {
+            let text = "";
+            if (configContentType === 'letters') {
+                const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                text = alphabet[Math.floor(Math.random() * alphabet.length)];
+            } else {
+                text = motivationalWords[Math.floor(Math.random() * motivationalWords.length)];
+            }
+
+            // Determine zone for 2-player or 1-player mode
+            let targetZone = 1;
+            let minX = 35;
+            let maxX = canvas.width - 35;
+
+            if (configPlayerMode === 2) {
+                targetZone = Math.random() < 0.5 ? 1 : 2;
+                if (targetZone === 1) {
+                    maxX = (canvas.width / 2) - 30;
+                } else {
+                    minX = (canvas.width / 2) + 30;
+                }
+            }
+
+            const x = minX + Math.random() * (maxX - minX);
+            const colors = ['#38bdf8', '#4ade80', '#facc15', '#f472b6', '#c084fc', '#fb923c'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+
+            fallingItems.push({
+                text: text,
+                typedIndex: 0, // for multi-character word matching
+                x: x,
+                y: -30,
+                radius: configContentType === 'letters' ? 22 : 32,
+                speed: getFallSpeed() * (0.85 + Math.random() * 0.3),
+                color: color,
+                pulse: Math.random() * Math.PI,
+                zone: targetZone
+            });
+        }
+
+        function handleKeyPress(key) {
+            if (isGameOver || !gameStarted) return;
+            key = key.toUpperCase();
+
+            // Highlight visual keycap
+            const keyBtn = document.querySelector(`button[data-key="${key}"]`);
+            if (keyBtn) {
+                keyBtn.classList.add('key-active');
+                setTimeout(() => keyBtn.classList.remove('key-active'), 120);
+            }
+
+            let hit = false;
+
+            if (configContentType === 'letters') {
+                // Find matching single letter lowest down on screen
+                let matchIndex = -1;
+                let maxY = -999;
+
+                for (let i = 0; i < fallingItems.length; i++) {
+                    if (fallingItems[i].text === key && fallingItems[i].y > maxY) {
+                        maxY = fallingItems[i].y;
+                        matchIndex = i;
+                    }
+                }
+
+                if (matchIndex !== -1) {
+                    const target = fallingItems[matchIndex];
+                    const firingRocketX = (configPlayerMode === 2 && target.zone === 2) ? rocketP2X : rocketP1X;
+
+                    lasers.push({
+                        startX: firingRocketX,
+                        startY: rocketY - 20,
+                        endX: target.x,
+                        endY: target.y,
+                        color: target.color,
+                        life: 1.0
+                    });
+
+                    spawnExplosion(target.x, target.y, target.color);
+                    playSound('laser');
+                    playSound('explode');
+
+                    if (configPlayerMode === 2 && target.zone === 2) {
+                        scoreP2 += 10 * level;
+                    } else {
+                        scoreP1 += 10 * level;
+                    }
+
+                    fallingItems.splice(matchIndex, 1);
+                    hit = true;
+                }
+            } else {
+                // Words Mode: Find item progressing or starting with pressed key
+                let activeMatch = -1;
+                let maxY = -999;
+
+                for (let i = 0; i < fallingItems.length; i++) {
+                    const item = fallingItems[i];
+                    if (item.text[item.typedIndex] === key && item.y > maxY) {
+                        maxY = item.y;
+                        activeMatch = i;
+                    }
+                }
+
+                if (activeMatch !== -1) {
+                    const target = fallingItems[activeMatch];
+                    target.typedIndex++;
+                    hit = true;
+
+                    const firingRocketX = (configPlayerMode === 2 && target.zone === 2) ? rocketP2X : rocketP1X;
+
+                    lasers.push({
+                        startX: firingRocketX,
+                        startY: rocketY - 20,
+                        endX: target.x,
+                        endY: target.y,
+                        color: target.color,
+                        life: 0.8
+                    });
+
+                    playSound('laser');
+
+                    // If full word completed
+                    if (target.typedIndex >= target.text.length) {
+                        spawnExplosion(target.x, target.y, target.color);
+                        playSound('explode');
+
+                        if (configPlayerMode === 2 && target.zone === 2) {
+                            scoreP2 += 25 * level;
+                        } else {
+                            scoreP1 += 25 * level;
+                        }
+
+                        fallingItems.splice(activeMatch, 1);
+                    }
+                }
+            }
+
+            if (hit) {
+                totalHits++;
+                destroyedCount++;
+                combo++;
+
+                // Level up every 10 destroyed targets
+                if (destroyedCount >= level * 10) {
+                    levelUp();
+                }
+                updateHUD();
+            } else {
+                totalMisses++;
+                combo = 0;
+                updateHUD();
+            }
+        }
+
+        function levelUp() {
+            level++;
+            playSound('levelup');
+
+            const banner = document.getElementById('levelUpBanner');
+            banner.innerText = `LEVEL ${level}! 🔥`;
+            banner.classList.remove('opacity-0', 'scale-75');
+            banner.classList.add('opacity-100', 'scale-100');
+
+            setTimeout(() => {
+                banner.classList.remove('opacity-100', 'scale-100');
+                banner.classList.add('opacity-0', 'scale-75');
+            }, 1200);
+
+            updateHUD();
+        }
+
+        function spawnExplosion(x, y, color) {
+            for (let i = 0; i < 16; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 2;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: Math.random() * 3.5 + 1.5,
+                    color: color,
+                    alpha: 1,
+                    decay: Math.random() * 0.04 + 0.02
+                });
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreVal').innerText = scoreP1;
+            document.getElementById('scoreP2Val').innerText = scoreP2;
+            document.getElementById('levelVal').innerText = level;
+
+            // Render hearts
+            const heartsContainer = document.getElementById('livesHeartContainer');
+            const hpText = document.getElementById('hpText');
+
+            if (configMaxLives >= 900) {
+                hpText.innerText = "♾️ Santai";
+                heartsContainer.innerHTML = "💖💖💖💖💖";
+            } else {
+                hpText.innerText = `${livesP1}/${configMaxLives}`;
+                let heartsHtml = "";
+                for (let i = 0; i < configMaxLives; i++) {
+                    heartsHtml += i < livesP1 ? "❤️" : "🖤";
+                }
+                heartsContainer.innerHTML = heartsHtml;
+            }
+
+            const speedLabel = configSpeedMode === 'slow' ? '🐢 Pelan' : configSpeedMode === 'normal' ? '🚶 Sedang' : '⚡ Cepat';
+            document.getElementById('speedInfo').innerText = `Modus: ${speedLabel} (Lvl ${level})`;
+
+            const comboBadge = document.getElementById('comboBadge');
+            const comboVal = document.getElementById('comboVal');
+            if (combo >= 3) {
+                comboVal.innerText = `${combo}x STREAK! 🔥`;
+                comboBadge.style.opacity = "1";
+            } else {
+                comboBadge.style.opacity = "0";
+            }
+        }
+
+        function updateAndRender(timestamp) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Starfield
+            stars.forEach(star => {
+                star.y += star.speed;
+                if (star.y > canvas.height) {
+                    star.y = 0;
+                    star.x = Math.random() * canvas.width;
+                }
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+                ctx.fill();
+            });
+
+            // Draw 2-Player dividing line
+            if (configPlayerMode === 2) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+                ctx.setLineDash([6, 6]);
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, 0);
+                ctx.lineTo(canvas.width / 2, canvas.height);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            if (!isGameOver && gameStarted) {
+                // 2. Spawn Items Logic
+                if (timestamp - lastSpawnTime > getSpawnInterval()) {
+                    spawnItem();
+                    lastSpawnTime = timestamp;
+                }
+
+                // 3. Update & Draw Falling Items
+                for (let i = fallingItems.length - 1; i >= 0; i--) {
+                    const item = fallingItems[i];
+                    item.y += item.speed;
+                    item.pulse += 0.05;
+
+                    // Reached Ground / Shield Line
+                    if (item.y >= canvas.height - 55) {
+                        if (configMaxLives < 900) {
+                            livesP1--;
+                        }
+                        combo = 0;
+                        playSound('damage');
+
+                        const dmgOverlay = document.getElementById('damageOverlay');
+                        dmgOverlay.style.opacity = "1";
+                        setTimeout(() => dmgOverlay.style.opacity = "0", 150);
+
+                        spawnExplosion(item.x, item.y, '#ef4444');
+                        fallingItems.splice(i, 1);
+                        updateHUD();
+
+                        if (livesP1 <= 0) {
+                            triggerGameOver();
+                        }
+                        continue;
+                    }
+
+                    // Render Falling Bubble / Box
+                    ctx.save();
+                    ctx.shadowBlur = 12;
+                    ctx.shadowColor = item.color;
+
+                    if (configContentType === 'letters') {
+                        // Circle bubble
+                        ctx.beginPath();
+                        ctx.arc(item.x, item.y, item.radius + Math.sin(item.pulse) * 1.5, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+                        ctx.strokeStyle = item.color;
+                        ctx.lineWidth = 2.5;
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Letter
+                        ctx.font = '700 20px "Fira Code", monospace';
+                        ctx.fillStyle = '#ffffff';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(item.text, item.x, item.y + 1);
+                    } else {
+                        // Rounded Word Box
+                        ctx.font = '700 15px "Fira Code", monospace';
+                        const textWidth = ctx.measureText(item.text).width;
+                        const boxW = textWidth + 24;
+                        const boxH = 34;
+
+                        ctx.beginPath();
+                        ctx.roundRect(item.x - boxW / 2, item.y - boxH / 2, boxW, boxH, 10);
+                        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                        ctx.strokeStyle = item.color;
+                        ctx.lineWidth = 2.5;
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Highlight typed characters in word
+                        const untyped = item.text.slice(item.typedIndex);
+                        const typed = item.text.slice(0, item.typedIndex);
+
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        
+                        // Draw typed prefix in green, remaining in white
+                        if (item.typedIndex > 0) {
+                            ctx.fillStyle = '#4ade80';
+                            ctx.fillText(typed, item.x - (ctx.measureText(untyped).width / 2), item.y);
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillText(untyped, item.x + (ctx.measureText(typed).width / 2), item.y);
+                        } else {
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillText(item.text, item.x, item.y);
+                        }
+                    }
+
+                    ctx.restore();
+                }
+
+                // 4. Update & Draw Lasers
+                for (let i = lasers.length - 1; i >= 0; i--) {
+                    const laser = lasers[i];
+                    laser.life -= 0.12;
+
+                    if (laser.life <= 0) {
+                        lasers.splice(i, 1);
+                        continue;
+                    }
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.moveTo(laser.startX, laser.startY);
+                    ctx.lineTo(laser.endX, laser.endY);
+                    ctx.strokeStyle = laser.color;
+                    ctx.lineWidth = 4 * laser.life;
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = laser.color;
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                // 5. Update & Draw Explosion Particles
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha -= p.decay;
+
+                    if (p.alpha <= 0) {
+                        particles.splice(i, 1);
+                        continue;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.alpha;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+
+                // 6. Draw Rockets
+                if (configPlayerMode === 1) {
+                    drawRocket(rocketP1X, rocketY, '#0ea5e9');
+                } else {
+                    drawRocket(rocketP1X, rocketY, '#10b981');
+                    drawRocket(rocketP2X, rocketY, '#d946ef');
+                }
+            }
+
+            requestAnimationFrame(updateAndRender);
+        }
+
+        function drawRocket(x, y, colorHex) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            // Ground defense line
+            ctx.beginPath();
+            ctx.moveTo(-canvas.width / 2, 22);
+            ctx.lineTo(canvas.width / 2, 22);
+            ctx.strokeStyle = livesP1 > 1 ? 'rgba(56, 189, 248, 0.4)' : 'rgba(239, 68, 68, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Thruster flame
+            ctx.beginPath();
+            ctx.moveTo(-7, 10);
+            ctx.lineTo(0, 22 + Math.random() * 8);
+            ctx.lineTo(7, 10);
+            ctx.fillStyle = '#f97316';
+            ctx.fill();
+
+            // Nose cone
+            ctx.beginPath();
+            ctx.moveTo(0, -26);
+            ctx.lineTo(11, -7);
+            ctx.lineTo(-11, -7);
+            ctx.closePath();
+            ctx.fillStyle = '#ef4444';
+            ctx.fill();
+
+            // Fuselage
+            ctx.beginPath();
+            ctx.rect(-9, -7, 18, 18);
+            ctx.fillStyle = '#f8fafc';
+            ctx.fill();
+
+            // Fins
+            ctx.beginPath();
+            ctx.moveTo(-9, 2);
+            ctx.lineTo(-16, 12);
+            ctx.lineTo(-9, 12);
+            ctx.fillStyle = colorHex;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(9, 2);
+            ctx.lineTo(16, 12);
+            ctx.lineTo(9, 12);
+            ctx.fillStyle = colorHex;
+            ctx.fill();
+
+            // Cockpit
+            ctx.beginPath();
+            ctx.arc(0, -2, 4.5, 0, Math.PI * 2);
+            ctx.fillStyle = '#0284c7';
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function triggerGameOver() {
+            isGameOver = true;
+            playSound('damage');
+
+            const totalAttempts = totalHits + totalMisses;
+            const accuracy = totalAttempts > 0 ? Math.round((totalHits / totalAttempts) * 100) : 100;
+
+            if (configPlayerMode === 2) {
+                document.getElementById('modalScoreLabel').innerText = "Skor P1 / P2";
+                document.getElementById('modalScore').innerText = `${scoreP1} / ${scoreP2}`;
+                document.getElementById('modalTitle').innerText = scoreP1 > scoreP2 ? "PLAYER 1 MENANG! 🎉" : scoreP2 > scoreP1 ? "PLAYER 2 MENANG! 🎉" : "SERI! 🤝";
+            } else {
+                document.getElementById('modalScoreLabel').innerText = "Skor Akhir";
+                document.getElementById('modalScore').innerText = scoreP1;
+                document.getElementById('modalTitle').innerText = "PERMAINAN SELESAI";
+            }
+
+            document.getElementById('modalLevel').innerText = level;
+            document.getElementById('modalDestroyed').innerText = destroyedCount;
+            document.getElementById('modalAccuracy').innerText = `${accuracy}%`;
+
+            const modal = document.getElementById('resultModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+        }
+
+        function restartGame() {
+            scoreP1 = 0;
+            scoreP2 = 0;
+            livesP1 = configMaxLives;
+            level = 1;
+            combo = 0;
+            totalHits = 0;
+            totalMisses = 0;
+            destroyedCount = 0;
+            isGameOver = false;
+
+            fallingItems = [];
+            lasers = [];
+            particles = [];
+            lastSpawnTime = performance.now();
+
+            updateHUD();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('resultModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.classList.remove('opacity-100');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key && e.key.length === 1 && e.key.match(/[a-z]/i)) {
+                handleKeyPress(e.key);
+            }
+        });
+
+        // Virtual On-Screen Key Buttons
+        document.querySelectorAll('button[data-key]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const key = btn.getAttribute('data-key');
+                if (key) handleKeyPress(key);
+            });
+        });
+
+        // Touch on Canvas Target
+        canvas.addEventListener('pointerdown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const touchX = e.clientX - rect.left;
+            const touchY = e.clientY - rect.top;
+
+            for (let i = 0; i < fallingItems.length; i++) {
+                const item = fallingItems[i];
+                const dist = Math.hypot(touchX - item.x, touchY - item.y);
+                if (dist <= item.radius + 15) {
+                    if (configContentType === 'letters') {
+                        handleKeyPress(item.text);
+                    } else {
+                        handleKeyPress(item.text[item.typedIndex]);
+                    }
+                    break;
+                }
+            }
+        });
+
+        window.addEventListener('resize', resizeCanvas);
+        window.onload = () => {
+            resizeCanvas();
+            openSettingsModal();
+            requestAnimationFrame(updateAndRender);
+        };
+    </script>
+</body>
+</html>
