@@ -1,734 +1,1161 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="h-full overflow-hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Ketik Roket Motivasi - Side Scroller</title>
+    <title>Gim Pengenalan Komputer - IFP Edition</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
-    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        fredoka: ['Fredoka', 'cursive'],
+                    },
+                    colors: {
+                        hw: {
+                            light: '#EFF6FF',
+                            DEFAULT: '#3B82F6',
+                            dark: '#1D4ED8',
+                        },
+                        sw: {
+                            light: '#F0FDF4',
+                            DEFAULT: '#22C55E',
+                            dark: '#15803D',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        body {
-            font-family: 'Outfit', sans-serif;
-            background-color: #030712;
-            color: #ffffff;
-            overflow-x: hidden;
+        * {
+            user-select: none;
+            -webkit-user-select: none;
             touch-action: manipulation;
         }
 
-        .font-mono-code {
-            font-family: 'Fira Code', monospace;
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F1F5F9;
         }
 
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.80);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
         }
 
-        /* Typing Highlights */
-        .char-correct {
-            color: #4ade80;
-            background-color: rgba(74, 222, 128, 0.2);
-            border-bottom: 2px solid #4ade80;
-            text-shadow: 0 0 10px rgba(74, 222, 128, 0.6);
+        /* Card Normal & Drag Styling for Large IFP Screens */
+        .device-card {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+            cursor: grab;
+        }
+        .device-card:active {
+            cursor: grabbing;
+        }
+        .device-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 24px -6px rgba(59, 130, 246, 0.25);
+            border-color: #60A5FA;
+        }
+        .device-card:hover img {
+            transform: scale(1.1);
         }
 
-        .char-incorrect {
-            color: #f87171;
-            background-color: rgba(248, 113, 113, 0.3);
-            border-bottom: 2px solid #f87171;
-            animation: shake 0.2s ease-in-out;
+        .device-card img {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .char-current {
-            background-color: rgba(56, 189, 248, 0.35);
-            border-bottom: 2px solid #38bdf8;
-            animation: pulse-caret 0.8s infinite;
+        /* Dragging active state on desktop */
+        .device-card.is-dragging {
+            opacity: 0.4;
+            transform: scale(0.95);
+            border-style: dashed;
+            border-color: #3B82F6;
         }
 
-        @keyframes pulse-caret {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        /* Tap selected state for IFP touch screen */
+        .device-card.selected-touch {
+            outline: 4px solid #3B82F6;
+            outline-offset: 2px;
+            transform: scale(1.05);
+            background-color: #EFF6FF !important;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
+        /* Drop Target Slots */
+        .slot-box {
+            transition: all 0.25s ease;
+        }
+        .slot-box.drag-over {
+            border-color: #3B82F6 !important;
+            background-color: #EFF6FF !important;
+            transform: scale(1.04);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         }
 
-        @keyframes warning-pulse {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
+        /* Touch Avatar Floating Dragging Effect on IFP */
+        .touch-drag-avatar {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.95;
+            transform: translate(-50%, -50%) scale(1.12) rotate(-3deg);
+            box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.35), 0 0 15px rgba(59, 130, 246, 0.4);
+            border: 3px solid #3B82F6 !important;
+            background-color: #FFFFFF !important;
+            border-radius: 1rem;
         }
 
-        .warning-bg {
-            animation: warning-pulse 0.6s infinite;
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); }
+            50% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
         }
-
-        .thrust-glow {
-            filter: drop-shadow(-10px 0px 15px rgba(249, 115, 22, 0.9)) drop-shadow(-5px 0px 8px rgba(234, 179, 8, 0.7));
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #090d1f;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1e293b;
-            border-radius: 4px;
+        .btn-check-active {
+            animation: pulseGlow 2s infinite;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between items-center p-3 sm:p-5 relative select-none">
 
-    <!-- Header Controls & HUD -->
-    <header class="w-full max-w-5xl flex flex-wrap justify-between items-center gap-3 mb-3 z-10">
-        <div class="flex items-center space-x-3">
-            <div class="p-2.5 bg-gradient-to-tr from-cyan-600 via-indigo-600 to-fuchsia-500 rounded-2xl shadow-lg shadow-cyan-500/20">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                </svg>
-            </div>
+<body class="h-screen w-screen overflow-hidden flex flex-col justify-between bg-slate-100 text-slate-800">
+
+    <header class="bg-white border-b border-slate-200 px-4 sm:px-6 py-2.5 shrink-0 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <!-- Icon Home Menu Trigger -->
+            <button onclick="openHomeMenu()" title="Menu Utama" class="w-11 h-11 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center font-bold text-xl shadow-md transition-all">
+                <i class="fa-solid fa-house"></i>
+            </button>
             <div>
-                <h1 class="text-xl sm:text-2xl font-black tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-200 to-fuchsia-400">
-                    ROKET MOTIVASI
-                </h1>
-                <p class="text-xs text-slate-400 font-medium">Ketik untuk terbang melaju ke depan. Jangan biarkan roket jatuh!</p>
+                <h1 class="font-fredoka font-bold text-base sm:text-xl text-slate-800 leading-tight">Gim Pengenalan Komputer</h1>
+                <p class="text-xs text-slate-500 font-semibold hidden sm:block">Uji Pengetahuan Hardware & Software</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-2">
-            <button id="soundToggleBtn" onclick="toggleAudio()" class="glass-panel hover:bg-slate-800 text-slate-200 px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-2 transition border border-slate-700">
-                <span id="soundIcon">🔊</span> <span id="soundText">Suara: ON</span>
+        <div class="flex items-center gap-2 sm:gap-3">
+            <!-- Fullscreen Trigger Button -->
+            <button onclick="toggleFullscreen()" title="Layar Penuh" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all flex items-center justify-center border border-slate-300">
+                <i id="fs-btn-icon" class="fa-solid fa-expand text-slate-600"></i>
             </button>
-            <button onclick="resetGame()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-extrabold transition shadow-lg shadow-indigo-600/30 active:scale-95">
-                Ulangi Misi 🔄
+            
+            <button id="reset-btn" onclick="resetGame()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 border border-slate-300">
+                <i class="fa-solid fa-rotate-right text-slate-500"></i>
+                <span class="hidden md:inline">Ulangi Gim</span>
             </button>
+
+            <button onclick="openLeaderboard()" class="px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 border border-amber-300 shadow-sm">
+                <i class="fa-solid fa-trophy text-amber-500"></i>
+                <span class="hidden md:inline">Peringkat</span>
+            </button>
+
+            <button onclick="openNameModal()" title="Ganti Nama Pemain" class="bg-indigo-50 border border-indigo-200 px-3 py-2 rounded-xl flex items-center gap-2 hover:bg-indigo-100 transition-all cursor-pointer">
+                <i class="fa-solid fa-user-astronaut text-indigo-600 text-sm"></i>
+                <span id="player-name-display" class="text-xs sm:text-sm font-extrabold text-indigo-700 font-fredoka truncate max-w-[100px] sm:max-w-[130px]">Pemain</span>
+            </button>
+
+            <div class="bg-blue-50 border border-blue-200 px-3 py-2 rounded-xl flex items-center gap-1.5">
+                <i class="fa-solid fa-layer-group text-blue-600 text-sm"></i>
+                <span id="placed-counter" class="text-xs sm:text-sm font-extrabold text-blue-700 font-fredoka">0/12</span>
+            </div>
         </div>
     </header>
 
-    <!-- Main Game Section -->
-    <main class="w-full max-w-5xl flex-1 flex flex-col gap-3 z-10">
-        
-        <!-- Sky Canvas Viewport -->
-        <div class="relative w-full h-[300px] sm:h-[360px] rounded-2xl glass-panel overflow-hidden border border-slate-700/60 shadow-2xl">
-            <!-- Background Canvas for Scrolling Space, Stars, and Ground Terrain -->
-            <canvas id="spaceCanvas" class="absolute inset-0 w-full h-full"></canvas>
+    <main class="flex-grow p-3 sm:p-4 flex flex-col gap-3 overflow-hidden max-w-[1800px] w-full mx-auto">
 
-            <!-- Danger Warning Overlay -->
-            <div id="dangerOverlay" class="absolute inset-0 bg-red-600/20 pointer-events-none warning-bg hidden border-4 border-red-500 rounded-2xl"></div>
-
-            <!-- Distance & Altitude Top HUD -->
-            <div class="absolute top-4 left-4 flex gap-4">
-                <div class="bg-slate-900/80 backdrop-blur border border-slate-700/80 px-3.5 py-2 rounded-xl">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-extrabold">Jarak Jelajah</div>
-                    <div class="text-lg sm:text-xl font-black text-cyan-400 font-mono-code flex items-baseline gap-1">
-                        <span id="distanceVal">0</span> <span class="text-xs text-slate-400">meter</span>
+        <!-- BOX SOAL / FUNGSI PERANGKAT -->
+        <section id="question-box" class="bg-white rounded-2xl p-3 sm:p-3.5 shadow-sm border-2 border-blue-400 relative overflow-hidden shrink-0 flex items-center justify-between transition-all">
+            <div class="flex items-center gap-3 sm:gap-4 flex-grow overflow-hidden">
+                <div class="bg-blue-600 text-white w-10 h-10 sm:w-12 sm:h-12 rounded-xl shrink-0 flex items-center justify-center text-lg sm:text-xl font-bold shadow-md">
+                    <i class="fa-solid fa-gear"></i>
+                </div>
+                <div class="flex-grow overflow-hidden">
+                    <div class="flex items-center gap-2 mb-0.5">
+                        <span id="question-badge" class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded-md font-fredoka">
+                            Pertanyaan 1/12
+                        </span>
+                        <span class="text-xs text-slate-400 font-semibold hidden sm:inline">
+                            <i class="fa-solid fa-hand-pointer mr-1"></i>Seret atau ketuk perangkat lalu pilih slot kanan
+                        </span>
                     </div>
+                    <p id="statement-text" class="text-xs sm:text-base md:text-lg font-extrabold text-slate-800 leading-snug truncate">
+                        Loading fungsi perangkat...
+                    </p>
                 </div>
+            </div>
 
-                <div class="bg-slate-900/80 backdrop-blur border border-slate-700/80 px-3.5 py-2 rounded-xl">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-extrabold">Ketinggian</div>
-                    <div class="text-lg sm:text-xl font-black text-emerald-400 font-mono-code flex items-baseline gap-1">
-                        <span id="altitudeVal">150</span> <span class="text-xs text-slate-400">m</span>
+            <!-- Navigasi Manual Pertanyaan -->
+            <div class="flex items-center gap-1.5 sm:gap-2 ml-2 shrink-0 border-l border-slate-200 pl-2 sm:pl-3">
+                <button id="prev-q-btn" onclick="navigateQuestion(-1)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-sm font-bold">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button id="next-q-btn" onclick="navigateQuestion(1)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-sm font-bold">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-12 gap-3 sm:gap-4 flex-grow overflow-hidden h-full">
+
+            <!-- PANEL KIRI: PILIHAN PERANGKAT -->
+            <section class="col-span-4 bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0 mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked text-amber-500 text-base"></i>
+                        <h2 class="font-fredoka font-bold text-slate-800 text-xs sm:text-base">Pilihan Perangkat</h2>
                     </div>
-                </div>
-            </div>
-
-            <!-- Performance Metrics Top Right HUD -->
-            <div class="absolute top-4 right-4 flex gap-2">
-                <div class="bg-slate-900/80 backdrop-blur border border-slate-700/80 px-3 py-1.5 rounded-xl text-right">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Kecepatan</div>
-                    <div class="text-xs sm:text-sm font-bold text-amber-400 font-mono-code" id="wpmVal">0 WPM</div>
-                </div>
-                <div class="bg-slate-900/80 backdrop-blur border border-slate-700/80 px-3 py-1.5 rounded-xl text-right">
-                    <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Akurasi</div>
-                    <div class="text-xs sm:text-sm font-bold text-sky-400 font-mono-code" id="accuracyVal">100%</div>
-                </div>
-            </div>
-
-            <!-- Danger Warning Message Banner -->
-            <div id="warningBanner" class="absolute top-16 left-1/2 -translate-x-1/2 bg-red-600/90 text-white font-extrabold text-xs px-4 py-1.5 rounded-full shadow-lg border border-red-400 uppercase tracking-widest hidden animate-bounce">
-                ⚠️ AWAS JATUH! KETIK CEPAT! ⚠️
-            </div>
-
-            <!-- Dynamic Combo Banner -->
-            <div id="comboContainer" class="absolute top-1/2 right-12 -translate-y-1/2 opacity-0 transition-all duration-300 pointer-events-none">
-                <div class="text-3xl sm:text-4xl font-black italic text-yellow-400 tracking-wider drop-shadow-[0_0_20px_rgba(250,204,21,0.9)]" id="comboText">
-                    5x STREAK!
-                </div>
-                <div class="text-xs text-yellow-200 font-extrabold uppercase tracking-widest text-right">Kecepatan Maksimal!</div>
-            </div>
-
-            <!-- Horizontal Rocket Container -->
-            <div id="rocket" class="absolute left-16 sm:left-24 transition-all duration-75 ease-out flex items-center select-none" style="bottom: 120px;">
-                
-                <!-- Dynamic Horizontal Thruster Flame (Left side of rocket) -->
-                <div id="flame" class="w-10 h-6 -mr-2 opacity-30 transition-all duration-100 transform origin-right scale-x-50">
-                    <svg viewBox="0 0 60 40" class="w-full h-full thrust-glow">
-                        <polygon points="0,20 60,0 60,40" fill="#f97316" />
-                        <polygon points="15,20 60,8 60,32" fill="#eab308" />
-                        <polygon points="30,20 60,14 60,26" fill="#ffffff" />
-                    </svg>
+                    <span class="text-[10px] sm:text-xs bg-amber-50 text-amber-700 font-bold px-2 py-0.5 sm:py-1 rounded-full border border-amber-200">Dapat Diseret</span>
                 </div>
 
-                <!-- SVG Horizontal Animated Rocket -->
-                <div id="rocketGraphic" class="w-20 h-16 sm:w-24 sm:h-20 transition-transform duration-150">
-                    <svg viewBox="0 0 120 100" class="w-full h-full">
-                        <!-- Upper/Lower Wings -->
-                        <path d="M 40 20 L 15 5 L 25 30 Z" fill="#dc2626" />
-                        <path d="M 40 80 L 15 95 L 25 70 Z" fill="#dc2626" />
-                        <!-- Main Body -->
-                        <path d="M 25 25 L 95 25 C 110 25, 115 50, 115 50 C 115 50, 110 75, 95 75 L 25 75 Z" fill="#f8fafc" />
-                        <!-- Nose Cone -->
-                        <path d="M 85 25 C 105 25, 120 45, 120 50 C 120 55, 105 75, 85 75 Z" fill="#ef4444" />
-                        <!-- Glass Canopy Window -->
-                        <circle cx="70" cy="50" r="13" fill="#0284c7" stroke="#e0f2fe" stroke-width="3" />
-                        <circle cx="66" cy="46" r="4" fill="#ffffff" opacity="0.8" />
-                        <!-- Engine Nozzle -->
-                        <rect x="15" y="38" width="10" height="24" rx="2" fill="#475569" />
-                        <!-- Body Accent Line -->
-                        <path d="M 45 35 L 75 35" stroke="#0ea5e9" stroke-width="3" stroke-linecap="round" />
-                    </svg>
+                <div id="image-pool" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
+                    <!-- Cards dynamically generated -->
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- Typing Game Area -->
-        <div class="glass-panel rounded-2xl p-4 sm:p-6 flex flex-col gap-3 border border-slate-700/60">
-            <!-- Sentence Target Box -->
-            <div class="bg-slate-950/90 border border-slate-800 rounded-xl p-4 sm:p-5 text-center min-h-[85px] flex items-center justify-center relative overflow-hidden shadow-inner">
-                <div id="quoteDisplay" class="text-base sm:text-xl font-medium tracking-wide leading-relaxed font-mono-code text-slate-300 select-none">
-                    Memuat kalimat motivasi...
+            <!-- PANEL KANAN: TWO COLUMNS (HARDWARE & SOFTWARE SLOTS) -->
+            <section class="col-span-8 bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200 shadow-sm flex flex-col overflow-hidden">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0 mb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-blue-600 text-base"></i>
+                        <h2 class="font-fredoka font-bold text-slate-800 text-xs sm:text-base">Area Pencocokan Kategori & Fungsi</h2>
+                    </div>
+                    <div class="text-xs font-semibold text-slate-400 hidden sm:block">Tempatkan perangkat ke slot yang sesuai</div>
                 </div>
-            </div>
 
-            <!-- Input Box -->
-            <div class="relative w-full">
-                <input 
-                    type="text" 
-                    id="typingInput" 
-                    placeholder="Mulai mengetik kalimat di atas untuk meluncurkan roket..." 
-                    autocomplete="off" 
-                    autofocus
-                    spellcheck="false"
-                    class="w-full bg-slate-900/90 border-2 border-cyan-500/50 focus:border-cyan-400 rounded-xl px-4 py-3.5 text-base sm:text-lg text-white font-mono-code outline-none shadow-inner transition-all placeholder:text-slate-500 focus:ring-4 focus:ring-cyan-500/20"
-                >
-                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
-                    <span id="inputStatus" class="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 font-bold uppercase tracking-wider">
-                        Siap
-                    </span>
-                </div>
-            </div>
+                <!-- 2 KOLOM SEJAJAR: HARDWARE & SOFTWARE -->
+                <div class="grid grid-cols-2 gap-2.5 sm:gap-3.5 flex-grow overflow-hidden">
+                    
+                    <!-- AREA HARDWARE -->
+                    <div class="bg-blue-50/60 rounded-xl p-2 sm:p-2.5 border border-blue-200/80 flex flex-col overflow-hidden">
+                        <div class="flex items-center justify-between mb-2 shrink-0 px-1">
+                            <span class="font-fredoka font-bold text-blue-800 text-xs sm:text-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-hard-drive text-blue-600"></i>
+                                HARDWARE
+                            </span>
+                            <span class="text-[10px] sm:text-xs font-extrabold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">Perangkat Keras</span>
+                        </div>
+                        <div id="hardware-slots" class="grid grid-cols-2 gap-2 sm:gap-2.5 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
+                            <!-- Slot Hardware -->
+                        </div>
+                    </div>
 
-            <!-- Helper Guidance Footer -->
-            <div class="flex flex-wrap justify-between items-center text-xs text-slate-400 px-1 gap-2">
-                <div class="flex items-center gap-2">
-                    <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-                    <span>Setiap huruf yang diketik memberikan dorongan ke atas & melaju kencang!</span>
+                    <!-- AREA SOFTWARE -->
+                    <div class="bg-emerald-50/60 rounded-xl p-2 sm:p-2.5 border border-emerald-200/80 flex flex-col overflow-hidden">
+                        <div class="flex items-center justify-between mb-2 shrink-0 px-1">
+                            <span class="font-fredoka font-bold text-emerald-800 text-xs sm:text-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-compact-disc text-emerald-600"></i>
+                                SOFTWARE
+                            </span>
+                            <span class="text-[10px] sm:text-xs font-extrabold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">Perangkat Lunak</span>
+                        </div>
+                        <div id="software-slots" class="grid grid-cols-2 gap-2 sm:gap-2.5 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
+                            <!-- Slot Software -->
+                        </div>
+                    </div>
+
                 </div>
-                <div class="font-bold text-slate-300">
-                    Selesai: <span id="completedCount" class="text-cyan-400 font-mono-code">0</span> Kalimat
-                </div>
-            </div>
+            </section>
         </div>
     </main>
 
-    <!-- Game Over / Mission Failed Modal -->
-    <div id="resultModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-all duration-300">
-        <div class="glass-panel border border-red-500/30 max-w-md w-full rounded-2xl p-6 sm:p-8 text-center flex flex-col items-center gap-5 shadow-2xl relative overflow-hidden">
-            <div class="absolute -top-12 -right-12 w-32 h-32 bg-red-500/10 rounded-full blur-2xl"></div>
+    <footer class="bg-white border-t border-slate-200 px-6 py-2.5 shrink-0 shadow-inner flex items-center justify-between">
+        <div class="text-xs sm:text-sm font-semibold text-slate-500 flex items-center gap-2">
+            <i class="fa-solid fa-code text-slate-400"></i>
+            <span>dikembangkan oleh <strong class="text-slate-800 font-bold">Rahmattullah</strong></span>
+        </div>
+
+        <button id="check-answer-btn" disabled onclick="checkAnswers()" class="px-7 py-2 bg-slate-300 text-slate-500 font-fredoka font-bold text-xs sm:text-base rounded-xl transition-all shadow-md flex items-center gap-2 cursor-not-allowed">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>Cek Jawaban</span>
+        </button>
+    </footer>
+
+    <!-- MODAL HOME MENU -->
+    <div id="home-menu-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border border-slate-100 transform transition-all">
+            <div class="w-16 h-16 rounded-2xl bg-blue-600 text-white mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg font-fredoka">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <h2 class="font-fredoka font-extrabold text-2xl text-slate-800 mb-1">Menu Utama</h2>
+            <p class="text-xs text-slate-500 font-semibold mb-5">Pilih opsi atau navigasi gim di bawah ini</p>
+
+            <div class="space-y-2.5">
+                <button onclick="closeHomeMenu(); openLeaderboard();" class="w-full py-3 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2.5 text-sm shadow-sm">
+                    <i class="fa-solid fa-trophy text-amber-500 text-base"></i>
+                    <span>Lihat Papan Peringkat</span>
+                </button>
+
+                <button onclick="closeHomeMenu(); openNameModal();" class="w-full py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2.5 text-sm shadow-sm">
+                    <i class="fa-solid fa-user-pen text-indigo-600 text-base"></i>
+                    <span>Input / Ganti Nama Pemain</span>
+                </button>
+
+                <button onclick="closeHomeMenu(); resetGame();" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2.5 text-sm">
+                    <i class="fa-solid fa-rotate-right text-slate-600 text-base"></i>
+                    <span>Ulangi Gim</span>
+                </button>
+
+                <button onclick="toggleFullscreen();" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2.5 text-sm">
+                    <i class="fa-solid fa-expand text-slate-600 text-base"></i>
+                    <span>Layar Penuh (Fullscreen)</span>
+                </button>
+
+                <button onclick="closeHomeMenu()" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-fredoka font-bold rounded-xl transition-all mt-2">
+                    Tutup Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: INPUT NAMA PEMAIN -->
+    <div id="name-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100 transform transition-all">
+            <div class="w-16 h-16 rounded-2xl bg-blue-600 text-white mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg font-fredoka">
+                <i class="fa-solid fa-gamepad"></i>
+            </div>
+            <h2 class="font-fredoka font-extrabold text-2xl text-slate-800 mb-1">Selamat Datang!</h2>
+            <p class="text-xs text-slate-500 font-semibold mb-5">Masukkan nama kamu sebelum memulai kuis pengenalan komputer.</p>
+
+            <form onsubmit="startGameWithPlayerName(event)" class="space-y-4">
+                <div class="text-left">
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5 ml-1">Nama Lengkap / Panggilan</label>
+                    <input type="text" id="player-name-input" required maxlength="20" placeholder="Contoh: Ahmad / Siti" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:outline-none font-bold text-slate-800 text-base shadow-sm transition-all">
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold text-base rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 active:scale-95">
+                    <span>Mulai Bermain</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: HASIL EVALUASI -->
+    <div id="result-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0" id="modal-content">
+            <div id="result-icon-box" class="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg">
+                <!-- Icon via JS -->
+            </div>
             
-            <div class="text-6xl animate-bounce" id="modalEmoji">💥</div>
-            <div>
-                <h2 class="text-2xl sm:text-3xl font-black text-white tracking-wide" id="modalTitle">MISI GAGAL!</h2>
-                <p class="text-xs sm:text-sm text-red-400 mt-1 font-semibold" id="modalSubtext">Roket kehilangan daya dorong dan jatuh ke Bumi!</p>
-            </div>
+            <h3 id="result-title" class="font-fredoka font-extrabold text-2xl text-slate-800 mb-1">Hasil Evaluasi</h3>
+            <p id="result-subtitle" class="text-xs text-slate-500 font-semibold mb-4">Pencocokan Hardware & Software Komputer</p>
 
-            <div class="w-full grid grid-cols-2 gap-3 my-1">
-                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                    <div class="text-[10px] text-slate-400 uppercase font-extrabold">Jarak Tempuh</div>
-                    <div class="text-lg font-black text-cyan-400 font-mono-code" id="modalDistance">0 m</div>
-                </div>
-                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                    <div class="text-[10px] text-slate-400 uppercase font-extrabold">Rata-rata WPM</div>
-                    <div class="text-lg font-black text-amber-400 font-mono-code" id="modalWpm">0 WPM</div>
-                </div>
-                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                    <div class="text-[10px] text-slate-400 uppercase font-extrabold">Akurasi Ketik</div>
-                    <div class="text-lg font-black text-emerald-400 font-mono-code" id="modalAccuracy">100%</div>
-                </div>
-                <div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                    <div class="text-[10px] text-slate-400 uppercase font-extrabold">Total Kalimat</div>
-                    <div class="text-lg font-black text-indigo-400 font-mono-code" id="modalQuotes">0</div>
+            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-5">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Skor Akhir <span id="result-player-name" class="text-indigo-600">Pemain</span></div>
+                <div id="result-score" class="font-fredoka font-extrabold text-5xl text-blue-600 mb-2">0 / 100</div>
+                <div id="result-breakdown" class="text-xs font-semibold text-slate-600 space-y-1">
+                    <!-- Breakdown stats -->
                 </div>
             </div>
 
-            <button onclick="resetGame(); closeModal();" class="w-full bg-gradient-to-r from-red-600 via-indigo-600 to-cyan-500 hover:from-red-500 hover:to-cyan-400 text-white font-extrabold py-3.5 px-6 rounded-xl transition shadow-lg shadow-indigo-500/25 active:scale-95 text-sm uppercase tracking-wider">
-                Coba Lagi & Luncurkan Roket 🚀
-            </button>
+            <div class="flex flex-col gap-2.5">
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="closeModalAndReset()" class="py-3 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 text-xs sm:text-sm">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Bermain Ulang</span>
+                    </button>
+                    <button onclick="promptChangePlayer()" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-fredoka font-bold rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 text-xs sm:text-sm">
+                        <i class="fa-solid fa-user-pen"></i>
+                        <span>Ganti Pemain</span>
+                    </button>
+                </div>
+                <button onclick="closeModalAndShowLeaderboard()" class="w-full py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 font-fredoka font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm">
+                    <i class="fa-solid fa-trophy text-amber-500"></i>
+                    <span>Papan Peringkat</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: PAPAN PERINGKAT (LEADERBOARD) -->
+    <div id="leaderboard-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 text-center shadow-2xl border border-slate-100 flex flex-col max-h-[85vh]">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4 shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div class="text-left">
+                        <h3 class="font-fredoka font-extrabold text-xl text-slate-800">Papan Peringkat</h3>
+                        <p class="text-xs text-slate-500 font-semibold">Skor Perolehan Hasil Siswa</p>
+                    </div>
+                </div>
+                <button onclick="closeLeaderboard()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto custom-scrollbar flex-grow pr-1 space-y-2" id="leaderboard-list">
+                <!-- Leaderboard rows generated dynamically -->
+            </div>
+
+            <div class="pt-4 mt-3 border-t border-slate-100 shrink-0">
+                <button onclick="closeLeaderboard()" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-fredoka font-bold rounded-xl transition-all">
+                    Tutup Papan Peringkat
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        const quotesList = [
-            "Masa depan milik mereka yang percaya pada keindahan mimpi.",
-            "Kegagalan adalah kesempatan untuk memulai lagi dengan lebih bijak.",
-            "Setiap langkah kecil hari ini membawamu lebih dekat ke tujuan besar.",
-            "Jangan berhenti ketika lelah berhentilah ketika kamu selesai.",
-            "Kerja keras menaklukkan bakat ketika bakat tidak bekerja keras.",
-            "Impian tidak akan bekerja kecuali kamu yang melakukannya.",
-            "Kesempatan tidak terjadi begitu saja kamu yang harus membuatnya.",
-            "Tetap semangat dan pantang menyerah menghadapi segala rintangan.",
-            "Fokus pada proses belajar bukan hanya pada hasil akhir.",
-            "Kamu jauh lebih kuat dari apa yang kamu bayangkan.",
-            "Satu-satunya batasan kita adalah batasan pikiran kita sendiri.",
-            "Tindakan adalah kunci dasar untuk semua kesuksesan.",
-            "Perjalanan ribuan mil dimulai dengan satu langkah tunggal.",
-            "Hambatan adalah hal-hal menakutkan yang terlihat saat mata teralih.",
-            "Jadikan hari ini lebih baik daripada hari kemarin."
+        const itemsData = [
+            // HARDWARE
+            {
+                id: 'monitor',
+                name: 'Monitor',
+                type: 'hardware',
+                func: 'menampilkan keluaran visual dan antarmuka layar komputer',
+                img: 'https://image.made-in-china.com/155f0j00mHFkYbMrntus/20-Inch-LED-Computer-Business-Office-Home-HD-IPS-Blue-Light-Eye-Protection-LCD-Monitor.webp'
+            },
+            {
+                id: 'keyboard',
+                name: 'Keyboard',
+                type: 'hardware',
+                func: 'mengetik teks, angka, dan menginput perintah ke komputer',
+                img: 'https://image.made-in-china.com/43f34j00kRQChAfPOUqI/madeinchina-com.jpg'
+            },
+            {
+                id: 'mouse',
+                name: 'Mouse',
+                type: 'hardware',
+                func: 'menggerakkan kursor dan memilih objek pada layar',
+                img: 'https://image.made-in-china.com/43f34j00wAubkBgKwcps/madeinchina-com.jpg'
+            },
+            {
+                id: 'cpu',
+                name: 'CPU',
+                type: 'hardware',
+                func: 'memproses dan mengolah seluruh data serta instruksi komputer',
+                img: 'https://diengcyber.com/wp-content/uploads/2022/02/image-4.png'
+            },
+            {
+                id: 'printer',
+                name: 'Printer',
+                type: 'hardware',
+                func: 'mencetak dokumen atau gambar dari komputer ke kertas',
+                img: 'https://platindokaryaprima.com/wp-content/uploads/2015/02/HP-LaserJet-Pro-P1102-PrinterCE651A.png'
+            },
+            {
+                id: 'speaker',
+                name: 'Speaker',
+                type: 'hardware',
+                func: 'mengeluarkan suara atau audio dari komputer',
+                img: 'https://img.lazcdn.com/g/p/75f89289e611de8259fe8e02852d551f.jpg_720x720q80.jpg_.webp'
+            },
+
+            // SOFTWARE
+            {
+                id: 'word',
+                name: 'Ms Word',
+                type: 'software',
+                func: 'mengolah dan mengetik dokumen berbentuk teks',
+                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Microsoft_Office_Word_%282025%E2%80%93present%29.svg/250px-Microsoft_Office_Word_%282025%E2%80%93present%29.svg.png'
+            },
+            {
+                id: 'excel',
+                name: 'Ms Excel',
+                type: 'software',
+                func: 'mengolah angka, tabel data, dan perhitungan rumus',
+                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Microsoft_Office_Excel_%282025%E2%80%93present%29.svg/250px-Microsoft_Office_Excel_%282025%E2%80%93present%29.svg.png'
+            },
+            {
+                id: 'chrome',
+                name: 'Google Chrome',
+                type: 'software',
+                func: 'menjelajahi dan membuka halaman web di internet',
+                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/250px-Google_Chrome_icon_%28February_2022%29.svg.png'
+            },
+            {
+                id: 'capcut',
+                name: 'CapCut',
+                type: 'software',
+                func: 'mengedit dan memotong video secara kreatif',
+                img: 'https://itbox.id/wp-content/uploads/2023/11/capcut.jpeg'
+            },
+            {
+                id: 'whatsapp',
+                name: 'WhatsApp',
+                type: 'software',
+                func: 'mengirim pesan singkat, dokumen, dan melakukan panggilan',
+                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/250px-WhatsApp.svg.png'
+            },
+            {
+                id: 'youtube',
+                name: 'YouTube',
+                type: 'software',
+                func: 'menonton, mengunggah, dan membagikan video',
+                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/YouTube_social_white_square_%282017%29.svg/330px-YouTube_social_white_square_%282017%29.svg.png'
+            }
         ];
 
-        /* Game State Variables */
-        let currentQuote = "";
-        let distance = 0;
-        let rocketY = 120; // Y offset from bottom in pixels
-        const minRocketY = 25; // Crash ground height
-        let maxRocketY = 260; // Sky ceiling limit
-        let isGameOver = false;
-        let completedCount = 0;
-        let streakCount = 0;
-        
-        // Flight Physics Parameters
-        let forwardSpeed = 1.5;
-        const gravity = 1.1;
-        let pitchAngle = 0;
-        
-        // Typing Metrics
-        let startTime = null;
-        let totalTypedChars = 0;
-        let correctTypedChars = 0;
-        let errorsCount = 0;
-        let isTypingStarted = false;
-        
-        // Sound toggle state
-        let audioEnabled = true;
-        let audioCtx = null;
+        /* Fallback placeholder jika gambar gagal dimuat */
+        const fallbackImg = "https://placehold.co/200x200/e2e8f0/475569?text=Perangkat";
 
-        // DOM Elements
-        const spaceCanvas = document.getElementById('spaceCanvas');
-        const ctx = spaceCanvas.getContext('2d');
-        const rocket = document.getElementById('rocket');
-        const rocketGraphic = document.getElementById('rocketGraphic');
-        const flame = document.getElementById('flame');
-        const quoteDisplay = document.getElementById('quoteDisplay');
-        const typingInput = document.getElementById('typingInput');
-        const distanceVal = document.getElementById('distanceVal');
-        const altitudeVal = document.getElementById('altitudeVal');
-        const wpmVal = document.getElementById('wpmVal');
-        const accuracyVal = document.getElementById('accuracyVal');
-        const completedCountEl = document.getElementById('completedCount');
-        const inputStatus = document.getElementById('inputStatus');
-        const comboContainer = document.getElementById('comboContainer');
-        const comboText = document.getElementById('comboText');
-        const dangerOverlay = document.getElementById('dangerOverlay');
-        const warningBanner = document.getElementById('warningBanner');
+        /* State Game Variables */
+        let questionsList = []; 
+        let currentQuestionIdx = 0; 
+        let slotAssignments = {}; 
+        let questionAnswerMap = {}; 
+        let selectedForTapId = null; 
+        let activeDraggedId = null;
+        let touchAvatar = null;
 
-        function initAudio() {
-            if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContext();
+        let currentPlayerName = "Pemain";
+        let leaderboardData = [];
+
+        try {
+            const savedData = localStorage.getItem('comp_game_leaderboard');
+            if (savedData) {
+                leaderboardData = JSON.parse(savedData);
             }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+        } catch(e) {
+            leaderboardData = [];
         }
 
-        function playSound(type) {
-            if (!audioEnabled) return;
+        /* Sound Synthesizer */
+        const playSound = (type) => {
             try {
-                initAudio();
-                const now = audioCtx.currentTime;
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
 
-                if (type === 'keypress') {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(450, now);
-                    osc.frequency.exponentialRampToValueAtTime(850, now + 0.05);
-                    gain.gain.setValueAtTime(0.08, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.05);
-                } else if (type === 'error') {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(140, now);
-                    gain.gain.setValueAtTime(0.12, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.15);
-                } else if (type === 'boost') {
-                    [250, 400, 600].forEach((freq, i) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(freq, now + i * 0.03);
-                        osc.frequency.exponentialRampToValueAtTime(freq * 1.8, now + i * 0.03 + 0.2);
-                        gain.gain.setValueAtTime(0.1, now + i * 0.03);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.03 + 0.25);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + i * 0.03);
-                        osc.stop(now + i * 0.03 + 0.25);
-                    });
-                } else if (type === 'crash') {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(120, now);
-                    osc.frequency.exponentialRampToValueAtTime(30, now + 0.5);
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.5);
+                if (type === 'place') {
+                    osc.frequency.setValueAtTime(440, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.12);
+                } else if (type === 'win') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
+                    osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.5);
+                } else if (type === 'click') {
+                    osc.frequency.setValueAtTime(300, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.05);
                 }
-            } catch (e) {
-                // Audio fallback
+            } catch (e) {}
+        };
+
+        function shuffle(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
             }
+            return arr;
         }
 
-        function toggleAudio() {
-            audioEnabled = !audioEnabled;
-            document.getElementById('soundIcon').innerText = audioEnabled ? '🔊' : '🔇';
-            document.getElementById('soundText').innerText = audioEnabled ? 'Suara: ON' : 'Suara: OFF';
-        }
-
-        let stars = [];
-        let particles = [];
-        let terrainOffsetX = 0;
-
-        function resizeCanvas() {
-            spaceCanvas.width = spaceCanvas.offsetWidth;
-            spaceCanvas.height = spaceCanvas.offsetHeight;
-            maxRocketY = spaceCanvas.height - 75;
-            initStars();
-        }
-
-        function initStars() {
-            stars = [];
-            const numStars = Math.floor((spaceCanvas.width * spaceCanvas.height) / 2200);
-            for (let i = 0; i < numStars; i++) {
-                stars.push({
-                    x: Math.random() * spaceCanvas.width,
-                    y: Math.random() * spaceCanvas.height,
-                    radius: Math.random() * 1.8 + 0.2,
-                    alpha: Math.random() * 0.8 + 0.2,
-                    speed: Math.random() * 2 + 0.5
+        function toggleFullscreen() {
+            playSound('click');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log("Error attempting fullscreen:", err.message);
                 });
-            }
-        }
-
-        function spawnThrusterParticles() {
-            const rocketRect = rocket.getBoundingClientRect();
-            const canvasRect = spaceCanvas.getBoundingClientRect();
-            const spawnX = (rocketRect.left + 5) - canvasRect.left;
-            const spawnY = (rocketRect.top + rocketRect.height / 2) - canvasRect.top;
-
-            for (let i = 0; i < 4; i++) {
-                particles.push({
-                    x: spawnX,
-                    y: spawnY + (Math.random() * 12 - 6),
-                    vx: -(Math.random() * 5 + 3),
-                    vy: (Math.random() - 0.5) * 2,
-                    radius: Math.random() * 4 + 2,
-                    color: Math.random() > 0.5 ? '#f97316' : '#eab308',
-                    alpha: 1,
-                    decay: Math.random() * 0.05 + 0.03
-                });
-            }
-        }
-
-        function renderCanvas() {
-            ctx.clearRect(0, 0, spaceCanvas.width, spaceCanvas.height);
-
-            // 1. Draw Starfield (Moving left for horizontal motion)
-            const speedMultiplier = isGameOver ? 0.2 : (1 + forwardSpeed / 4);
-            stars.forEach(star => {
-                star.x -= star.speed * speedMultiplier;
-                if (star.x < 0) {
-                    star.x = spaceCanvas.width;
-                    star.y = Math.random() * spaceCanvas.height;
-                }
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
-                ctx.fill();
-            });
-
-            // 2. Draw Ground Terrain Hazard at Bottom
-            terrainOffsetX += speedMultiplier * 2;
-            ctx.fillStyle = '#0f172a';
-            ctx.beginPath();
-            ctx.moveTo(0, spaceCanvas.height);
-            for (let x = 0; x <= spaceCanvas.width; x += 20) {
-                const y = spaceCanvas.height - 20 - Math.sin((x + terrainOffsetX) * 0.015) * 8;
-                ctx.lineTo(x, y);
-            }
-            ctx.lineTo(spaceCanvas.width, spaceCanvas.height);
-            ctx.closePath();
-            ctx.fill();
-
-            // Ground Red Hazard Line
-            ctx.strokeStyle = '#ef4444';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // 3. Draw Particles (Leftward exhaust)
-            for (let i = particles.length - 1; i >= 0; i--) {
-                const p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.alpha -= p.decay;
-
-                if (p.alpha <= 0) {
-                    particles.splice(i, 1);
-                    continue;
-                }
-
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = p.alpha;
-                ctx.fill();
-                ctx.globalAlpha = 1;
-            }
-
-            requestAnimationFrame(renderCanvas);
-        }
-
-        function loadNextQuote() {
-            const availableQuotes = quotesList.filter(q => q !== currentQuote);
-            currentQuote = availableQuotes[Math.floor(Math.random() * availableQuotes.length)];
-            typingInput.value = "";
-            renderQuoteHTML("");
-        }
-
-        function renderQuoteHTML(inputValue) {
-            let html = "";
-            let match = true;
-
-            for (let i = 0; i < currentQuote.length; i++) {
-                const char = currentQuote[i];
-
-                if (i < inputValue.length) {
-                    if (inputValue[i] === char) {
-                        html += `<span class="char-correct">${char}</span>`;
-                    } else {
-                        match = false;
-                        html += `<span class="char-incorrect">${char}</span>`;
-                    }
-                } else if (i === inputValue.length) {
-                    html += `<span class="char-current">${char}</span>`;
-                } else {
-                    html += `<span>${char}</span>`;
-                }
-            }
-
-            quoteDisplay.innerHTML = html;
-            return match;
-        }
-
-        function updateMetrics() {
-            if (!startTime || !isTypingStarted) return;
-
-            const elapsedMinutes = (Date.now() - startTime) / 60000;
-            if (elapsedMinutes <= 0) return;
-
-            const wpm = Math.round((correctTypedChars / 5) / elapsedMinutes) || 0;
-            wpmVal.innerText = `${wpm} WPM`;
-
-            const totalAttempts = correctTypedChars + errorsCount;
-            const accuracy = totalAttempts > 0 ? Math.round((correctTypedChars / totalAttempts) * 100) : 100;
-            accuracyVal.innerText = `${accuracy}%`;
-        }
-
-        typingInput.addEventListener('input', (e) => {
-            if (isGameOver) return;
-
-            const val = typingInput.value;
-
-            if (!isTypingStarted && val.length > 0) {
-                isTypingStarted = true;
-                startTime = Date.now();
-                inputStatus.innerText = "Terbang";
-                inputStatus.className = "text-xs px-2.5 py-1 rounded-lg bg-cyan-950 text-cyan-400 font-bold uppercase tracking-wider border border-cyan-800";
-            }
-
-            const isCorrectSoFar = renderQuoteHTML(val);
-
-            if (isCorrectSoFar) {
-                correctTypedChars++;
-                totalTypedChars++;
-                playSound('keypress');
-
-                // Upward thrust and forward boost on keypress
-                rocketY = Math.min(rocketY + 8, maxRocketY);
-                pitchAngle = Math.min(pitchAngle + 4, 20); // Tilt nose UP
-                
-                flame.style.opacity = "1";
-                flame.style.transform = "scaleX(1.4)";
-                spawnThrusterParticles();
-
-                setTimeout(() => {
-                    flame.style.opacity = "0.3";
-                    flame.style.transform = "scaleX(0.5)";
-                }, 100);
-
             } else {
-                errorsCount++;
-                playSound('error');
-            }
-
-            updateMetrics();
-
-            // Completed Full Quote Bonus
-            if (val === currentQuote) {
-                completedCount++;
-                streakCount++;
-                completedCountEl.innerText = completedCount;
-
-                // Major Thrust Impulse
-                rocketY = Math.min(rocketY + 30, maxRocketY);
-                distance += 150 + streakCount * 20;
-                distanceVal.innerText = distance;
-
-                playSound('boost');
-
-                // Streak Banner
-                if (streakCount >= 3) {
-                    comboText.innerText = `${streakCount}x COMBO!`;
-                    comboContainer.style.opacity = "1";
-                    comboContainer.style.transform = "translateY(-50%) scale(1.1)";
-                    setTimeout(() => {
-                        comboContainer.style.opacity = "0";
-                        comboContainer.style.transform = "translateY(-50%) scale(0.9)";
-                    }, 1200);
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
                 }
+            }
+        }
 
-                loadNextQuote();
+        document.addEventListener('fullscreenchange', () => {
+            const fsIcon = document.getElementById('fs-btn-icon');
+            if (fsIcon) {
+                if (document.fullscreenElement) {
+                    fsIcon.className = 'fa-solid fa-compress text-blue-600';
+                } else {
+                    fsIcon.className = 'fa-solid fa-expand text-slate-600';
+                }
             }
         });
 
-        // Flight Loop (Gravity & Forward Motion)
-        setInterval(() => {
-            if (isGameOver) return;
+        function openHomeMenu() {
+            playSound('click');
+            document.getElementById('home-menu-modal').classList.remove('hidden');
+        }
 
-            if (isTypingStarted) {
-                // Gravity pulls rocket down
-                rocketY -= gravity;
-                pitchAngle = Math.max(pitchAngle - 1, -25); // Tilt nose DOWN when falling
+        function closeHomeMenu() {
+            playSound('click');
+            document.getElementById('home-menu-modal').classList.add('hidden');
+        }
 
-                // Accumulate forward distance
-                distance += Math.round(forwardSpeed);
-                distanceVal.innerText = distance;
-                altitudeVal.innerText = Math.max(0, Math.round(rocketY - minRocketY));
+        function openNameModal() {
+            playSound('click');
+            const nameInput = document.getElementById('player-name-input');
+            nameInput.value = currentPlayerName !== "Pemain" ? currentPlayerName : '';
+            document.getElementById('name-modal').classList.remove('hidden');
+            nameInput.focus();
+        }
 
-                // Danger Alert check
-                if (rocketY < 60) {
-                    dangerOverlay.classList.remove('hidden');
-                    warningBanner.classList.remove('hidden');
-                } else {
-                    dangerOverlay.classList.add('hidden');
-                    warningBanner.classList.add('hidden');
-                }
+        const statementTextEl = document.getElementById('statement-text');
+        const questionBadgeEl = document.getElementById('question-badge');
+        const prevQBtn = document.getElementById('prev-q-btn');
+        const nextQBtn = document.getElementById('next-q-btn');
+        const imagePoolEl = document.getElementById('image-pool');
+        const hardwareSlotsEl = document.getElementById('hardware-slots');
+        const softwareSlotsEl = document.getElementById('software-slots');
+        const checkAnswerBtn = document.getElementById('check-answer-btn');
+        const placedCounterEl = document.getElementById('placed-counter');
 
-                // Crash / Game Over condition (Touched the ground)
-                if (rocketY <= minRocketY) {
-                    triggerGameOver();
-                }
+        window.onload = function() {
+            document.getElementById('name-modal').classList.remove('hidden');
+            document.getElementById('player-name-input').focus();
+        };
+
+        function startGameWithPlayerName(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('player-name-input').value.trim();
+            if (inputVal) {
+                currentPlayerName = inputVal;
+                document.getElementById('player-name-display').innerText = currentPlayerName;
+                document.getElementById('name-modal').classList.add('hidden');
+                playSound('click');
+                initGame();
+            }
+        }
+
+        function promptChangePlayer() {
+            playSound('click');
+            const modal = document.getElementById('result-modal');
+            const modalContent = document.getElementById('modal-content');
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                openNameModal();
+            }, 200);
+        }
+
+        function openLeaderboard() {
+            playSound('click');
+            renderLeaderboard();
+            document.getElementById('leaderboard-modal').classList.remove('hidden');
+        }
+
+        function closeLeaderboard() {
+            playSound('click');
+            document.getElementById('leaderboard-modal').classList.add('hidden');
+        }
+
+        function closeModalAndShowLeaderboard() {
+            const modal = document.getElementById('result-modal');
+            const modalContent = document.getElementById('modal-content');
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                openLeaderboard();
+            }, 200);
+        }
+
+        function renderLeaderboard() {
+            const listEl = document.getElementById('leaderboard-list');
+            listEl.innerHTML = '';
+
+            if (leaderboardData.length === 0) {
+                listEl.innerHTML = `
+                    <div class="py-10 text-center text-slate-400 font-semibold text-xs sm:text-sm">
+                        <i class="fa-solid fa-trophy text-4xl text-slate-300 mb-3 block"></i>
+                        <span>Belum ada data peringkat.<br>Jadilah pemain pertama yang mencetak skor!</span>
+                    </div>
+                `;
+                return;
             }
 
-            // Render rocket position and pitch angle
-            rocket.style.bottom = `${rocketY}px`;
-            rocketGraphic.style.transform = `rotate(${-pitchAngle}deg)`;
-        }, 50);
+            leaderboardData.sort((a, b) => b.score - a.score);
 
-        function triggerGameOver() {
-            isGameOver = true;
-            playSound('crash');
+            leaderboardData.forEach((item, index) => {
+                const isCurrent = (item.name === currentPlayerName);
+                let rankBadge = `<span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center font-fredoka">${index + 1}</span>`;
 
-            dangerOverlay.classList.add('hidden');
-            warningBanner.classList.add('hidden');
-            inputStatus.innerText = "Kalah";
-            inputStatus.className = "text-xs px-2.5 py-1 rounded-lg bg-red-950 text-red-400 font-bold uppercase tracking-wider border border-red-800";
+                if (index === 0) rankBadge = `<span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-crown text-amber-500"></i></span>`;
+                else if (index === 1) rankBadge = `<span class="w-7 h-7 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-medal text-slate-500"></i></span>`;
+                else if (index === 2) rankBadge = `<span class="w-7 h-7 rounded-lg bg-amber-700/10 text-amber-800 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-award text-amber-700"></i></span>`;
 
-            document.getElementById('modalDistance').innerText = `${distance} m`;
-            document.getElementById('modalWpm').innerText = wpmVal.innerText;
-            document.getElementById('modalAccuracy').innerText = accuracyVal.innerText;
-            document.getElementById('modalQuotes').innerText = completedCount;
+                const row = document.createElement('div');
+                row.className = `p-3 rounded-xl flex items-center justify-between border ${isCurrent ? 'bg-indigo-50 border-indigo-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`;
+                row.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        ${rankBadge}
+                        <div class="text-left">
+                            <span class="font-fredoka font-bold text-sm ${isCurrent ? 'text-indigo-900' : 'text-slate-800'} block truncate max-w-[180px]">${item.name} ${isCurrent ? '(Kamu)' : ''}</span>
+                            <span class="text-[10px] font-semibold text-slate-400">${item.date || 'Baru Saja'}</span>
+                        </div>
+                    </div>
+                    <div class="font-fredoka font-extrabold text-base ${item.score >= 80 ? 'text-emerald-600' : 'text-blue-600'}">
+                        ${item.score} <span class="text-xs text-slate-400 font-normal">pts</span>
+                    </div>
+                `;
+                listEl.appendChild(row);
+            });
+        }
 
-            const modal = document.getElementById('resultModal');
-            modal.classList.remove('opacity-0', 'pointer-events-none');
-            modal.classList.add('opacity-100');
+        function initGame() {
+            slotAssignments = {};
+            questionAnswerMap = {};
+            selectedForTapId = null;
+            currentQuestionIdx = 0;
+
+            questionsList = shuffle(itemsData);
+
+            renderActiveQuestion();
+            renderImagePool();
+            renderSlots();
+            updatePlacedCounter();
         }
 
         function resetGame() {
-            isGameOver = false;
-            distance = 0;
-            rocketY = 120;
-            pitchAngle = 0;
-            completedCount = 0;
-            streakCount = 0;
-            startTime = null;
-            totalTypedChars = 0;
-            correctTypedChars = 0;
-            errorsCount = 0;
-            isTypingStarted = false;
+            playSound('click');
+            initGame();
+        }
 
-            distanceVal.innerText = "0";
-            altitudeVal.innerText = "95";
-            wpmVal.innerText = "0 WPM";
-            accuracyVal.innerText = "100%";
-            completedCountEl.innerText = "0";
-            rocket.style.bottom = "120px";
-            rocketGraphic.style.transform = "rotate(0deg)";
+        function renderActiveQuestion() {
+            const currentItem = questionsList[currentQuestionIdx];
+            questionBadgeEl.innerText = `Pertanyaan ${currentQuestionIdx + 1}/12`;
+            statementTextEl.innerHTML = `Perangkat yang berfungsi untuk <span class="text-blue-700 font-extrabold">${currentItem.func}</span>`;
+
+            prevQBtn.disabled = (currentQuestionIdx === 0);
+            nextQBtn.disabled = (currentQuestionIdx === questionsList.length - 1);
+        }
+
+        function navigateQuestion(direction) {
+            playSound('click');
+            const newIdx = currentQuestionIdx + direction;
+            if (newIdx >= 0 && newIdx < questionsList.length) {
+                currentQuestionIdx = newIdx;
+                renderActiveQuestion();
+            }
+        }
+
+        function renderImagePool() {
+            imagePoolEl.innerHTML = '';
             
-            dangerOverlay.classList.add('hidden');
-            warningBanner.classList.add('hidden');
-
-            inputStatus.innerText = "Siap";
-            inputStatus.className = "text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 font-bold uppercase tracking-wider";
-
-            loadNextQuote();
-            typingInput.focus();
+            itemsData.forEach(item => {
+                const isPlaced = Object.values(slotAssignments).includes(item.id);
+                if (!isPlaced) {
+                    const card = createCardElement(item);
+                    imagePoolEl.appendChild(card);
+                }
+            });
         }
 
-        function closeModal() {
-            const modal = document.getElementById('resultModal');
-            modal.classList.add('opacity-0', 'pointer-events-none');
-            modal.classList.remove('opacity-100');
+        function createCardElement(item) {
+            const card = document.createElement('div');
+            card.id = `card-${item.id}`;
+            card.setAttribute('data-id', item.id);
+            card.setAttribute('draggable', 'true');
+            
+            /* Enhanced Card & Image size layout */
+            card.className = "device-card group bg-white border-2 border-slate-200 hover:border-blue-400 rounded-2xl p-2 flex flex-col items-center justify-between text-center shadow-sm hover:shadow-md relative overflow-hidden h-28 sm:h-36 active:cursor-grabbing cursor-grab";
+
+            card.innerHTML = `
+                <div class="w-full flex-grow flex items-center justify-center p-1 overflow-hidden relative">
+                    <img src="${item.img}" alt="${item.name}" 
+                         onerror="this.onerror=null; this.src='${fallbackImg}';"
+                         class="device-img max-h-16 sm:max-h-24 max-w-full object-contain pointer-events-none drop-shadow-sm transition-transform duration-300" />
+                </div>
+                <div class="w-full bg-slate-50 group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-200 rounded-xl py-1 px-1.5 shrink-0 transition-colors">
+                    <span class="font-fredoka font-bold text-xs sm:text-sm text-slate-800 group-hover:text-blue-900 line-clamp-1 block">${item.name}</span>
+                </div>
+            `;
+
+            addDragAndHoverEvents(card, item);
+            return card;
         }
 
-        window.addEventListener('resize', resizeCanvas);
-        window.onload = () => {
-            resizeCanvas();
-            renderCanvas();
-            resetGame();
-        };
+        function renderSlots() {
+            hardwareSlotsEl.innerHTML = '';
+            softwareSlotsEl.innerHTML = '';
+
+            for (let i = 1; i <= 6; i++) {
+                hardwareSlotsEl.appendChild(createSlotElement(`hw-${i}`, 'Hardware', i));
+                softwareSlotsEl.appendChild(createSlotElement(`sw-${i}`, 'Software', i));
+            }
+        }
+
+        function createSlotElement(slotKey, categoryName, num) {
+            const slot = document.createElement('div');
+            slot.id = `slot-${slotKey}`;
+            slot.setAttribute('data-slot-key', slotKey);
+            slot.setAttribute('data-category', categoryName.toLowerCase());
+            slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-2xl p-1.5 flex flex-col items-center justify-center h-24 sm:h-32 transition-all text-center relative overflow-hidden";
+
+            const assignedItemId = slotAssignments[slotKey];
+
+            if (assignedItemId) {
+                const item = itemsData.find(i => i.id === assignedItemId);
+                const isHw = slotKey.startsWith('hw');
+                slot.className = `slot-box bg-white border-2 border-solid ${isHw ? 'border-blue-300' : 'border-emerald-300'} rounded-2xl p-1.5 flex flex-col items-center justify-between h-24 sm:h-32 relative overflow-hidden shadow-sm`;
+                slot.innerHTML = `
+                    <div class="w-full flex-grow p-1 flex items-center justify-center overflow-hidden">
+                        <img src="${item.img}" alt="${item.name}" 
+                             onerror="this.onerror=null; this.src='${fallbackImg}';"
+                             class="max-h-14 sm:max-h-20 max-w-full object-contain pointer-events-none drop-shadow-sm" />
+                    </div>
+                    <div class="w-full ${isHw ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'} border rounded-xl py-0.5 sm:py-1 px-1 shrink-0">
+                        <span class="font-fredoka font-bold text-[10px] sm:text-xs ${isHw ? 'text-blue-900' : 'text-emerald-900'} truncate block">${item.name}</span>
+                    </div>
+                    <button onclick="removeItemFromSlot('${slotKey}')" class="absolute top-1.5 right-1.5 w-6 h-6 sm:w-7 sm:h-7 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-xs flex items-center justify-center shadow-md transition-all z-10 active:scale-95">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+            } else {
+                slot.innerHTML = `
+                    <div class="empty-placeholder flex flex-col items-center justify-center gap-1 pointer-events-none">
+                        <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-100 text-slate-400 font-bold font-fredoka text-xs flex items-center justify-center">${num}</span>
+                        <span class="text-[9px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Slot ${categoryName}</span>
+                    </div>
+                `;
+            }
+
+            addSlotEvents(slot, slotKey);
+            return slot;
+        }
+
+        function addDragAndHoverEvents(element, item) {
+            // Tap / Click to select for IFP Touch
+            element.addEventListener('click', () => {
+                if (selectedForTapId === item.id) {
+                    selectedForTapId = null;
+                    element.classList.remove('selected-touch');
+                } else {
+                    document.querySelectorAll('.selected-touch').forEach(el => el.classList.remove('selected-touch'));
+                    selectedForTapId = item.id;
+                    element.classList.add('selected-touch');
+                }
+            });
+
+            // Native Desktop Drag Events
+            element.addEventListener('dragstart', (e) => {
+                activeDraggedId = item.id;
+                element.classList.add('is-dragging');
+                e.dataTransfer.setData('text/plain', item.id);
+                e.dataTransfer.effectAllowed = "move";
+            });
+
+            element.addEventListener('dragend', () => {
+                element.classList.remove('is-dragging');
+                activeDraggedId = null;
+            });
+
+            // Touch Screen / IFP Drag Events
+            element.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                activeDraggedId = item.id;
+
+                touchAvatar = element.cloneNode(true);
+                touchAvatar.classList.add('touch-drag-avatar');
+                touchAvatar.style.width = element.offsetWidth + 'px';
+                touchAvatar.style.height = element.offsetHeight + 'px';
+                touchAvatar.style.left = touch.clientX + 'px';
+                touchAvatar.style.top = touch.clientY + 'px';
+                document.body.appendChild(touchAvatar);
+
+                element.classList.add('opacity-40');
+            }, { passive: false });
+
+            element.addEventListener('touchmove', (e) => {
+                if (!touchAvatar) return;
+                e.preventDefault();
+                const touch = e.touches[0];
+                touchAvatar.style.left = touch.clientX + 'px';
+                touchAvatar.style.top = touch.clientY + 'px';
+
+                const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+                highlightTouchTarget(targetEl);
+            }, { passive: false });
+
+            element.addEventListener('touchend', (e) => {
+                if (!touchAvatar) return;
+                const touch = e.changedTouches[0];
+                const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                touchAvatar.remove();
+                touchAvatar = null;
+                element.classList.remove('opacity-40');
+
+                if (dropTarget) {
+                    const slot = dropTarget.closest('.slot-box');
+                    if (slot) {
+                        const slotKey = slot.getAttribute('data-slot-key');
+                        placeItemInSlot(activeDraggedId, slotKey);
+                    }
+                }
+
+                removeSlotHighlights();
+                activeDraggedId = null;
+            });
+        }
+
+        function highlightTouchTarget(targetEl) {
+            removeSlotHighlights();
+            if (targetEl) {
+                const slot = targetEl.closest('.slot-box');
+                if (slot) {
+                    slot.classList.add('drag-over');
+                }
+            }
+        }
+
+        function removeSlotHighlights() {
+            document.querySelectorAll('.slot-box').forEach(s => s.classList.remove('drag-over'));
+        }
+
+        function addSlotEvents(slot, slotKey) {
+            slot.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                slot.classList.add('drag-over');
+            });
+
+            slot.addEventListener('dragleave', () => {
+                slot.classList.remove('drag-over');
+            });
+
+            slot.addEventListener('drop', (e) => {
+                e.preventDefault();
+                slot.classList.remove('drag-over');
+                const itemId = e.dataTransfer.getData('text/plain') || activeDraggedId;
+                if (itemId) {
+                    placeItemInSlot(itemId, slotKey);
+                }
+            });
+
+            slot.addEventListener('click', () => {
+                if (selectedForTapId && !slotAssignments[slotKey]) {
+                    placeItemInSlot(selectedForTapId, slotKey);
+                    selectedForTapId = null;
+                }
+            });
+        }
+
+        function placeItemInSlot(itemId, slotKey) {
+            if (slotAssignments[slotKey]) return;
+
+            // Remove item from any previous slot
+            Object.keys(slotAssignments).forEach(key => {
+                if (slotAssignments[key] === itemId) {
+                    delete slotAssignments[key];
+                }
+            });
+
+            // Remove previous mapping for this item in questions
+            Object.keys(questionAnswerMap).forEach(qIdx => {
+                if (questionAnswerMap[qIdx] === itemId) {
+                    delete questionAnswerMap[qIdx];
+                }
+            });
+
+            slotAssignments[slotKey] = itemId;
+            questionAnswerMap[currentQuestionIdx] = itemId;
+
+            playSound('place');
+
+            renderImagePool();
+            renderSlots();
+            updatePlacedCounter();
+
+            findNextUnansweredQuestion();
+        }
+
+        function findNextUnansweredQuestion() {
+            for (let i = 0; i < questionsList.length; i++) {
+                if (!questionAnswerMap[i]) {
+                    currentQuestionIdx = i;
+                    renderActiveQuestion();
+                    return;
+                }
+            }
+            if (currentQuestionIdx < questionsList.length - 1) {
+                currentQuestionIdx++;
+                renderActiveQuestion();
+            }
+        }
+
+        function removeItemFromSlot(slotKey) {
+            playSound('click');
+            const itemId = slotAssignments[slotKey];
+            delete slotAssignments[slotKey];
+
+            Object.keys(questionAnswerMap).forEach(qIdx => {
+                if (questionAnswerMap[qIdx] === itemId) {
+                    delete questionAnswerMap[qIdx];
+                }
+            });
+
+            renderImagePool();
+            renderSlots();
+            updatePlacedCounter();
+        }
+
+        function updatePlacedCounter() {
+            const count = Object.keys(slotAssignments).length;
+            placedCounterEl.innerText = `${count}/12`;
+
+            if (count === 12) {
+                checkAnswerBtn.disabled = false;
+                checkAnswerBtn.className = "px-7 py-2 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold text-xs sm:text-base rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2 btn-check-active cursor-pointer";
+            } else {
+                checkAnswerBtn.disabled = true;
+                checkAnswerBtn.className = "px-7 py-2 bg-slate-300 text-slate-500 font-fredoka font-bold text-xs sm:text-base rounded-xl transition-all shadow-md flex items-center gap-2 cursor-not-allowed";
+            }
+        }
+
+        function checkAnswers() {
+            let correctCategoryCount = 0;
+            let correctFunctionCount = 0;
+
+            // 1. EVALUASI KETEPATAN TATA LETAK HARDWARE & SOFTWARE (50 Poin)
+            Object.keys(slotAssignments).forEach(slotKey => {
+                const itemId = slotAssignments[slotKey];
+                const item = itemsData.find(i => i.id === itemId);
+                const slotEl = document.getElementById(`slot-${slotKey}`);
+
+                if (!item) return;
+
+                const isHardwareSlot = slotKey.startsWith('hw');
+                const isSoftwareSlot = slotKey.startsWith('sw');
+
+                let isCategoryCorrect = false;
+                if (isHardwareSlot && item.type === 'hardware') isCategoryCorrect = true;
+                if (isSoftwareSlot && item.type === 'software') isCategoryCorrect = true;
+
+                if (isCategoryCorrect) correctCategoryCount++;
+
+                if (slotEl) {
+                    slotEl.classList.remove('border-slate-300', 'border-dashed', 'border-blue-300', 'border-emerald-300');
+                    if (isCategoryCorrect) {
+                        slotEl.classList.add('border-emerald-500', 'bg-emerald-50/70');
+                    } else {
+                        slotEl.classList.add('border-rose-500', 'bg-rose-50/70');
+                    }
+
+                    const badge = document.createElement('div');
+                    badge.className = `absolute top-1.5 left-1.5 w-6 h-6 rounded-full flex items-center justify-center text-xs text-white font-bold shadow-md z-10 ${isCategoryCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
+                    badge.innerHTML = isCategoryCorrect ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>';
+                    slotEl.appendChild(badge);
+                }
+            });
+
+            // 2. EVALUASI PENCOCOKAN FUNGSI / SOAL (50 Poin)
+            questionsList.forEach((qItem, idx) => {
+                const answeredItemId = questionAnswerMap[idx];
+                if (answeredItemId === qItem.id) {
+                    correctFunctionCount++;
+                }
+            });
+
+            const categoryScore = Math.round((correctCategoryCount / 12) * 50);
+            const functionScore = Math.round((correctFunctionCount / 12) * 50);
+            const totalScore = categoryScore + functionScore;
+
+            saveScoreToLeaderboard(currentPlayerName, totalScore);
+
+            showModal(totalScore, correctCategoryCount, correctFunctionCount, categoryScore, functionScore);
+        }
+
+        function saveScoreToLeaderboard(name, score) {
+            const existingIdx = leaderboardData.findIndex(item => item.name.toLowerCase() === name.toLowerCase());
+            if (existingIdx !== -1) {
+                if (score > leaderboardData[existingIdx].score) {
+                    leaderboardData[existingIdx].score = score;
+                    leaderboardData[existingIdx].date = "Baru Saja";
+                }
+            } else {
+                leaderboardData.push({ name: name, score: score, date: "Baru Saja" });
+            }
+
+            try {
+                localStorage.setItem('comp_game_leaderboard', JSON.stringify(leaderboardData));
+            } catch(e) {}
+        }
+
+        function showModal(score, correctCat, correctFunc, catScore, funcScore) {
+            playSound('win');
+            const modal = document.getElementById('result-modal');
+            const modalContent = document.getElementById('modal-content');
+            const iconBox = document.getElementById('result-icon-box');
+            const titleEl = document.getElementById('result-title');
+            const scoreEl = document.getElementById('result-score');
+            const breakdownEl = document.getElementById('result-breakdown');
+
+            document.getElementById('result-player-name').innerText = currentPlayerName;
+            scoreEl.innerText = `${score} / 100`;
+
+            if (score >= 80) {
+                iconBox.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg bg-emerald-100 text-emerald-600";
+                iconBox.innerHTML = '<i class="fa-solid fa-trophy"></i>';
+                titleEl.innerText = "Luar Biasa!";
+            } else if (score >= 50) {
+                iconBox.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg bg-amber-100 text-amber-600";
+                iconBox.innerHTML = '<i class="fa-solid fa-star"></i>';
+                titleEl.innerText = "Bagus Sekali!";
+            } else {
+                iconBox.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg bg-blue-100 text-blue-600";
+                iconBox.innerHTML = '<i class="fa-solid fa-thumbs-up"></i>';
+                titleEl.innerText = "Tetap Semangat!";
+            }
+
+            breakdownEl.innerHTML = `
+                <div class="flex justify-between py-1.5 border-b border-slate-200">
+                    <span>Ketepatan Tata Letak (HW/SW):</span>
+                    <strong class="text-slate-800">${correctCat}/12 Tepat (${catScore} Pts)</strong>
+                </div>
+                <div class="flex justify-between py-1.5">
+                    <span>Pencocokan Fungsi Soal:</span>
+                    <strong class="text-slate-800">${correctFunc}/12 Tepat (${funcScore} Pts)</strong>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        }
+
+        function closeModalAndReset() {
+            const modal = document.getElementById('result-modal');
+            const modalContent = document.getElementById('modal-content');
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                initGame();
+            }, 200);
+        }
     </script>
 </body>
 </html>
