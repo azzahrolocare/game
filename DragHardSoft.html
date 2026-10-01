@@ -2,8 +2,8 @@
 <html lang="id" class="h-full overflow-hidden">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gim Pengenalan Komputer - IFP Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gim Pengenalan Komputer - IFP Touch Edition</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
@@ -48,67 +48,69 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #F1F5F9;
+            overflow: hidden;
         }
 
         .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+            width: 5px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
             background: rgba(0, 0, 0, 0.05);
             border-radius: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
         }
 
-        /* Card Normal & Drag Styling for Large IFP Screens */
+        /* Card Normal & Drag Styling Optimized for Single Screen IFP */
         .device-card {
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
             cursor: grab;
+            touch-action: none; /* Prevents touch scrolling while dragging */
         }
         .device-card:active {
             cursor: grabbing;
         }
         .device-card:hover {
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 12px 24px -6px rgba(59, 130, 246, 0.25);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 16px -4px rgba(59, 130, 246, 0.25);
             border-color: #60A5FA;
         }
         .device-card:hover img {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
         .device-card img {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Dragging active state on desktop */
+        /* Active Dragging States */
         .device-card.is-dragging {
-            opacity: 0.4;
-            transform: scale(0.95);
+            opacity: 0.3;
+            transform: scale(0.92);
             border-style: dashed;
             border-color: #3B82F6;
         }
 
         /* Tap selected state for IFP touch screen */
         .device-card.selected-touch {
-            outline: 4px solid #3B82F6;
-            outline-offset: 2px;
-            transform: scale(1.05);
+            outline: 3px solid #3B82F6;
+            outline-offset: 1px;
+            transform: scale(1.03);
             background-color: #EFF6FF !important;
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 6px 18px -3px rgba(59, 130, 246, 0.35);
         }
 
-        /* Drop Target Slots */
+        /* Drop Target Slots Styling */
         .slot-box {
-            transition: all 0.25s ease;
+            transition: all 0.2s ease;
         }
         .slot-box.drag-over {
             border-color: #3B82F6 !important;
             background-color: #EFF6FF !important;
-            transform: scale(1.04);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            transform: scale(1.03);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
         }
 
         /* Touch Avatar Floating Dragging Effect on IFP */
@@ -117,16 +119,17 @@
             pointer-events: none;
             z-index: 9999;
             opacity: 0.95;
-            transform: translate(-50%, -50%) scale(1.12) rotate(-3deg);
-            box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.35), 0 0 15px rgba(59, 130, 246, 0.4);
+            transform: translate(-50%, -50%) scale(1.1) rotate(-2deg);
+            box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.35), 0 0 20px rgba(59, 130, 246, 0.5);
             border: 3px solid #3B82F6 !important;
             background-color: #FFFFFF !important;
-            border-radius: 1rem;
+            border-radius: 0.85rem;
+            will-change: left, top;
         }
 
         @keyframes pulseGlow {
             0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); }
-            50% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
+            50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
         }
         .btn-check-active {
             animation: pulseGlow 2s infinite;
@@ -136,135 +139,135 @@
 
 <body class="h-screen w-screen overflow-hidden flex flex-col justify-between bg-slate-100 text-slate-800">
 
-    <header class="bg-white border-b border-slate-200 px-4 sm:px-6 py-2.5 shrink-0 shadow-sm flex items-center justify-between">
-        <div class="flex items-center gap-3">
-            <!-- Icon Home Menu Trigger -->
-            <button onclick="openHomeMenu()" title="Menu Utama" class="w-11 h-11 rounded-2xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center font-bold text-xl shadow-md transition-all">
+    <!-- Header Section -->
+    <header class="bg-white border-b border-slate-200 px-3 sm:px-6 py-2 shrink-0 shadow-sm flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+            <button onclick="openHomeMenu()" title="Menu Utama" class="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center font-bold text-lg shadow-md transition-all">
                 <i class="fa-solid fa-house"></i>
             </button>
             <div>
-                <h1 class="font-fredoka font-bold text-base sm:text-xl text-slate-800 leading-tight">Gim Pengenalan Komputer</h1>
-                <p class="text-xs text-slate-500 font-semibold hidden sm:block">Uji Pengetahuan Hardware & Software</p>
+                <h1 class="font-fredoka font-bold text-sm sm:text-lg text-slate-800 leading-tight">Gim Pengenalan Komputer</h1>
+                <p class="text-[10px] sm:text-xs text-slate-500 font-semibold hidden sm:block">IFP Interactive Touch Edition</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-2 sm:gap-3">
-            <!-- Fullscreen Trigger Button -->
-            <button onclick="toggleFullscreen()" title="Layar Penuh" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all flex items-center justify-center border border-slate-300">
-                <i id="fs-btn-icon" class="fa-solid fa-expand text-slate-600"></i>
+        <div class="flex items-center gap-1.5 sm:gap-2.5">
+            <button onclick="toggleFullscreen()" title="Layar Penuh" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all flex items-center justify-center border border-slate-300">
+                <i id="fs-btn-icon" class="fa-solid fa-expand text-slate-600 text-sm"></i>
             </button>
             
-            <button id="reset-btn" onclick="resetGame()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 border border-slate-300">
+            <button id="reset-btn" onclick="resetGame()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 border border-slate-300">
                 <i class="fa-solid fa-rotate-right text-slate-500"></i>
                 <span class="hidden md:inline">Ulangi Gim</span>
             </button>
 
-            <button onclick="openLeaderboard()" class="px-3 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 border border-amber-300 shadow-sm">
+            <button onclick="openLeaderboard()" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 border border-amber-300 shadow-sm">
                 <i class="fa-solid fa-trophy text-amber-500"></i>
                 <span class="hidden md:inline">Peringkat</span>
             </button>
 
-            <button onclick="openNameModal()" title="Ganti Nama Pemain" class="bg-indigo-50 border border-indigo-200 px-3 py-2 rounded-xl flex items-center gap-2 hover:bg-indigo-100 transition-all cursor-pointer">
-                <i class="fa-solid fa-user-astronaut text-indigo-600 text-sm"></i>
-                <span id="player-name-display" class="text-xs sm:text-sm font-extrabold text-indigo-700 font-fredoka truncate max-w-[100px] sm:max-w-[130px]">Pemain</span>
+            <button onclick="openNameModal()" title="Ganti Nama Pemain" class="bg-indigo-50 border border-indigo-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 hover:bg-indigo-100 transition-all cursor-pointer">
+                <i class="fa-solid fa-user-astronaut text-indigo-600 text-xs"></i>
+                <span id="player-name-display" class="text-xs font-extrabold text-indigo-700 font-fredoka truncate max-w-[80px] sm:max-w-[120px]">Pemain</span>
             </button>
 
-            <div class="bg-blue-50 border border-blue-200 px-3 py-2 rounded-xl flex items-center gap-1.5">
-                <i class="fa-solid fa-layer-group text-blue-600 text-sm"></i>
-                <span id="placed-counter" class="text-xs sm:text-sm font-extrabold text-blue-700 font-fredoka">0/12</span>
+            <div class="bg-blue-50 border border-blue-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1">
+                <i class="fa-solid fa-layer-group text-blue-600 text-xs"></i>
+                <span id="placed-counter" class="text-xs font-extrabold text-blue-700 font-fredoka">0/12</span>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow p-3 sm:p-4 flex flex-col gap-3 overflow-hidden max-w-[1800px] w-full mx-auto">
+    <main class="flex-grow p-2 sm:p-3 flex flex-col gap-2 overflow-hidden max-w-[1920px] w-full mx-auto">
 
-        <!-- BOX SOAL / FUNGSI PERANGKAT -->
-        <section id="question-box" class="bg-white rounded-2xl p-3 sm:p-3.5 shadow-sm border-2 border-blue-400 relative overflow-hidden shrink-0 flex items-center justify-between transition-all">
-            <div class="flex items-center gap-3 sm:gap-4 flex-grow overflow-hidden">
-                <div class="bg-blue-600 text-white w-10 h-10 sm:w-12 sm:h-12 rounded-xl shrink-0 flex items-center justify-center text-lg sm:text-xl font-bold shadow-md">
+        <!-- Question / Function Statement Box -->
+        <section id="question-box" class="bg-white rounded-2xl p-2 sm:p-2.5 shadow-sm border-2 border-blue-400 relative overflow-hidden shrink-0 flex items-center justify-between transition-all">
+            <div class="flex items-center gap-2.5 sm:gap-3 flex-grow overflow-hidden">
+                <div class="bg-blue-600 text-white w-9 h-9 sm:w-10 sm:h-10 rounded-xl shrink-0 flex items-center justify-center text-base sm:text-lg font-bold shadow-md">
                     <i class="fa-solid fa-gear"></i>
                 </div>
                 <div class="flex-grow overflow-hidden">
                     <div class="flex items-center gap-2 mb-0.5">
-                        <span id="question-badge" class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-blue-700 bg-blue-100 px-2.5 py-0.5 rounded-md font-fredoka">
+                        <span id="question-badge" class="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md font-fredoka">
                             Pertanyaan 1/12
                         </span>
-                        <span class="text-xs text-slate-400 font-semibold hidden sm:inline">
+                        <span class="text-[10px] sm:text-xs text-slate-400 font-semibold hidden sm:inline">
                             <i class="fa-solid fa-hand-pointer mr-1"></i>Seret atau ketuk perangkat lalu pilih slot kanan
                         </span>
                     </div>
-                    <p id="statement-text" class="text-xs sm:text-base md:text-lg font-extrabold text-slate-800 leading-snug truncate">
-                        Loading fungsi perangkat...
+                    <p id="statement-text" class="text-xs sm:text-sm md:text-base font-extrabold text-slate-800 leading-tight truncate">
+                        Memuat fungsi perangkat...
                     </p>
                 </div>
             </div>
 
-            <!-- Navigasi Manual Pertanyaan -->
-            <div class="flex items-center gap-1.5 sm:gap-2 ml-2 shrink-0 border-l border-slate-200 pl-2 sm:pl-3">
-                <button id="prev-q-btn" onclick="navigateQuestion(-1)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-sm font-bold">
+            <!-- Manual Question Navigation -->
+            <div class="flex items-center gap-1 ml-2 shrink-0 border-l border-slate-200 pl-2">
+                <button id="prev-q-btn" onclick="navigateQuestion(-1)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-xs font-bold">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <button id="next-q-btn" onclick="navigateQuestion(1)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-sm font-bold">
+                <button id="next-q-btn" onclick="navigateQuestion(1)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-xs font-bold">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
         </section>
 
-        <div class="grid grid-cols-12 gap-3 sm:gap-4 flex-grow overflow-hidden h-full">
+        <div class="grid grid-cols-12 gap-2 sm:gap-3 flex-grow overflow-hidden h-full">
 
-            <!-- PANEL KIRI: PILIHAN PERANGKAT -->
-            <section class="col-span-4 bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200 shadow-sm flex flex-col overflow-hidden">
-                <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0 mb-2">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-boxes-stacked text-amber-500 text-base"></i>
-                        <h2 class="font-fredoka font-bold text-slate-800 text-xs sm:text-base">Pilihan Perangkat</h2>
+            <!-- LEFT PANEL: DEVICE SELECTION POOL (Compact Grid to Fit One Screen) -->
+            <section class="col-span-5 lg:col-span-4 bg-white rounded-2xl p-2 sm:p-2.5 border border-slate-200 shadow-sm flex flex-col overflow-hidden h-full">
+                <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 shrink-0 mb-1.5">
+                    <div class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-boxes-stacked text-amber-500 text-sm"></i>
+                        <h2 class="font-fredoka font-bold text-slate-800 text-xs sm:text-sm">Pilihan Perangkat</h2>
                     </div>
-                    <span class="text-[10px] sm:text-xs bg-amber-50 text-amber-700 font-bold px-2 py-0.5 sm:py-1 rounded-full border border-amber-200">Dapat Diseret</span>
+                    <span class="text-[9px] sm:text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-200">1 Screen View</span>
                 </div>
 
-                <div id="image-pool" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
+                <!-- Single Screen Compact Grid Layout -->
+                <div id="image-pool" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 gap-1.5 sm:gap-2 p-0.5 flex-grow overflow-hidden items-stretch justify-items-stretch">
                     <!-- Cards dynamically generated -->
                 </div>
             </section>
 
-            <!-- PANEL KANAN: TWO COLUMNS (HARDWARE & SOFTWARE SLOTS) -->
-            <section class="col-span-8 bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200 shadow-sm flex flex-col overflow-hidden">
-                <div class="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0 mb-2">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-bullseye text-blue-600 text-base"></i>
-                        <h2 class="font-fredoka font-bold text-slate-800 text-xs sm:text-base">Area Pencocokan Kategori & Fungsi</h2>
+            <!-- RIGHT PANEL: CATEGORY MATCHING SLOTS (HARDWARE & SOFTWARE) -->
+            <section class="col-span-7 lg:col-span-8 bg-white rounded-2xl p-2 sm:p-2.5 border border-slate-200 shadow-sm flex flex-col overflow-hidden h-full">
+                <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 shrink-0 mb-1.5">
+                    <div class="flex items-center gap-1.5">
+                        <i class="fa-solid fa-bullseye text-blue-600 text-sm"></i>
+                        <h2 class="font-fredoka font-bold text-slate-800 text-xs sm:text-sm">Area Pencocokan Kategori & Fungsi</h2>
                     </div>
-                    <div class="text-xs font-semibold text-slate-400 hidden sm:block">Tempatkan perangkat ke slot yang sesuai</div>
+                    <div class="text-[10px] font-semibold text-slate-400 hidden sm:block">Tempatkan ke slot yang sesuai</div>
                 </div>
 
-                <!-- 2 KOLOM SEJAJAR: HARDWARE & SOFTWARE -->
-                <div class="grid grid-cols-2 gap-2.5 sm:gap-3.5 flex-grow overflow-hidden">
+                <!-- Two Parallel Category Columns -->
+                <div class="grid grid-cols-2 gap-2 flex-grow overflow-hidden">
                     
-                    <!-- AREA HARDWARE -->
-                    <div class="bg-blue-50/60 rounded-xl p-2 sm:p-2.5 border border-blue-200/80 flex flex-col overflow-hidden">
-                        <div class="flex items-center justify-between mb-2 shrink-0 px-1">
-                            <span class="font-fredoka font-bold text-blue-800 text-xs sm:text-sm flex items-center gap-1.5">
+                    <!-- HARDWARE AREA -->
+                    <div class="bg-blue-50/60 rounded-xl p-1.5 sm:p-2 border border-blue-200/80 flex flex-col overflow-hidden">
+                        <div class="flex items-center justify-between mb-1.5 shrink-0 px-1">
+                            <span class="font-fredoka font-bold text-blue-800 text-xs flex items-center gap-1">
                                 <i class="fa-solid fa-hard-drive text-blue-600"></i>
                                 HARDWARE
                             </span>
-                            <span class="text-[10px] sm:text-xs font-extrabold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">Perangkat Keras</span>
+                            <span class="text-[9px] sm:text-[10px] font-extrabold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">Perangkat Keras</span>
                         </div>
-                        <div id="hardware-slots" class="grid grid-cols-2 gap-2 sm:gap-2.5 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
-                            <!-- Slot Hardware -->
+                        <div id="hardware-slots" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-1.5 p-0.5 flex-grow overflow-hidden items-stretch">
+                            <!-- Hardware Slots -->
                         </div>
                     </div>
 
-                    <!-- AREA SOFTWARE -->
-                    <div class="bg-emerald-50/60 rounded-xl p-2 sm:p-2.5 border border-emerald-200/80 flex flex-col overflow-hidden">
-                        <div class="flex items-center justify-between mb-2 shrink-0 px-1">
-                            <span class="font-fredoka font-bold text-emerald-800 text-xs sm:text-sm flex items-center gap-1.5">
+                    <!-- SOFTWARE AREA -->
+                    <div class="bg-emerald-50/60 rounded-xl p-1.5 sm:p-2 border border-emerald-200/80 flex flex-col overflow-hidden">
+                        <div class="flex items-center justify-between mb-1.5 shrink-0 px-1">
+                            <span class="font-fredoka font-bold text-emerald-800 text-xs flex items-center gap-1">
                                 <i class="fa-solid fa-compact-disc text-emerald-600"></i>
                                 SOFTWARE
                             </span>
-                            <span class="text-[10px] sm:text-xs font-extrabold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">Perangkat Lunak</span>
+                            <span class="text-[9px] sm:text-[10px] font-extrabold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">Perangkat Lunak</span>
                         </div>
-                        <div id="software-slots" class="grid grid-cols-2 gap-2 sm:gap-2.5 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
-                            <!-- Slot Software -->
+                        <div id="software-slots" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-1.5 p-0.5 flex-grow overflow-hidden items-stretch">
+                            <!-- Software Slots -->
                         </div>
                     </div>
 
@@ -273,49 +276,49 @@
         </div>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 px-6 py-2.5 shrink-0 shadow-inner flex items-center justify-between">
-        <div class="text-xs sm:text-sm font-semibold text-slate-500 flex items-center gap-2">
+    <footer class="bg-white border-t border-slate-200 px-4 py-2 shrink-0 shadow-inner flex items-center justify-between">
+        <div class="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
             <i class="fa-solid fa-code text-slate-400"></i>
             <span>dikembangkan oleh <strong class="text-slate-800 font-bold">Rahmattullah</strong></span>
         </div>
 
-        <button id="check-answer-btn" disabled onclick="checkAnswers()" class="px-7 py-2 bg-slate-300 text-slate-500 font-fredoka font-bold text-xs sm:text-base rounded-xl transition-all shadow-md flex items-center gap-2 cursor-not-allowed">
+        <button id="check-answer-btn" disabled onclick="checkAnswers()" class="px-6 py-1.5 bg-slate-300 text-slate-500 font-fredoka font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center gap-2 cursor-not-allowed">
             <i class="fa-solid fa-circle-check"></i>
             <span>Cek Jawaban</span>
         </button>
     </footer>
 
-    <!-- MODAL HOME MENU -->
+    <!-- MODAL 0: HOME MENU -->
     <div id="home-menu-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border border-slate-100 transform transition-all">
-            <div class="w-16 h-16 rounded-2xl bg-blue-600 text-white mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg font-fredoka">
+            <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white mx-auto flex items-center justify-center text-2xl mb-3 shadow-lg font-fredoka">
                 <i class="fa-solid fa-house"></i>
             </div>
-            <h2 class="font-fredoka font-extrabold text-2xl text-slate-800 mb-1">Menu Utama</h2>
-            <p class="text-xs text-slate-500 font-semibold mb-5">Pilih opsi atau navigasi gim di bawah ini</p>
+            <h2 class="font-fredoka font-extrabold text-xl text-slate-800 mb-1">Menu Utama</h2>
+            <p class="text-xs text-slate-500 font-semibold mb-4">Pilih opsi atau navigasi gim di bawah ini</p>
 
-            <div class="space-y-2.5">
-                <button onclick="closeHomeMenu(); openLeaderboard();" class="w-full py-3 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2.5 text-sm shadow-sm">
-                    <i class="fa-solid fa-trophy text-amber-500 text-base"></i>
+            <div class="space-y-2">
+                <button onclick="closeHomeMenu(); openLeaderboard();" class="w-full py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm shadow-sm">
+                    <i class="fa-solid fa-trophy text-amber-500"></i>
                     <span>Lihat Papan Peringkat</span>
                 </button>
 
-                <button onclick="closeHomeMenu(); openNameModal();" class="w-full py-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2.5 text-sm shadow-sm">
-                    <i class="fa-solid fa-user-pen text-indigo-600 text-base"></i>
+                <button onclick="closeHomeMenu(); openNameModal();" class="w-full py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm shadow-sm">
+                    <i class="fa-solid fa-user-pen text-indigo-600"></i>
                     <span>Input / Ganti Nama Pemain</span>
                 </button>
 
-                <button onclick="closeHomeMenu(); resetGame();" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2.5 text-sm">
-                    <i class="fa-solid fa-rotate-right text-slate-600 text-base"></i>
+                <button onclick="closeHomeMenu(); resetGame();" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
+                    <i class="fa-solid fa-rotate-right text-slate-600"></i>
                     <span>Ulangi Gim</span>
                 </button>
 
-                <button onclick="toggleFullscreen();" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2.5 text-sm">
-                    <i class="fa-solid fa-expand text-slate-600 text-base"></i>
+                <button onclick="toggleFullscreen();" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
+                    <i class="fa-solid fa-expand text-slate-600"></i>
                     <span>Layar Penuh (Fullscreen)</span>
                 </button>
 
-                <button onclick="closeHomeMenu()" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-fredoka font-bold rounded-xl transition-all mt-2">
+                <button onclick="closeHomeMenu()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-fredoka font-bold rounded-xl transition-all mt-2 text-xs sm:text-sm">
                     Tutup Menu
                 </button>
             </div>
@@ -337,7 +340,7 @@
                     <input type="text" id="player-name-input" required maxlength="20" placeholder="Contoh: Ahmad / Siti" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:outline-none font-bold text-slate-800 text-base shadow-sm transition-all">
                 </div>
 
-                <button type="submit" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold text-base rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 active:scale-95">
+                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold text-base rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 active:scale-95">
                     <span>Mulai Bermain</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
@@ -348,33 +351,33 @@
     <!-- MODAL 2: HASIL EVALUASI -->
     <div id="result-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0" id="modal-content">
-            <div id="result-icon-box" class="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg">
+            <div id="result-icon-box" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg">
                 <!-- Icon via JS -->
             </div>
             
             <h3 id="result-title" class="font-fredoka font-extrabold text-2xl text-slate-800 mb-1">Hasil Evaluasi</h3>
             <p id="result-subtitle" class="text-xs text-slate-500 font-semibold mb-4">Pencocokan Hardware & Software Komputer</p>
 
-            <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-5">
+            <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 mb-4">
                 <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Skor Akhir <span id="result-player-name" class="text-indigo-600">Pemain</span></div>
-                <div id="result-score" class="font-fredoka font-extrabold text-5xl text-blue-600 mb-2">0 / 100</div>
+                <div id="result-score" class="font-fredoka font-extrabold text-4xl text-blue-600 mb-2">0 / 100</div>
                 <div id="result-breakdown" class="text-xs font-semibold text-slate-600 space-y-1">
                     <!-- Breakdown stats -->
                 </div>
             </div>
 
-            <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col gap-2">
                 <div class="grid grid-cols-2 gap-2">
-                    <button onclick="closeModalAndReset()" class="py-3 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 text-xs sm:text-sm">
+                    <button onclick="closeModalAndReset()" class="py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 text-xs sm:text-sm">
                         <i class="fa-solid fa-rotate-right"></i>
                         <span>Bermain Ulang</span>
                     </button>
-                    <button onclick="promptChangePlayer()" class="py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-fredoka font-bold rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 text-xs sm:text-sm">
+                    <button onclick="promptChangePlayer()" class="py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-fredoka font-bold rounded-xl transition-all shadow-md shadow-indigo-500/20 flex items-center justify-center gap-2 text-xs sm:text-sm">
                         <i class="fa-solid fa-user-pen"></i>
                         <span>Ganti Pemain</span>
                     </button>
                 </div>
-                <button onclick="closeModalAndShowLeaderboard()" class="w-full py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 font-fredoka font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm">
+                <button onclick="closeModalAndShowLeaderboard()" class="w-full py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-300 font-fredoka font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm">
                     <i class="fa-solid fa-trophy text-amber-500"></i>
                     <span>Papan Peringkat</span>
                 </button>
@@ -385,7 +388,7 @@
     <!-- MODAL 3: PAPAN PERINGKAT (LEADERBOARD) -->
     <div id="leaderboard-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 text-center shadow-2xl border border-slate-100 flex flex-col max-h-[85vh]">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4 shrink-0">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3 shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold">
                         <i class="fa-solid fa-trophy"></i>
@@ -395,7 +398,7 @@
                         <p class="text-xs text-slate-500 font-semibold">Skor Perolehan Hasil Siswa</p>
                     </div>
                 </div>
-                <button onclick="closeLeaderboard()" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-all">
+                <button onclick="closeLeaderboard()" class="w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center transition-all">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -404,8 +407,8 @@
                 <!-- Leaderboard rows generated dynamically -->
             </div>
 
-            <div class="pt-4 mt-3 border-t border-slate-100 shrink-0">
-                <button onclick="closeLeaderboard()" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-fredoka font-bold rounded-xl transition-all">
+            <div class="pt-3 mt-3 border-t border-slate-100 shrink-0">
+                <button onclick="closeLeaderboard()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-fredoka font-bold rounded-xl transition-all text-sm">
                     Tutup Papan Peringkat
                 </button>
             </div>
@@ -503,8 +506,8 @@
             }
         ];
 
-        /* Fallback placeholder jika gambar gagal dimuat */
-        const fallbackImg = "https://placehold.co/200x200/e2e8f0/475569?text=Perangkat";
+        /* Fallback placeholder */
+        const fallbackImg = "https://placehold.co/150x150/e2e8f0/475569?text=Perangkat";
 
         /* State Game Variables */
         let questionsList = []; 
@@ -527,7 +530,7 @@
             leaderboardData = [];
         }
 
-        /* Sound Synthesizer */
+        /* Sound Synthesizer via Web Audio API */
         const playSound = (type) => {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -538,27 +541,27 @@
 
                 if (type === 'place') {
                     osc.frequency.setValueAtTime(440, ctx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
                     gain.gain.setValueAtTime(0.15, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
                     osc.start();
-                    osc.stop(ctx.currentTime + 0.12);
+                    osc.stop(ctx.currentTime + 0.1);
                 } else if (type === 'win') {
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
-                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2);
-                    osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.3);
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08);
+                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.16);
+                    osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.24);
                     gain.gain.setValueAtTime(0.2, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
                     osc.start();
-                    osc.stop(ctx.currentTime + 0.5);
+                    osc.stop(ctx.currentTime + 0.4);
                 } else if (type === 'click') {
-                    osc.frequency.setValueAtTime(300, ctx.currentTime);
+                    osc.frequency.setValueAtTime(320, ctx.currentTime);
                     gain.gain.setValueAtTime(0.08, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
                     osc.start();
-                    osc.stop(ctx.currentTime + 0.05);
+                    osc.stop(ctx.currentTime + 0.04);
                 }
             } catch (e) {}
         };
@@ -589,9 +592,9 @@
             const fsIcon = document.getElementById('fs-btn-icon');
             if (fsIcon) {
                 if (document.fullscreenElement) {
-                    fsIcon.className = 'fa-solid fa-compress text-blue-600';
+                    fsIcon.className = 'fa-solid fa-compress text-blue-600 text-sm';
                 } else {
-                    fsIcon.className = 'fa-solid fa-expand text-slate-600';
+                    fsIcon.className = 'fa-solid fa-expand text-slate-600 text-sm';
                 }
             }
         });
@@ -685,8 +688,8 @@
 
             if (leaderboardData.length === 0) {
                 listEl.innerHTML = `
-                    <div class="py-10 text-center text-slate-400 font-semibold text-xs sm:text-sm">
-                        <i class="fa-solid fa-trophy text-4xl text-slate-300 mb-3 block"></i>
+                    <div class="py-8 text-center text-slate-400 font-semibold text-xs">
+                        <i class="fa-solid fa-trophy text-3xl text-slate-300 mb-2 block"></i>
                         <span>Belum ada data peringkat.<br>Jadilah pemain pertama yang mencetak skor!</span>
                     </div>
                 `;
@@ -697,24 +700,24 @@
 
             leaderboardData.forEach((item, index) => {
                 const isCurrent = (item.name === currentPlayerName);
-                let rankBadge = `<span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center font-fredoka">${index + 1}</span>`;
+                let rankBadge = `<span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center font-fredoka">${index + 1}</span>`;
 
-                if (index === 0) rankBadge = `<span class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-crown text-amber-500"></i></span>`;
-                else if (index === 1) rankBadge = `<span class="w-7 h-7 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-medal text-slate-500"></i></span>`;
-                else if (index === 2) rankBadge = `<span class="w-7 h-7 rounded-lg bg-amber-700/10 text-amber-800 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-award text-amber-700"></i></span>`;
+                if (index === 0) rankBadge = `<span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-crown text-amber-500"></i></span>`;
+                else if (index === 1) rankBadge = `<span class="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-medal text-slate-500"></i></span>`;
+                else if (index === 2) rankBadge = `<span class="w-6 h-6 rounded-lg bg-amber-700/10 text-amber-800 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-award text-amber-700"></i></span>`;
 
                 const row = document.createElement('div');
-                row.className = `p-3 rounded-xl flex items-center justify-between border ${isCurrent ? 'bg-indigo-50 border-indigo-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`;
+                row.className = `p-2.5 rounded-xl flex items-center justify-between border ${isCurrent ? 'bg-indigo-50 border-indigo-200 shadow-sm' : 'bg-slate-50 border-slate-100'}`;
                 row.innerHTML = `
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2.5">
                         ${rankBadge}
                         <div class="text-left">
-                            <span class="font-fredoka font-bold text-sm ${isCurrent ? 'text-indigo-900' : 'text-slate-800'} block truncate max-w-[180px]">${item.name} ${isCurrent ? '(Kamu)' : ''}</span>
-                            <span class="text-[10px] font-semibold text-slate-400">${item.date || 'Baru Saja'}</span>
+                            <span class="font-fredoka font-bold text-xs sm:text-sm ${isCurrent ? 'text-indigo-900' : 'text-slate-800'} block truncate max-w-[160px]">${item.name} ${isCurrent ? '(Kamu)' : ''}</span>
+                            <span class="text-[9px] font-semibold text-slate-400">${item.date || 'Baru Saja'}</span>
                         </div>
                     </div>
-                    <div class="font-fredoka font-extrabold text-base ${item.score >= 80 ? 'text-emerald-600' : 'text-blue-600'}">
-                        ${item.score} <span class="text-xs text-slate-400 font-normal">pts</span>
+                    <div class="font-fredoka font-extrabold text-sm sm:text-base ${item.score >= 80 ? 'text-emerald-600' : 'text-blue-600'}">
+                        ${item.score} <span class="text-[10px] text-slate-400 font-normal">pts</span>
                     </div>
                 `;
                 listEl.appendChild(row);
@@ -776,17 +779,17 @@
             card.setAttribute('data-id', item.id);
             card.setAttribute('draggable', 'true');
             
-            /* Enhanced Card & Image size layout */
-            card.className = "device-card group bg-white border-2 border-slate-200 hover:border-blue-400 rounded-2xl p-2 flex flex-col items-center justify-between text-center shadow-sm hover:shadow-md relative overflow-hidden h-28 sm:h-36 active:cursor-grabbing cursor-grab";
+            /* Optimized Compact Card Size for Single Screen View */
+            card.className = "device-card group bg-white border-2 border-slate-200 hover:border-blue-400 rounded-xl p-1 flex flex-col items-center justify-between text-center shadow-sm relative overflow-hidden h-20 sm:h-24 w-full";
 
             card.innerHTML = `
-                <div class="w-full flex-grow flex items-center justify-center p-1 overflow-hidden relative">
+                <div class="w-full flex-grow flex items-center justify-center p-0.5 overflow-hidden relative">
                     <img src="${item.img}" alt="${item.name}" 
                          onerror="this.onerror=null; this.src='${fallbackImg}';"
-                         class="device-img max-h-16 sm:max-h-24 max-w-full object-contain pointer-events-none drop-shadow-sm transition-transform duration-300" />
+                         class="device-img max-h-10 sm:max-h-12 max-w-full object-contain pointer-events-none drop-shadow-sm transition-transform duration-200" />
                 </div>
-                <div class="w-full bg-slate-50 group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-200 rounded-xl py-1 px-1.5 shrink-0 transition-colors">
-                    <span class="font-fredoka font-bold text-xs sm:text-sm text-slate-800 group-hover:text-blue-900 line-clamp-1 block">${item.name}</span>
+                <div class="w-full bg-slate-50 group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-200 rounded-lg py-0.5 px-1 shrink-0 transition-colors">
+                    <span class="font-fredoka font-bold text-[10px] sm:text-xs text-slate-800 group-hover:text-blue-900 line-clamp-1 block leading-tight">${item.name}</span>
                 </div>
             `;
 
@@ -809,32 +812,32 @@
             slot.id = `slot-${slotKey}`;
             slot.setAttribute('data-slot-key', slotKey);
             slot.setAttribute('data-category', categoryName.toLowerCase());
-            slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-2xl p-1.5 flex flex-col items-center justify-center h-24 sm:h-32 transition-all text-center relative overflow-hidden";
+            slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-xl p-1 flex flex-col items-center justify-center h-20 sm:h-24 transition-all text-center relative overflow-hidden w-full";
 
             const assignedItemId = slotAssignments[slotKey];
 
             if (assignedItemId) {
                 const item = itemsData.find(i => i.id === assignedItemId);
                 const isHw = slotKey.startsWith('hw');
-                slot.className = `slot-box bg-white border-2 border-solid ${isHw ? 'border-blue-300' : 'border-emerald-300'} rounded-2xl p-1.5 flex flex-col items-center justify-between h-24 sm:h-32 relative overflow-hidden shadow-sm`;
+                slot.className = `slot-box bg-white border-2 border-solid ${isHw ? 'border-blue-300' : 'border-emerald-300'} rounded-xl p-1 flex flex-col items-center justify-between h-20 sm:h-24 relative overflow-hidden shadow-sm w-full`;
                 slot.innerHTML = `
-                    <div class="w-full flex-grow p-1 flex items-center justify-center overflow-hidden">
+                    <div class="w-full flex-grow p-0.5 flex items-center justify-center overflow-hidden">
                         <img src="${item.img}" alt="${item.name}" 
                              onerror="this.onerror=null; this.src='${fallbackImg}';"
-                             class="max-h-14 sm:max-h-20 max-w-full object-contain pointer-events-none drop-shadow-sm" />
+                             class="max-h-10 sm:max-h-12 max-w-full object-contain pointer-events-none drop-shadow-sm" />
                     </div>
-                    <div class="w-full ${isHw ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'} border rounded-xl py-0.5 sm:py-1 px-1 shrink-0">
-                        <span class="font-fredoka font-bold text-[10px] sm:text-xs ${isHw ? 'text-blue-900' : 'text-emerald-900'} truncate block">${item.name}</span>
+                    <div class="w-full ${isHw ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'} border rounded-lg py-0.5 px-1 shrink-0">
+                        <span class="font-fredoka font-bold text-[9px] sm:text-[10px] ${isHw ? 'text-blue-900' : 'text-emerald-900'} truncate block leading-tight">${item.name}</span>
                     </div>
-                    <button onclick="removeItemFromSlot('${slotKey}')" class="absolute top-1.5 right-1.5 w-6 h-6 sm:w-7 sm:h-7 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-xs flex items-center justify-center shadow-md transition-all z-10 active:scale-95">
+                    <button onclick="removeItemFromSlot('${slotKey}')" class="absolute top-1 right-1 w-5 h-5 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-[10px] flex items-center justify-center shadow-md transition-all z-10 active:scale-95">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 `;
             } else {
                 slot.innerHTML = `
-                    <div class="empty-placeholder flex flex-col items-center justify-center gap-1 pointer-events-none">
-                        <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-100 text-slate-400 font-bold font-fredoka text-xs flex items-center justify-center">${num}</span>
-                        <span class="text-[9px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Slot ${categoryName}</span>
+                    <div class="empty-placeholder flex flex-col items-center justify-center gap-0.5 pointer-events-none">
+                        <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-400 font-bold font-fredoka text-[10px] flex items-center justify-center">${num}</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Slot ${categoryName}</span>
                     </div>
                 `;
             }
@@ -844,8 +847,8 @@
         }
 
         function addDragAndHoverEvents(element, item) {
-            // Tap / Click to select for IFP Touch
-            element.addEventListener('click', () => {
+            // Tap / Click to select for IFP Touch fallback
+            element.addEventListener('click', (e) => {
                 if (selectedForTapId === item.id) {
                     selectedForTapId = null;
                     element.classList.remove('selected-touch');
@@ -856,7 +859,7 @@
                 }
             });
 
-            // Native Desktop Drag Events
+            // Desktop Drag Events
             element.addEventListener('dragstart', (e) => {
                 activeDraggedId = item.id;
                 element.classList.add('is-dragging');
@@ -869,11 +872,12 @@
                 activeDraggedId = null;
             });
 
-            // Touch Screen / IFP Drag Events
+            // Touch Screen / IFP Direct Drag Handler
             element.addEventListener('touchstart', (e) => {
                 const touch = e.touches[0];
                 activeDraggedId = item.id;
 
+                // Create Floating Touch Avatar
                 touchAvatar = element.cloneNode(true);
                 touchAvatar.classList.add('touch-drag-avatar');
                 touchAvatar.style.width = element.offsetWidth + 'px';
@@ -882,7 +886,7 @@
                 touchAvatar.style.top = touch.clientY + 'px';
                 document.body.appendChild(touchAvatar);
 
-                element.classList.add('opacity-40');
+                element.classList.add('opacity-30');
             }, { passive: false });
 
             element.addEventListener('touchmove', (e) => {
@@ -892,6 +896,7 @@
                 touchAvatar.style.left = touch.clientX + 'px';
                 touchAvatar.style.top = touch.clientY + 'px';
 
+                // Real-time IFP Touch Target Detection
                 const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
                 highlightTouchTarget(targetEl);
             }, { passive: false });
@@ -903,7 +908,7 @@
 
                 touchAvatar.remove();
                 touchAvatar = null;
-                element.classList.remove('opacity-40');
+                element.classList.remove('opacity-30');
 
                 if (dropTarget) {
                     const slot = dropTarget.closest('.slot-box');
@@ -1024,10 +1029,10 @@
 
             if (count === 12) {
                 checkAnswerBtn.disabled = false;
-                checkAnswerBtn.className = "px-7 py-2 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold text-xs sm:text-base rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2 btn-check-active cursor-pointer";
+                checkAnswerBtn.className = "px-6 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold text-xs sm:text-sm rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center gap-2 btn-check-active cursor-pointer";
             } else {
                 checkAnswerBtn.disabled = true;
-                checkAnswerBtn.className = "px-7 py-2 bg-slate-300 text-slate-500 font-fredoka font-bold text-xs sm:text-base rounded-xl transition-all shadow-md flex items-center gap-2 cursor-not-allowed";
+                checkAnswerBtn.className = "px-6 py-1.5 bg-slate-300 text-slate-500 font-fredoka font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center gap-2 cursor-not-allowed";
             }
         }
 
@@ -1061,7 +1066,7 @@
                     }
 
                     const badge = document.createElement('div');
-                    badge.className = `absolute top-1.5 left-1.5 w-6 h-6 rounded-full flex items-center justify-center text-xs text-white font-bold shadow-md z-10 ${isCategoryCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
+                    badge.className = `absolute top-1 left-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white font-bold shadow-md z-10 ${isCategoryCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
                     badge.innerHTML = isCategoryCorrect ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>';
                     slotEl.appendChild(badge);
                 }
@@ -1113,25 +1118,25 @@
             scoreEl.innerText = `${score} / 100`;
 
             if (score >= 80) {
-                iconBox.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg bg-emerald-100 text-emerald-600";
+                iconBox.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg bg-emerald-100 text-emerald-600";
                 iconBox.innerHTML = '<i class="fa-solid fa-trophy"></i>';
                 titleEl.innerText = "Luar Biasa!";
             } else if (score >= 50) {
-                iconBox.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg bg-amber-100 text-amber-600";
+                iconBox.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg bg-amber-100 text-amber-600";
                 iconBox.innerHTML = '<i class="fa-solid fa-star"></i>';
                 titleEl.innerText = "Bagus Sekali!";
             } else {
-                iconBox.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-4xl mb-4 shadow-lg bg-blue-100 text-blue-600";
+                iconBox.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg bg-blue-100 text-blue-600";
                 iconBox.innerHTML = '<i class="fa-solid fa-thumbs-up"></i>';
                 titleEl.innerText = "Tetap Semangat!";
             }
 
             breakdownEl.innerHTML = `
-                <div class="flex justify-between py-1.5 border-b border-slate-200">
+                <div class="flex justify-between py-1 border-b border-slate-200">
                     <span>Ketepatan Tata Letak (HW/SW):</span>
                     <strong class="text-slate-800">${correctCat}/12 Tepat (${catScore} Pts)</strong>
                 </div>
-                <div class="flex justify-between py-1.5">
+                <div class="flex justify-between py-1">
                     <span>Pencocokan Fungsi Soal:</span>
                     <strong class="text-slate-800">${correctFunc}/12 Tepat (${funcScore} Pts)</strong>
                 </div>
