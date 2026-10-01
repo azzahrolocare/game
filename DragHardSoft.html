@@ -62,50 +62,71 @@
             border-radius: 8px;
         }
 
-        /* Card Normal Styling for Large IFP Screens */
+        /* Card Normal & Drag Styling for Large IFP Screens */
         .device-card {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
             cursor: grab;
         }
         .device-card:active {
             cursor: grabbing;
         }
         .device-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 24px -6px rgba(59, 130, 246, 0.25);
+            border-color: #60A5FA;
+        }
+        .device-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .device-card img {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Dragging active state on desktop */
+        .device-card.is-dragging {
+            opacity: 0.4;
+            transform: scale(0.95);
+            border-style: dashed;
+            border-color: #3B82F6;
         }
 
         /* Tap selected state for IFP touch screen */
         .device-card.selected-touch {
             outline: 4px solid #3B82F6;
             outline-offset: 2px;
-            transform: scale(1.04);
+            transform: scale(1.05);
             background-color: #EFF6FF !important;
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.3);
         }
 
         /* Drop Target Slots */
         .slot-box {
-            transition: all 0.2s ease;
+            transition: all 0.25s ease;
         }
         .slot-box.drag-over {
             border-color: #3B82F6 !important;
             background-color: #EFF6FF !important;
-            transform: scale(1.02);
+            transform: scale(1.04);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         }
 
-        /* Touch Avatar Dragging on IFP */
+        /* Touch Avatar Floating Dragging Effect on IFP */
         .touch-drag-avatar {
             position: fixed;
             pointer-events: none;
             z-index: 9999;
             opacity: 0.95;
-            transform: translate(-50%, -50%) scale(1.08);
-            box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.35);
+            transform: translate(-50%, -50%) scale(1.12) rotate(-3deg);
+            box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.35), 0 0 15px rgba(59, 130, 246, 0.4);
+            border: 3px solid #3B82F6 !important;
+            background-color: #FFFFFF !important;
+            border-radius: 1rem;
         }
 
         @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
-            50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); }
+            50% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
         }
         .btn-check-active {
             animation: pulseGlow 2s infinite;
@@ -169,7 +190,7 @@
                             Pertanyaan 1/12
                         </span>
                         <span class="text-xs text-slate-400 font-semibold hidden sm:inline">
-                            <i class="fa-solid fa-hand-pointer mr-1"></i>Seret atau ketuk nama/perangkat lalu pilih slot kanan
+                            <i class="fa-solid fa-hand-pointer mr-1"></i>Seret atau ketuk perangkat lalu pilih slot kanan
                         </span>
                     </div>
                     <p id="statement-text" class="text-xs sm:text-base md:text-lg font-extrabold text-slate-800 leading-snug truncate">
@@ -201,7 +222,7 @@
                     <span class="text-[10px] sm:text-xs bg-amber-50 text-amber-700 font-bold px-2 py-0.5 sm:py-1 rounded-full border border-amber-200">Dapat Diseret</span>
                 </div>
 
-                <div id="image-pool" class="grid grid-cols-2 sm:grid-cols-3 gap-2 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
+                <div id="image-pool" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
                     <!-- Cards dynamically generated -->
                 </div>
             </section>
@@ -228,7 +249,7 @@
                             </span>
                             <span class="text-[10px] sm:text-xs font-extrabold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">Perangkat Keras</span>
                         </div>
-                        <div id="hardware-slots" class="grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
+                        <div id="hardware-slots" class="grid grid-cols-2 gap-2 sm:gap-2.5 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
                             <!-- Slot Hardware -->
                         </div>
                     </div>
@@ -242,7 +263,7 @@
                             </span>
                             <span class="text-[10px] sm:text-xs font-extrabold text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full">Perangkat Lunak</span>
                         </div>
-                        <div id="software-slots" class="grid grid-cols-2 gap-2 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
+                        <div id="software-slots" class="grid grid-cols-2 gap-2 sm:gap-2.5 overflow-y-auto custom-scrollbar p-1 flex-grow align-content-start">
                             <!-- Slot Software -->
                         </div>
                     </div>
@@ -342,7 +363,6 @@
                 </div>
             </div>
 
-            <!-- ACTION BUTTONS: BERMAIN ULANG / GANTI PEMAIN / PERINGKAT -->
             <div class="flex flex-col gap-2.5">
                 <div class="grid grid-cols-2 gap-2">
                     <button onclick="closeModalAndReset()" class="py-3 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 text-xs sm:text-sm">
@@ -484,7 +504,7 @@
         ];
 
         /* Fallback placeholder jika gambar gagal dimuat */
-        const fallbackImg = "https://placehold.co/150x150/e2e8f0/475569?text=Perangkat";
+        const fallbackImg = "https://placehold.co/200x200/e2e8f0/475569?text=Perangkat";
 
         /* State Game Variables */
         let questionsList = []; 
@@ -754,16 +774,19 @@
             const card = document.createElement('div');
             card.id = `card-${item.id}`;
             card.setAttribute('data-id', item.id);
-            card.className = "device-card bg-white border-2 border-slate-200 rounded-xl p-1.5 sm:p-2 flex flex-col items-center justify-between text-center shadow-sm relative overflow-hidden aspect-square h-24 sm:h-32";
+            card.setAttribute('draggable', 'true');
+            
+            /* Enhanced Card & Image size layout */
+            card.className = "device-card group bg-white border-2 border-slate-200 hover:border-blue-400 rounded-2xl p-2 flex flex-col items-center justify-between text-center shadow-sm hover:shadow-md relative overflow-hidden h-28 sm:h-36 active:cursor-grabbing cursor-grab";
 
             card.innerHTML = `
-                <div class="w-full flex-grow flex items-center justify-center p-0.5 pointer-events-none overflow-hidden">
+                <div class="w-full flex-grow flex items-center justify-center p-1 overflow-hidden relative">
                     <img src="${item.img}" alt="${item.name}" 
                          onerror="this.onerror=null; this.src='${fallbackImg}';"
-                         class="max-h-12 sm:max-h-20 max-w-full object-contain pointer-events-none" />
+                         class="device-img max-h-16 sm:max-h-24 max-w-full object-contain pointer-events-none drop-shadow-sm transition-transform duration-300" />
                 </div>
-                <div class="w-full bg-slate-100 border border-slate-200 rounded-lg py-0.5 sm:py-1 px-1 shrink-0 pointer-events-none">
-                    <span class="font-fredoka font-bold text-[10px] sm:text-sm text-slate-800 line-clamp-1 block">${item.name}</span>
+                <div class="w-full bg-slate-50 group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-200 rounded-xl py-1 px-1.5 shrink-0 transition-colors">
+                    <span class="font-fredoka font-bold text-xs sm:text-sm text-slate-800 group-hover:text-blue-900 line-clamp-1 block">${item.name}</span>
                 </div>
             `;
 
@@ -786,31 +809,31 @@
             slot.id = `slot-${slotKey}`;
             slot.setAttribute('data-slot-key', slotKey);
             slot.setAttribute('data-category', categoryName.toLowerCase());
-            slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-xl p-1 sm:p-1.5 flex flex-col items-center justify-center h-20 sm:h-28 transition-all text-center relative overflow-hidden";
+            slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-2xl p-1.5 flex flex-col items-center justify-center h-24 sm:h-32 transition-all text-center relative overflow-hidden";
 
             const assignedItemId = slotAssignments[slotKey];
 
             if (assignedItemId) {
                 const item = itemsData.find(i => i.id === assignedItemId);
                 const isHw = slotKey.startsWith('hw');
-                slot.className = `slot-box bg-white border-2 border-solid ${isHw ? 'border-blue-300' : 'border-emerald-300'} rounded-xl p-1 sm:p-1.5 flex flex-col items-center justify-between h-20 sm:h-28 relative overflow-hidden shadow-sm`;
+                slot.className = `slot-box bg-white border-2 border-solid ${isHw ? 'border-blue-300' : 'border-emerald-300'} rounded-2xl p-1.5 flex flex-col items-center justify-between h-24 sm:h-32 relative overflow-hidden shadow-sm`;
                 slot.innerHTML = `
-                    <div class="w-full flex-grow p-0.5 flex items-center justify-center overflow-hidden">
+                    <div class="w-full flex-grow p-1 flex items-center justify-center overflow-hidden">
                         <img src="${item.img}" alt="${item.name}" 
                              onerror="this.onerror=null; this.src='${fallbackImg}';"
-                             class="max-h-10 sm:max-h-16 max-w-full object-contain pointer-events-none" />
+                             class="max-h-14 sm:max-h-20 max-w-full object-contain pointer-events-none drop-shadow-sm" />
                     </div>
-                    <div class="w-full ${isHw ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'} border rounded-lg py-0.5 px-1 shrink-0">
+                    <div class="w-full ${isHw ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'} border rounded-xl py-0.5 sm:py-1 px-1 shrink-0">
                         <span class="font-fredoka font-bold text-[10px] sm:text-xs ${isHw ? 'text-blue-900' : 'text-emerald-900'} truncate block">${item.name}</span>
                     </div>
-                    <button onclick="removeItemFromSlot('${slotKey}')" class="absolute top-1 right-1 w-5 h-5 sm:w-6 sm:h-6 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-[10px] sm:text-xs flex items-center justify-center shadow-md transition-all z-10">
+                    <button onclick="removeItemFromSlot('${slotKey}')" class="absolute top-1.5 right-1.5 w-6 h-6 sm:w-7 sm:h-7 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-xs flex items-center justify-center shadow-md transition-all z-10 active:scale-95">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 `;
             } else {
                 slot.innerHTML = `
-                    <div class="empty-placeholder flex flex-col items-center justify-center gap-0.5 pointer-events-none">
-                        <span class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-100 text-slate-400 font-bold font-fredoka text-[10px] sm:text-xs flex items-center justify-center">${num}</span>
+                    <div class="empty-placeholder flex flex-col items-center justify-center gap-1 pointer-events-none">
+                        <span class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-slate-100 text-slate-400 font-bold font-fredoka text-xs flex items-center justify-center">${num}</span>
                         <span class="text-[9px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">Slot ${categoryName}</span>
                     </div>
                 `;
@@ -821,6 +844,7 @@
         }
 
         function addDragAndHoverEvents(element, item) {
+            // Tap / Click to select for IFP Touch
             element.addEventListener('click', () => {
                 if (selectedForTapId === item.id) {
                     selectedForTapId = null;
@@ -832,24 +856,28 @@
                 }
             });
 
+            // Native Desktop Drag Events
             element.addEventListener('dragstart', (e) => {
                 activeDraggedId = item.id;
-                element.classList.add('opacity-50');
+                element.classList.add('is-dragging');
                 e.dataTransfer.setData('text/plain', item.id);
+                e.dataTransfer.effectAllowed = "move";
             });
 
             element.addEventListener('dragend', () => {
-                element.classList.remove('opacity-50');
+                element.classList.remove('is-dragging');
                 activeDraggedId = null;
             });
 
+            // Touch Screen / IFP Drag Events
             element.addEventListener('touchstart', (e) => {
                 const touch = e.touches[0];
                 activeDraggedId = item.id;
 
                 touchAvatar = element.cloneNode(true);
-                touchAvatar.classList.add('touch-drag-avatar', 'bg-white', 'p-2', 'rounded-xl', 'border-2', 'border-blue-500');
+                touchAvatar.classList.add('touch-drag-avatar');
                 touchAvatar.style.width = element.offsetWidth + 'px';
+                touchAvatar.style.height = element.offsetHeight + 'px';
                 touchAvatar.style.left = touch.clientX + 'px';
                 touchAvatar.style.top = touch.clientY + 'px';
                 document.body.appendChild(touchAvatar);
@@ -957,12 +985,10 @@
             renderSlots();
             updatePlacedCounter();
 
-            // Auto-advance to next unanswered question
             findNextUnansweredQuestion();
         }
 
         function findNextUnansweredQuestion() {
-            // Find first question index that hasn't been answered yet
             for (let i = 0; i < questionsList.length; i++) {
                 if (!questionAnswerMap[i]) {
                     currentQuestionIdx = i;
@@ -970,7 +996,6 @@
                     return;
                 }
             }
-            // If all are answered, keep on current question or max
             if (currentQuestionIdx < questionsList.length - 1) {
                 currentQuestionIdx++;
                 renderActiveQuestion();
@@ -982,7 +1007,6 @@
             const itemId = slotAssignments[slotKey];
             delete slotAssignments[slotKey];
 
-            // Clear answer map for this item
             Object.keys(questionAnswerMap).forEach(qIdx => {
                 if (questionAnswerMap[qIdx] === itemId) {
                     delete questionAnswerMap[qIdx];
@@ -1011,7 +1035,7 @@
             let correctCategoryCount = 0;
             let correctFunctionCount = 0;
 
-            // 1. EVALUASI KETEPATAN TATA LETAK HARDWARE & SOFTWARE (50% dari Skor Total)
+            // 1. EVALUASI KETEPATAN TATA LETAK HARDWARE & SOFTWARE (50 Poin)
             Object.keys(slotAssignments).forEach(slotKey => {
                 const itemId = slotAssignments[slotKey];
                 const item = itemsData.find(i => i.id === itemId);
@@ -1029,7 +1053,6 @@
                 if (isCategoryCorrect) correctCategoryCount++;
 
                 if (slotEl) {
-                    // Update visual border feedback on slot
                     slotEl.classList.remove('border-slate-300', 'border-dashed', 'border-blue-300', 'border-emerald-300');
                     if (isCategoryCorrect) {
                         slotEl.classList.add('border-emerald-500', 'bg-emerald-50/70');
@@ -1038,13 +1061,13 @@
                     }
 
                     const badge = document.createElement('div');
-                    badge.className = `absolute top-1 left-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] sm:text-xs text-white font-bold shadow-md z-10 ${isCategoryCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
+                    badge.className = `absolute top-1.5 left-1.5 w-6 h-6 rounded-full flex items-center justify-center text-xs text-white font-bold shadow-md z-10 ${isCategoryCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
                     badge.innerHTML = isCategoryCorrect ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>';
                     slotEl.appendChild(badge);
                 }
             });
 
-            // 2. EVALUASI PENCOCOKAN FUNGSI / SOAL (50% dari Skor Total)
+            // 2. EVALUASI PENCOCOKAN FUNGSI / SOAL (50 Poin)
             questionsList.forEach((qItem, idx) => {
                 const answeredItemId = questionAnswerMap[idx];
                 if (answeredItemId === qItem.id) {
@@ -1052,9 +1075,6 @@
                 }
             });
 
-            // Perhitungan skor akurat berbobot:
-            // 50 Poin untuk Ketepatan Kategori/Tata Letak Hardware & Software
-            // 50 Poin untuk Ketepatan Perangkat dengan Soal/Fungsi
             const categoryScore = Math.round((correctCategoryCount / 12) * 50);
             const functionScore = Math.round((correctFunctionCount / 12) * 50);
             const totalScore = categoryScore + functionScore;
