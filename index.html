@@ -77,9 +77,20 @@
             transform: translateY(3px);
             box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
         }
+
+        /* Fullscreen support */
+        :fullscreen {
+            background-color: #f0fdf4;
+            overflow-y: auto;
+        }
+
+        :-webkit-full-screen {
+            background-color: #f0fdf4;
+            overflow-y: auto;
+        }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col justify-between font-sans selection:bg-pink-500 selection:text-white">
+<body class="text-slate-800 min-h-screen flex flex-col justify-between font-sans selection:bg-pink-500 selection:text-white" ondblclick="toggleFullscreen()">
 
     <!-- Header / Navbar -->
     <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b-2 border-slate-100 shadow-sm">
@@ -102,6 +113,19 @@
                     <i class="fa-solid fa-laptop-code text-cyan-500"></i> Mapel Informatika
                 </span>
             </div>
+
+            <!-- Fullscreen Trigger -->
+            <button
+                id="fullscreenBtn"
+                type="button"
+                onclick="toggleFullscreen()"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold bg-purple-50 text-purple-700 border-2 border-purple-200 shadow-inner hover:bg-purple-100 transition-all"
+                title="Aktifkan layar penuh"
+                aria-label="Aktifkan layar penuh"
+            >
+                <i id="fullscreenIcon" class="fa-solid fa-expand"></i>
+                <span id="fullscreenText">Fullscreen</span>
+            </button>
         </div>
     </header>
 
@@ -174,6 +198,49 @@
                     <a 
                         href="http://azzahro.web.id/game/HardSoftMaster.html" 
                         class="game-btn w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3.5 px-6 rounded-2xl text-sm"
+                    >
+                        <span>MAIN SEKARANG</span>
+                        <i class="fa-solid fa-play text-xs bg-white/20 p-1.5 rounded-full"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- GAME TAMBAHAN: DragHardSoft.html -->
+            <div class="arcade-card rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden">
+                <!-- Top Decorative Badge -->
+                <div class="absolute -top-10 -right-10 w-28 h-28 bg-emerald-100 rounded-full group-hover:scale-125 transition-transform duration-500"></div>
+
+                <div class="relative z-10">
+                    <!-- Icon & Tag -->
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-3xl shadow-lg shadow-emerald-500/30 group-hover:rotate-6 transition-transform">
+                            <i class="fa-solid fa-hand-pointer"></i>
+                        </div>
+                        <span class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            Hardware & Software
+                        </span>
+                    </div>
+
+                    <!-- Title & File Name -->
+                    <h3 class="font-arcade text-2xl font-bold text-slate-900 mb-1 group-hover:text-emerald-600 transition-colors">
+                        Drag Hard Soft
+                    </h3>
+                    <p class="text-xs text-slate-400 font-mono mb-4 flex items-center gap-1.5 font-semibold">
+                        <i class="fa-regular fa-file-code text-emerald-500"></i>
+                        DragHardSoft.html
+                    </p>
+
+                    <!-- Description -->
+                    <p class="text-slate-600 text-sm font-medium leading-relaxed mb-6">
+                        Pilih dan cocokkan gambar sesuai perintah! Kenali mana yang termasuk perangkat keras (hardware) dan perangkat lunak (software) melalui permainan drag dan mencocokkan gambar.
+                    </p>
+                </div>
+
+                <!-- Action Button -->
+                <div class="relative z-10">
+                    <a
+                        href="http://azzahro.web.id/game/DragHardSoft.html"
+                        class="game-btn w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 px-6 rounded-2xl text-sm"
                     >
                         <span>MAIN SEKARANG</span>
                         <i class="fa-solid fa-play text-xs bg-white/20 p-1.5 rounded-full"></i>
@@ -327,6 +394,61 @@
     </footer>
 
     <script>
+        // Pemicu Fullscreen
+        function toggleFullscreen() {
+            const doc = document;
+            if (!doc.fullscreenElement && !doc.webkitFullscreenElement) {
+                const element = document.documentElement;
+                const requestFullscreen =
+                    element.requestFullscreen ||
+                    element.webkitRequestFullscreen ||
+                    element.msRequestFullscreen;
+
+                if (requestFullscreen) {
+                    const result = requestFullscreen.call(element);
+                    if (result && typeof result.catch === 'function') {
+                        result.catch(() => {});
+                    }
+                }
+            } else {
+                const exitFullscreen =
+                    doc.exitFullscreen ||
+                    doc.webkitExitFullscreen ||
+                    doc.msExitFullscreen;
+
+                if (exitFullscreen) {
+                    const result = exitFullscreen.call(doc);
+                    if (result && typeof result.catch === 'function') {
+                        result.catch(() => {});
+                    }
+                }
+            }
+        }
+
+        function updateFullscreenButton() {
+            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            const btn = document.getElementById('fullscreenBtn');
+            const icon = document.getElementById('fullscreenIcon');
+            const text = document.getElementById('fullscreenText');
+
+            if (!btn || !icon || !text) return;
+
+            if (isFullscreen) {
+                icon.className = 'fa-solid fa-compress';
+                text.textContent = 'Keluar Fullscreen';
+                btn.title = 'Keluar dari layar penuh';
+                btn.setAttribute('aria-label', 'Keluar dari layar penuh');
+            } else {
+                icon.className = 'fa-solid fa-expand';
+                text.textContent = 'Fullscreen';
+                btn.title = 'Aktifkan layar penuh';
+                btn.setAttribute('aria-label', 'Aktifkan layar penuh');
+            }
+        }
+
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+
         function filterGames() {
             const input = document.getElementById('searchInput').value.toLowerCase();
             const cards = document.getElementsByClassName('arcade-card');
