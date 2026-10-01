@@ -18,8 +18,9 @@
             background: linear-gradient(135deg, #e0f2fe 0%, #ccfbf1 35%, #e0e7ff 70%, #fef3c7 100%);
             background-size: 300% 300%;
             animation: gradientBG 15s ease infinite;
-            min-height: 100vh;
-            overflow-x: hidden;
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
         }
 
         @keyframes gradientBG {
@@ -68,25 +69,28 @@
             transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
             caret-color: transparent;
             touch-action: manipulation;
+            user-select: none;
         }
 
-        .letter-box:focus {
-            transform: scale(1.12);
+        .letter-box:focus, .letter-box.active-box {
+            transform: scale(1.08);
             box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+            border-color: #4f46e5 !important;
+            background-color: #ffffff !important;
         }
 
         /* Large Touch Key Targets for IFP Touchscreens */
         .vk-btn {
             flex: 1 0 auto;
-            min-width: 44px;
-            max-width: 72px;
-            height: 60px;
+            min-width: 38px;
+            max-width: 64px;
+            height: 50px;
             background: white;
             border: 2px solid #cbd5e1;
             border-bottom: 5px solid #94a3b8;
-            border-radius: 14px;
+            border-radius: 12px;
             font-weight: 800;
-            font-size: 20px;
+            font-size: 18px;
             color: #1e293b;
             display: flex;
             align-items: center;
@@ -104,18 +108,18 @@
         }
 
         .ifp-btn-shadow {
-            box-shadow: 0 6px 0 0 rgba(0, 0, 0, 0.15);
+            box-shadow: 0 5px 0 0 rgba(0, 0, 0, 0.15);
             transition: all 0.15s ease;
         }
 
         .ifp-btn-shadow:active {
-            transform: translateY(4px);
+            transform: translateY(3px);
             box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.15);
         }
 
         /* Custom Large Scrollbar for touch dragging */
         ::-webkit-scrollbar {
-            width: 12px;
+            width: 8px;
         }
         ::-webkit-scrollbar-track {
             background: #f1f5f9;
@@ -131,51 +135,51 @@
         }
     </style>
 </head>
-<body class="flex items-center justify-center p-3 sm:p-6 lg:p-8 text-slate-800 relative min-h-screen select-none">
+<body class="flex items-center justify-center p-2 sm:p-4 text-slate-800 relative h-screen w-screen overflow-hidden select-none">
 
     <div class="bg-bubble w-72 h-72 top-10 left-10"></div>
     <div class="bg-bubble w-96 h-96 bottom-10 right-10"></div>
     <div class="bg-bubble w-56 h-56 top-1/2 left-1/4"></div>
 
-    <!-- MAIN CONTAINER OPTIMIZED FOR LARGE IFP DISPLAY -->
-    <div id="app" class="w-full max-w-5xl bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border-4 border-white/80 z-10 flex flex-col justify-between min-h-[780px] my-auto transition-all relative">
+    <!-- MAIN CONTAINER OPTIMIZED FOR LARGE IFP DISPLAY (Strict Single Screen 100vh) -->
+    <div id="app" class="w-full max-w-5xl h-full max-h-[96vh] bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border-4 border-white/80 z-10 flex flex-col justify-between my-auto transition-all relative">
 
         <!-- GLOBAL TOP AUDIO & FULLSCREEN TOOLBAR -->
-        <div class="absolute top-4 right-4 z-30 flex items-center gap-3">
-            <button id="fullscreen-toggle-btn" onclick="toggleFullscreen()" class="w-12 h-12 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 flex items-center justify-center text-xl font-bold shadow-md border-2 border-slate-200 transition-all" title="Toggle Fullscreen">
+        <div class="absolute top-3 right-3 z-30 flex items-center gap-2">
+            <button id="fullscreen-toggle-btn" onclick="toggleFullscreen()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 flex items-center justify-center text-lg font-bold shadow-md border-2 border-slate-200 transition-all" title="Toggle Fullscreen">
                 <i id="fullscreen-icon" class="fa-solid fa-expand text-indigo-600"></i>
             </button>
-            <button id="sound-toggle-btn" onclick="toggleAudio()" class="w-12 h-12 rounded-2xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 flex items-center justify-center text-xl font-bold shadow-md border-2 border-slate-200 transition-all" title="Toggle Sound">
+            <button id="sound-toggle-btn" onclick="toggleAudio()" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-700 flex items-center justify-center text-lg font-bold shadow-md border-2 border-slate-200 transition-all" title="Toggle Sound">
                 <i id="sound-icon" class="fa-solid fa-volume-high text-indigo-600"></i>
             </button>
         </div>
 
         <!-- START SCREEN: PLAYER NAME & QUESTION COUNT CONFIG -->
-        <div id="start-screen" class="p-6 sm:p-12 text-center flex-1 flex flex-col justify-center items-center">
-            <div class="w-28 h-28 rounded-3xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-6xl mb-6 shadow-inner border-2 border-indigo-200 animate-bounce-custom">
+        <div id="start-screen" class="p-4 sm:p-8 text-center flex-1 flex flex-col justify-center items-center overflow-y-auto">
+            <div class="w-20 h-20 rounded-3xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-4xl mb-4 shadow-inner border-2 border-indigo-200 animate-bounce-custom shrink-0">
                 <i class="fa-solid fa-gamepad"></i>
             </div>
             
-            <h1 class="text-3xl sm:text-5xl font-black text-slate-800 mb-3 tracking-wide">Game Interaktif HardSoft Master Informatika</h1>
-            <p class="text-slate-600 text-lg sm:text-xl mb-8 max-w-2xl font-medium">Hardware & Software Komputer</p>
+            <h1 class="text-2xl sm:text-4xl font-black text-slate-800 mb-2 tracking-wide">Game Interaktif HardSoft Master Informatika</h1>
+            <p class="text-slate-600 text-base sm:text-lg mb-6 max-w-2xl font-medium">Hardware & Software Komputer</p>
 
-            <form onsubmit="handleStartGame(event)" class="w-full max-w-md flex flex-col gap-5">
+            <form onsubmit="handleStartGame(event)" class="w-full max-w-md flex flex-col gap-4">
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-5 text-indigo-500 text-2xl">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-indigo-500 text-xl">
                         <i class="fa-solid fa-user-astronaut"></i>
                     </span>
                     <input type="text" id="player-name-input" required maxlength="18" placeholder="Masukkan Nama Kamu..." 
-                        class="w-full pl-14 pr-6 py-4 rounded-2xl border-4 border-indigo-100 focus:border-indigo-500 focus:outline-none font-bold text-xl sm:text-2xl text-slate-800 transition-all text-center shadow-inner">
+                        class="w-full pl-12 pr-4 py-3 rounded-2xl border-4 border-indigo-100 focus:border-indigo-500 focus:outline-none font-bold text-lg sm:text-xl text-slate-800 transition-all text-center shadow-inner">
                 </div>
 
                 <!-- SELECT QUESTION COUNT -->
-                <div class="text-left bg-slate-50 p-4 rounded-2xl border-2 border-slate-200">
-                    <label class="block text-sm font-black text-slate-600 uppercase tracking-wider mb-2 text-center">Jumlah Soal Kuis:</label>
+                <div class="text-left bg-slate-50 p-3 rounded-2xl border-2 border-slate-200">
+                    <label class="block text-xs font-black text-slate-600 uppercase tracking-wider mb-1 text-center">Jumlah Soal Kuis:</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-indigo-500 text-xl">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-indigo-500 text-lg">
                             <i class="fa-solid fa-list-ol"></i>
                         </span>
-                        <select id="question-count-select" class="w-full pl-12 pr-10 py-3.5 rounded-xl border-2 border-slate-300 focus:border-indigo-500 focus:outline-none font-extrabold text-lg sm:text-xl text-slate-700 bg-white transition-all text-center appearance-none cursor-pointer">
+                        <select id="question-count-select" class="w-full pl-10 pr-8 py-2.5 rounded-xl border-2 border-slate-300 focus:border-indigo-500 focus:outline-none font-extrabold text-base sm:text-lg text-slate-700 bg-white transition-all text-center appearance-none cursor-pointer">
                             <option value="5">5 Soal (Sangat Cepat)</option>
                             <option value="10">10 Soal (Standar)</option>
                             <option value="15" selected>15 Soal (Rekomendasi)</option>
@@ -183,107 +187,107 @@
                             <option value="25">25 Soal (Tantangan)</option>
                             <option value="30">30 Soal (Semua Materi)</option>
                         </select>
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400 text-xl">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400 text-lg">
                             <i class="fa-solid fa-chevron-down"></i>
                         </span>
                     </div>
                 </div>
 
-                <button type="submit" onclick="playClickSound()" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold py-5 px-8 rounded-2xl transition-all text-2xl ifp-btn-shadow flex items-center justify-center gap-3 mt-2">
+                <button type="submit" onclick="playClickSound()" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold py-4 px-6 rounded-2xl transition-all text-xl ifp-btn-shadow flex items-center justify-center gap-3 mt-1">
                     <span>MULAI BERMAIN</span>
                     <i class="fa-solid fa-play text-yellow-300"></i>
                 </button>
             </form>
 
-            <div class="flex flex-wrap items-center justify-center gap-5 mt-8">
+            <div class="flex flex-wrap items-center justify-center gap-4 mt-6">
                 <!-- MODAL MODULE LEARNING TRIGGER BUTTON -->
-                <button onclick="playClickSound(); openStudyModal();" class="text-base font-extrabold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 px-6 py-3 rounded-2xl border-2 border-emerald-300 flex items-center gap-2 transition-all shadow-sm active:scale-95">
-                    <i class="fa-solid fa-book-open text-emerald-600 text-xl"></i>
-                    <span>📚 Paduan!</span>
+                <button onclick="playClickSound(); openStudyModal();" class="text-sm sm:text-base font-extrabold bg-emerald-100 text-emerald-800 hover:bg-emerald-200 px-5 py-2.5 rounded-2xl border-2 border-emerald-300 flex items-center gap-2 transition-all shadow-sm active:scale-95">
+                    <i class="fa-solid fa-book-open text-emerald-600 text-lg"></i>
+                    <span>📚 Panduan!</span>
                 </button>
 
-                <button onclick="playClickSound(); showLeaderboardOnly();" class="text-base font-extrabold bg-amber-100 text-amber-800 hover:bg-amber-200 px-6 py-3 rounded-2xl border-2 border-amber-300 flex items-center gap-2 transition-all shadow-sm active:scale-95">
-                    <i class="fa-solid fa-trophy text-amber-600 text-xl"></i> Papan Peringkat
+                <button onclick="playClickSound(); showLeaderboardOnly();" class="text-sm sm:text-base font-extrabold bg-amber-100 text-amber-800 hover:bg-amber-200 px-5 py-2.5 rounded-2xl border-2 border-amber-300 flex items-center gap-2 transition-all shadow-sm active:scale-95">
+                    <i class="fa-solid fa-trophy text-amber-600 text-lg"></i> Papan Peringkat
                 </button>
             </div>
         </div>
 
         <!-- MAIN QUIZ HEADER (Hidden initially) -->
-        <header id="quiz-header" class="hidden bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 text-white p-5 sm:p-7 shadow-lg relative rounded-b-3xl">
-            <div class="flex justify-between items-center mb-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-2xl">
+        <header id="quiz-header" class="hidden bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 text-white p-3 sm:p-4 shadow-md relative rounded-b-2xl shrink-0">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center space-x-2">
+                    <div class="w-9 h-9 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-lg">
                         <i class="fa-solid fa-user-astronaut text-yellow-300"></i>
                     </div>
                     <div>
-                        <span class="text-xs uppercase tracking-wider font-extrabold text-indigo-200">Pemain:</span>
-                        <h3 id="player-display-name" class="font-extrabold text-xl sm:text-2xl tracking-wide leading-none">Pemain</h3>
+                        <span class="text-[10px] uppercase tracking-wider font-extrabold text-indigo-200">Pemain:</span>
+                        <h3 id="player-display-name" class="font-extrabold text-base sm:text-lg tracking-wide leading-none">Pemain</h3>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3 pr-24 sm:pr-28">
-                    <button onclick="playClickSound(); openStudyModal();" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 px-4 py-2.5 rounded-2xl text-sm font-extrabold flex items-center gap-2 border-2 border-emerald-300 transition-all text-white shadow-md">
+                <div class="flex items-center gap-2 pr-20">
+                    <button onclick="playClickSound(); openStudyModal();" class="bg-emerald-500 hover:bg-emerald-600 active:scale-95 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 border border-emerald-300 transition-all text-white shadow-sm">
                         <i class="fa-solid fa-book-open text-yellow-300"></i>
-                        <span>Paduan</span>
+                        <span>Panduan</span>
                     </button>
-                    <div class="bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-2xl text-lg sm:text-xl font-extrabold flex items-center gap-2 border border-white/30 shadow-inner">
-                        <i class="fa-solid fa-trophy text-yellow-300 text-2xl"></i>
+                    <div class="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-xl text-sm sm:text-base font-extrabold flex items-center gap-1.5 border border-white/30 shadow-inner">
+                        <i class="fa-solid fa-trophy text-yellow-300 text-lg"></i>
                         <span id="score-display">Skor: 0</span>
                     </div>
                 </div>
             </div>
 
             <!-- Progress Bar -->
-            <div class="w-full bg-black/20 rounded-full h-4 overflow-hidden p-0.5 border border-white/20">
-                <div id="progress-bar" class="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500 shadow-lg" style="width: 0%;"></div>
+            <div class="w-full bg-black/20 rounded-full h-2.5 overflow-hidden p-0.5 border border-white/20">
+                <div id="progress-bar" class="bg-gradient-to-r from-emerald-400 to-teal-300 h-full rounded-full transition-all duration-500 shadow-md" style="width: 0%;"></div>
             </div>
-            <div class="flex justify-between items-center text-sm sm:text-base text-indigo-100 mt-2 font-bold">
+            <div class="flex justify-between items-center text-xs text-indigo-100 mt-1 font-bold">
                 <span id="question-number">Soal 1 dari 15</span>
-                <span id="category-tag" class="bg-white/20 px-3 py-1 rounded-xl text-xs sm:text-sm uppercase font-black tracking-wider border border-white/30">HARDWARE</span>
+                <span id="category-tag" class="bg-white/20 px-2.5 py-0.5 rounded-lg text-[10px] uppercase font-black tracking-wider border border-white/30">HARDWARE</span>
             </div>
         </header>
 
         <!-- MAIN QUIZ CARD CONTENT (Hidden initially) -->
-        <main id="quiz-screen" class="hidden p-4 sm:p-8 flex-1 flex flex-col justify-between">
+        <main id="quiz-screen" class="hidden p-3 sm:p-5 flex-1 flex flex-col justify-between overflow-hidden">
             <!-- Question Box -->
-            <div class="text-center my-auto py-2">
-                <span class="inline-block bg-indigo-100 text-indigo-800 font-extrabold text-sm sm:text-base px-4 py-1.5 rounded-full mb-3 border-2 border-indigo-200">Fungsi / Deskripsi Perangkat:</span>
-                <h2 id="question-text" class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-800 leading-snug min-h-[90px] flex items-center justify-center px-4">
+            <div class="text-center my-auto">
+                <span class="inline-block bg-indigo-100 text-indigo-800 font-extrabold text-xs px-3 py-1 rounded-full mb-1 border border-indigo-200">Fungsi / Deskripsi Perangkat:</span>
+                <h2 id="question-text" class="text-lg sm:text-xl lg:text-2xl font-extrabold text-slate-800 leading-snug min-h-[50px] flex items-center justify-center px-2">
                     Pertanyaan akan muncul di sini...
                 </h2>
             </div>
 
             <!-- Letter Inputs Container (Sized for IFP Touch Target) -->
-            <div class="my-3">
-                <div id="letter-boxes-container" class="flex flex-wrap justify-center gap-2 sm:gap-3 my-3">
+            <div class="my-1">
+                <div id="letter-boxes-container" class="flex flex-wrap justify-center gap-1.5 sm:gap-2 my-1">
                     <!-- Dynamic Letter Input Boxes Inserted Here -->
                 </div>
                 <!-- Feedback Message -->
-                <div id="feedback-message" class="text-center font-black text-lg sm:text-2xl mt-2 min-h-[36px]"></div>
+                <div id="feedback-message" class="text-center font-black text-sm sm:text-lg mt-1 min-h-[28px]"></div>
             </div>
 
             <!-- Action Buttons for IFP -->
-            <div class="flex flex-col gap-3 my-2 max-w-3xl mx-auto w-full">
-                <div class="flex justify-between items-center gap-4">
-                    <button id="hint-btn" onclick="useHint()" class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-black py-4 px-6 rounded-2xl border-2 border-amber-300 transition-all text-base sm:text-lg flex items-center justify-center gap-2 ifp-btn-shadow">
-                        <i class="fa-solid fa-lightbulb text-amber-600 text-2xl"></i>
-                        <span>Gunakan Hint (-5 Poin)</span>
+            <div class="flex flex-col gap-2 my-1 max-w-2xl mx-auto w-full">
+                <div class="flex justify-between items-center gap-3">
+                    <button id="hint-btn" onclick="useHint()" class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-900 font-black py-2.5 px-4 rounded-xl border-2 border-amber-300 transition-all text-sm sm:text-base flex items-center justify-center gap-2 ifp-btn-shadow">
+                        <i class="fa-solid fa-lightbulb text-amber-600 text-lg"></i>
+                        <span>Gunakan Hint (-5)</span>
                     </button>
-                    <button id="check-btn" onclick="checkAnswer()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-6 rounded-2xl transition-all text-base sm:text-lg flex items-center justify-center gap-2 ifp-btn-shadow">
+                    <button id="check-btn" onclick="checkAnswer()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-2.5 px-4 rounded-xl transition-all text-sm sm:text-base flex items-center justify-center gap-2 ifp-btn-shadow">
                         <span>Cek Jawaban</span>
-                        <i class="fa-solid fa-circle-check text-2xl"></i>
+                        <i class="fa-solid fa-circle-check text-lg"></i>
                     </button>
                 </div>
-                <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black py-5 px-6 rounded-2xl transition-all text-xl sm:text-2xl flex items-center justify-center gap-3 ifp-btn-shadow animate-bounce-custom">
+                <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black py-3 px-4 rounded-xl transition-all text-lg flex items-center justify-center gap-2 ifp-btn-shadow animate-bounce-custom">
                     <span>Soal Berikutnya</span>
-                    <i class="fa-solid fa-arrow-right text-3xl"></i>
+                    <i class="fa-solid fa-arrow-right text-xl"></i>
                 </button>
             </div>
 
-            <!-- On-Screen Virtual Keyboard (Sized Big for IFP Screen Touch) -->
-            <div class="mt-4 pt-4 border-t-2 border-slate-100">
-                <div id="virtual-keyboard" class="flex flex-col gap-2 max-w-3xl mx-auto">
-                    <div class="flex justify-center gap-1.5">
+            <!-- On-Screen Virtual Keyboard (Optimized for Pure IFP Touch Control) -->
+            <div class="mt-1 pt-2 border-t-2 border-slate-100 shrink-0">
+                <div id="virtual-keyboard" class="flex flex-col gap-1.5 max-w-3xl mx-auto">
+                    <div class="flex justify-center gap-1">
                         <button onclick="typeVirtualKey('Q')" class="vk-btn">Q</button>
                         <button onclick="typeVirtualKey('W')" class="vk-btn">W</button>
                         <button onclick="typeVirtualKey('E')" class="vk-btn">E</button>
@@ -295,7 +299,7 @@
                         <button onclick="typeVirtualKey('O')" class="vk-btn">O</button>
                         <button onclick="typeVirtualKey('P')" class="vk-btn">P</button>
                     </div>
-                    <div class="flex justify-center gap-1.5">
+                    <div class="flex justify-center gap-1">
                         <button onclick="typeVirtualKey('A')" class="vk-btn">A</button>
                         <button onclick="typeVirtualKey('S')" class="vk-btn">S</button>
                         <button onclick="typeVirtualKey('D')" class="vk-btn">D</button>
@@ -306,7 +310,7 @@
                         <button onclick="typeVirtualKey('K')" class="vk-btn">K</button>
                         <button onclick="typeVirtualKey('L')" class="vk-btn">L</button>
                     </div>
-                    <div class="flex justify-center gap-1.5">
+                    <div class="flex justify-center gap-1">
                         <button onclick="typeVirtualKey('Z')" class="vk-btn">Z</button>
                         <button onclick="typeVirtualKey('X')" class="vk-btn">X</button>
                         <button onclick="typeVirtualKey('C')" class="vk-btn">C</button>
@@ -314,8 +318,8 @@
                         <button onclick="typeVirtualKey('B')" class="vk-btn">B</button>
                         <button onclick="typeVirtualKey('N')" class="vk-btn">N</button>
                         <button onclick="typeVirtualKey('M')" class="vk-btn">M</button>
-                        <button onclick="typeVirtualKey('BACKSPACE')" class="vk-btn !min-width-[80px] !max-w-[120px] bg-rose-100 text-rose-700 border-rose-300 hover:bg-rose-200">
-                            <i class="fa-solid fa-backspace text-2xl"></i>
+                        <button onclick="typeVirtualKey('BACKSPACE')" class="vk-btn !min-w-[65px] !max-w-[100px] bg-rose-100 text-rose-700 border-rose-300 hover:bg-rose-200">
+                            <i class="fa-solid fa-backspace text-xl"></i>
                         </button>
                     </div>
                 </div>
@@ -323,40 +327,40 @@
         </main>
 
         <!-- RESULT SCORE & LEADERBOARD SCREEN (Hidden initially) -->
-        <div id="result-screen" class="hidden p-6 sm:p-10 text-center flex-1 flex flex-col justify-between">
+        <div id="result-screen" class="hidden p-4 sm:p-6 text-center flex-1 flex flex-col justify-between overflow-y-auto">
             <div>
-                <div id="result-badge" class="w-24 h-24 rounded-3xl bg-amber-100 text-amber-600 flex items-center justify-center text-5xl mx-auto mb-4 shadow-inner border-2 border-amber-300 animate-bounce-custom">
+                <div id="result-badge" class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-3xl mx-auto mb-2 shadow-inner border-2 border-amber-300 animate-bounce-custom shrink-0">
                     <i class="fa-solid fa-trophy"></i>
                 </div>
                 
-                <h2 class="text-3xl sm:text-4xl font-black text-slate-800 mb-2">Kuis Selesai!</h2>
-                <p class="text-slate-600 text-lg sm:text-xl mb-6 font-semibold">Poin Kamu: <span id="final-score" class="font-black text-indigo-600 text-3xl">0</span> | Akurasi: <span id="final-percentage" class="font-black text-emerald-600 text-3xl">0%</span></p>
+                <h2 class="text-2xl sm:text-3xl font-black text-slate-800 mb-1">Kuis Selesai!</h2>
+                <p class="text-slate-600 text-base sm:text-lg mb-4 font-semibold">Poin Kamu: <span id="final-score" class="font-black text-indigo-600 text-2xl">0</span> | Akurasi: <span id="final-percentage" class="font-black text-emerald-600 text-2xl">0%</span></p>
 
                 <!-- Leaderboard Table -->
-                <div class="bg-slate-50 border-2 border-slate-200 rounded-3xl p-5 shadow-sm mb-6 max-h-[320px] overflow-y-auto">
-                    <div class="flex justify-between items-center mb-4 px-2">
-                        <h3 class="font-black text-slate-800 text-lg sm:text-xl flex items-center gap-2">
-                            <i class="fa-solid fa-ranking-star text-yellow-500 text-2xl"></i> Papan Peringkat (Top 10)
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-3 shadow-sm mb-4 max-h-[220px] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-3 px-1">
+                        <h3 class="font-black text-slate-800 text-base sm:text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-ranking-star text-yellow-500 text-xl"></i> Papan Peringkat (Top 10)
                         </h3>
-                        <button onclick="clearLeaderboard()" class="text-xs sm:text-sm text-rose-600 hover:text-rose-800 font-extrabold underline">
+                        <button onclick="clearLeaderboard()" class="text-xs text-rose-600 hover:text-rose-800 font-extrabold underline">
                             Reset Leaderboard
                         </button>
                     </div>
 
-                    <div id="leaderboard-list" class="flex flex-col gap-2.5">
+                    <div id="leaderboard-list" class="flex flex-col gap-2">
                         <!-- Dynamic Leaderboard Items -->
                     </div>
                 </div>
             </div>
 
             <!-- Restart Options -->
-            <div class="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto w-full">
-                <button onclick="playClickSound(); restartQuiz(false);" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-6 rounded-2xl transition-all ifp-btn-shadow text-lg flex items-center justify-center gap-3">
-                    <i class="fa-solid fa-rotate-right text-xl"></i>
+            <div class="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto w-full">
+                <button onclick="playClickSound(); restartQuiz(false);" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-black py-3 px-4 rounded-xl transition-all ifp-btn-shadow text-base flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right text-lg"></i>
                     <span>Main Lagi (Nama Sama)</span>
                 </button>
-                <button onclick="playClickSound(); restartQuiz(true);" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black py-4 px-6 rounded-2xl transition-all text-lg flex items-center justify-center gap-3 border-2 border-slate-300">
-                    <i class="fa-solid fa-user-pen text-xl"></i>
+                <button onclick="playClickSound(); restartQuiz(true);" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black py-3 px-4 rounded-xl transition-all text-base flex items-center justify-center gap-2 border-2 border-slate-300">
+                    <i class="fa-solid fa-user-pen text-lg"></i>
                     <span>Ganti Pemain / Soal</span>
                 </button>
             </div>
@@ -365,58 +369,58 @@
     </div>
 
     <!-- MODAL POPUP: MODUL AJAR (Hardware & Software) -->
-    <div id="study-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 hidden transition-all duration-300">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden border-4 border-white/60 transform transition-all">
+    <div id="study-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 hidden transition-all duration-300">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden border-4 border-white/60 transform transition-all">
             
             <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-indigo-600 to-violet-700 p-5 sm:p-7 text-white flex justify-between items-center shrink-0">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl border border-white/30">
+            <div class="bg-gradient-to-r from-indigo-600 to-violet-700 p-4 sm:p-5 text-white flex justify-between items-center shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-2xl border border-white/30">
                         <i class="fa-solid fa-book-open text-yellow-300"></i>
                     </div>
                     <div>
-                        <h2 class="font-black text-2xl sm:text-3xl leading-tight">Modul Ajar Informatika</h2>
-                        <p class="text-indigo-200 text-sm sm:text-base font-semibold">Ringkasan 30 Perangkat Keras & Perangkat Lunak</p>
+                        <h2 class="font-black text-xl sm:text-2xl leading-tight">Modul Ajar Informatika</h2>
+                        <p class="text-indigo-200 text-xs sm:text-sm font-semibold">Ringkasan 30 Perangkat Keras & Perangkat Lunak</p>
                     </div>
                 </div>
-                <button onclick="playClickSound(); closeStudyModal();" class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all border border-white/20">
-                    <i class="fa-solid fa-xmark text-2xl"></i>
+                <button onclick="playClickSound(); closeStudyModal();" class="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all border border-white/20">
+                    <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
             </div>
 
             <!-- Search & Filter Control Bar -->
-            <div class="p-4 sm:p-5 bg-slate-50 border-b-2 border-slate-200 shrink-0 flex flex-col sm:flex-row gap-4 justify-between items-center">
+            <div class="p-3 bg-slate-50 border-b-2 border-slate-200 shrink-0 flex flex-col sm:flex-row gap-3 justify-between items-center">
                 <!-- Search Input -->
-                <div class="relative w-full sm:w-80">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                <div class="relative w-full sm:w-72">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-base"></i>
                     </span>
                     <input type="text" id="study-search-input" onkeyup="filterStudyModule()" placeholder="Cari perangkat..." 
-                        class="w-full pl-11 pr-4 py-3 text-base rounded-2xl border-2 border-slate-300 focus:border-indigo-500 focus:outline-none bg-white font-bold">
+                        class="w-full pl-9 pr-3 py-2 text-sm rounded-xl border-2 border-slate-300 focus:border-indigo-500 focus:outline-none bg-white font-bold">
                 </div>
 
                 <!-- Filter Tabs -->
-                <div class="flex bg-slate-200 p-1.5 rounded-2xl gap-2 w-full sm:w-auto text-sm sm:text-base font-black text-slate-700">
-                    <button id="filter-btn-all" onclick="playClickSound(); setStudyFilter('all');" class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white shadow-md text-indigo-600 transition-all">
+                <div class="flex bg-slate-200 p-1 rounded-xl gap-1 w-full sm:w-auto text-xs sm:text-sm font-black text-slate-700">
+                    <button id="filter-btn-all" onclick="playClickSound(); setStudyFilter('all');" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-white shadow-md text-indigo-600 transition-all">
                         Semua (30)
                     </button>
-                    <button id="filter-btn-hardware" onclick="playClickSound(); setStudyFilter('Hardware');" class="flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all">
+                    <button id="filter-btn-hardware" onclick="playClickSound(); setStudyFilter('Hardware');" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg hover:text-indigo-600 transition-all">
                         Hardware (15)
                     </button>
-                    <button id="filter-btn-software" onclick="playClickSound(); setStudyFilter('Software');" class="flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all">
+                    <button id="filter-btn-software" onclick="playClickSound(); setStudyFilter('Software');" class="flex-1 sm:flex-none px-3 py-1.5 rounded-lg hover:text-indigo-600 transition-all">
                         Software (15)
                     </button>
                 </div>
             </div>
 
             <!-- Modal Content List (Scrollable for IFP Touch) -->
-            <div id="study-module-list" class="p-5 sm:p-8 overflow-y-auto space-y-4 flex-1">
+            <div id="study-module-list" class="p-4 overflow-y-auto space-y-3 flex-1">
                 <!-- Dynamic Study Cards Injected Here -->
             </div>
 
             <!-- Modal Footer -->
-            <div class="p-4 bg-slate-50 border-t-2 border-slate-200 text-center shrink-0">
-                <p class="text-xs sm:text-sm text-slate-500 font-extrabold">Pelajari materi di atas dengan seksama untuk meraih skor tertinggi pada Game HardSoft Master!</p>
+            <div class="p-3 bg-slate-50 border-t-2 border-slate-200 text-center shrink-0">
+                <p class="text-xs text-slate-500 font-extrabold">Pelajari materi di atas dengan seksama untuk meraih skor tertinggi pada Game HardSoft Master!</p>
             </div>
 
         </div>
@@ -691,9 +695,9 @@
             const btnHw = document.getElementById("filter-btn-hardware");
             const btnSw = document.getElementById("filter-btn-software");
 
-            btnAll.className = filter === 'all' ? "flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white shadow-md text-indigo-600 transition-all" : "flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all";
-            btnHw.className = filter === 'Hardware' ? "flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white shadow-md text-indigo-600 transition-all" : "flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all";
-            btnSw.className = filter === 'Software' ? "flex-1 sm:flex-none px-4 py-2 rounded-xl bg-white shadow-md text-indigo-600 transition-all" : "flex-1 sm:flex-none px-4 py-2 rounded-xl hover:text-indigo-600 transition-all";
+            btnAll.className = filter === 'all' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-white shadow-md text-indigo-600 transition-all" : "flex-1 sm:flex-none px-3 py-1.5 rounded-lg hover:text-indigo-600 transition-all";
+            btnHw.className = filter === 'Hardware' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-white shadow-md text-indigo-600 transition-all" : "flex-1 sm:flex-none px-3 py-1.5 rounded-lg hover:text-indigo-600 transition-all";
+            btnSw.className = filter === 'Software' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-lg bg-white shadow-md text-indigo-600 transition-all" : "flex-1 sm:flex-none px-3 py-1.5 rounded-lg hover:text-indigo-600 transition-all";
 
             renderStudyModule();
         }
@@ -715,9 +719,9 @@
 
             if (filteredData.length === 0) {
                 container.innerHTML = `
-                    <div class="text-center py-10 text-slate-400">
-                        <i class="fa-solid fa-folder-open text-5xl mb-3"></i>
-                        <p class="text-base font-bold">Tidak ada perangkat yang cocok dengan pencarian Anda.</p>
+                    <div class="text-center py-8 text-slate-400">
+                        <i class="fa-solid fa-folder-open text-4xl mb-2"></i>
+                        <p class="text-sm font-bold">Tidak ada perangkat yang cocok dengan pencarian Anda.</p>
                     </div>
                 `;
                 return;
@@ -726,20 +730,20 @@
             filteredData.forEach(item => {
                 const isHardware = item.category === "Hardware";
                 const card = document.createElement("div");
-                card.className = "p-5 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-indigo-300 transition-all flex items-start gap-4 shadow-sm";
+                card.className = "p-4 rounded-2xl bg-slate-50 border-2 border-slate-200 hover:border-indigo-300 transition-all flex items-start gap-3 shadow-sm";
 
                 card.innerHTML = `
-                    <div class="w-14 h-14 rounded-2xl ${isHardware ? 'bg-amber-100 text-amber-600 border-2 border-amber-300' : 'bg-teal-100 text-teal-600 border-2 border-teal-300'} flex items-center justify-center text-2xl shrink-0 mt-0.5">
+                    <div class="w-12 h-12 rounded-xl ${isHardware ? 'bg-amber-100 text-amber-600 border-2 border-amber-300' : 'bg-teal-100 text-teal-600 border-2 border-teal-300'} flex items-center justify-center text-xl shrink-0 mt-0.5">
                         <i class="fa-solid ${item.icon}"></i>
                     </div>
                     <div class="flex-1">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <h3 class="font-black text-slate-800 text-lg sm:text-xl">${item.name}</h3>
-                            <span class="text-xs uppercase font-black tracking-wider px-3 py-1 rounded-lg ${isHardware ? 'bg-amber-100 text-amber-800' : 'bg-teal-100 text-teal-800'}">
+                        <div class="flex items-center justify-between mb-1">
+                            <h3 class="font-black text-slate-800 text-base sm:text-lg">${item.name}</h3>
+                            <span class="text-[10px] uppercase font-black tracking-wider px-2 py-0.5 rounded-md ${isHardware ? 'bg-amber-100 text-amber-800' : 'bg-teal-100 text-teal-800'}">
                                 ${item.category}
                             </span>
                         </div>
-                        <p class="text-sm sm:text-base text-slate-600 leading-relaxed font-semibold">${item.desc}</p>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-semibold">${item.desc}</p>
                     </div>
                 `;
                 container.appendChild(card);
@@ -773,6 +777,19 @@
             loadQuestion();
         }
 
+        function setActiveBox(index) {
+            currentFocusedIndex = index;
+            const inputs = document.querySelectorAll(".letter-box");
+            inputs.forEach(input => {
+                const idx = parseInt(input.dataset.index);
+                if (idx === currentFocusedIndex) {
+                    input.classList.add("active-box");
+                } else {
+                    input.classList.remove("active-box");
+                }
+            });
+        }
+
         function loadQuestion() {
             isAnswerChecked = false;
             usedHintInCurrentQuestion = false;
@@ -783,7 +800,7 @@
             document.getElementById("question-number").innerText = `Soal ${currentQuestionIndex + 1} dari ${activeQuestions.length}`;
             document.getElementById("progress-bar").style.width = `${((currentQuestionIndex + 1) / activeQuestions.length) * 100}%`;
             document.getElementById("category-tag").innerText = currentQ.category;
-            document.getElementById("category-tag").className = `px-3 py-1 rounded-xl text-xs sm:text-sm uppercase font-black tracking-wider border border-white/30 ${
+            document.getElementById("category-tag").className = `px-2.5 py-0.5 rounded-lg text-[10px] uppercase font-black tracking-wider border border-white/30 ${
                 currentQ.category === "Hardware" ? "bg-amber-500/80 text-white" : "bg-teal-500/80 text-white"
             }`;
 
@@ -805,7 +822,7 @@
                 const char = targetAnswer[i];
                 if (char === " ") {
                     const spacer = document.createElement("div");
-                    spacer.className = "w-6 sm:w-8";
+                    spacer.className = "w-4 sm:w-6";
                     boxesContainer.appendChild(spacer);
                     continue;
                 }
@@ -814,60 +831,24 @@
                 input.type = "text";
                 input.maxLength = 1;
                 input.dataset.index = i;
-                input.className = "letter-box w-12 h-14 sm:w-16 sm:h-20 text-center text-2xl sm:text-4xl font-black uppercase rounded-2xl border-4 border-slate-300 bg-slate-50 focus:bg-white focus:border-indigo-600 focus:outline-none shadow-md transition-all";
+                input.readOnly = true; // MATIKAN KEYBOARD FISIK / BAWAAN IFP
+                input.className = "letter-box w-10 h-12 sm:w-14 sm:h-16 text-center text-xl sm:text-3xl font-black uppercase rounded-xl border-3 border-slate-300 bg-slate-50 shadow-md transition-all cursor-pointer";
                 
-                input.addEventListener("keydown", (e) => handleKeydown(e, i));
-                input.addEventListener("input", (e) => handleInput(e, i));
-                input.addEventListener("click", () => { currentFocusedIndex = i; playClickSound(); });
+                input.addEventListener("click", () => { 
+                    setActiveBox(i); 
+                    playClickSound(); 
+                });
 
                 boxesContainer.appendChild(input);
             }
 
-            // Auto focus on first box
+            // Highlight first active box
             setTimeout(() => {
                 const firstInput = boxesContainer.querySelector(".letter-box");
                 if (firstInput) {
-                    firstInput.focus();
-                    currentFocusedIndex = parseInt(firstInput.dataset.index);
+                    setActiveBox(parseInt(firstInput.dataset.index));
                 }
             }, 100);
-        }
-
-        function handleInput(e, index) {
-            playClickSound();
-            const val = e.target.value.toUpperCase();
-            e.target.value = val;
-
-            if (val.length === 1) {
-                const inputs = Array.from(document.querySelectorAll(".letter-box"));
-                const currentBoxIdx = inputs.indexOf(e.target);
-                if (currentBoxIdx < inputs.length - 1) {
-                    inputs[currentBoxIdx + 1].focus();
-                    currentFocusedIndex = parseInt(inputs[currentBoxIdx + 1].dataset.index);
-                }
-            }
-            checkAutoSubmit();
-        }
-
-        function handleKeydown(e, index) {
-            const inputs = Array.from(document.querySelectorAll(".letter-box"));
-            const currentBoxIdx = inputs.indexOf(e.target);
-
-            if (e.key === "Backspace") {
-                playClickSound();
-                if (e.target.value === "" && currentBoxIdx > 0) {
-                    inputs[currentBoxIdx - 1].focus();
-                    currentFocusedIndex = parseInt(inputs[currentBoxIdx - 1].dataset.index);
-                }
-            } else if (e.key === "ArrowLeft" && currentBoxIdx > 0) {
-                inputs[currentBoxIdx - 1].focus();
-                currentFocusedIndex = parseInt(inputs[currentBoxIdx - 1].dataset.index);
-            } else if (e.key === "ArrowRight" && currentBoxIdx < inputs.length - 1) {
-                inputs[currentBoxIdx + 1].focus();
-                currentFocusedIndex = parseInt(inputs[currentBoxIdx + 1].dataset.index);
-            } else if (e.key === "Enter") {
-                checkAnswer();
-            }
         }
 
         function typeVirtualKey(char) {
@@ -887,16 +868,14 @@
                     currentBox.value = "";
                 } else if (currentBoxIdx > 0) {
                     const prevBox = inputs[currentBoxIdx - 1];
-                    prevBox.focus();
                     prevBox.value = "";
-                    currentFocusedIndex = parseInt(prevBox.dataset.index);
+                    setActiveBox(parseInt(prevBox.dataset.index));
                 }
             } else {
                 currentBox.value = char;
                 if (currentBoxIdx < inputs.length - 1) {
                     const nextBox = inputs[currentBoxIdx + 1];
-                    nextBox.focus();
-                    currentFocusedIndex = parseInt(nextBox.dataset.index);
+                    setActiveBox(parseInt(nextBox.dataset.index));
                 }
             }
 
@@ -925,15 +904,14 @@
             }
             
             const feedbackEl = document.getElementById("feedback-message");
-            feedbackEl.className = "text-center font-black text-lg sm:text-xl mt-2 text-amber-600";
+            feedbackEl.className = "text-center font-black text-sm sm:text-base mt-1 text-amber-600";
             feedbackEl.innerText = `💡 Hint Terbuka: Huruf pertamanya "${firstChar}"`;
 
             document.getElementById("hint-btn").disabled = true;
             document.getElementById("hint-btn").classList.add("opacity-50", "cursor-not-allowed");
 
             if (inputs.length > 1) {
-                inputs[1].focus();
-                currentFocusedIndex = parseInt(inputs[1].dataset.index);
+                setActiveBox(parseInt(inputs[1].dataset.index));
             }
         }
 
@@ -959,7 +937,7 @@
 
             if (userAnswer.replace(/\s/g, "").length < correctAnswer.replace(/\s/g, "").length) {
                 playWrongSound();
-                feedbackEl.className = "text-center font-black text-lg sm:text-xl mt-2 text-amber-600";
+                feedbackEl.className = "text-center font-black text-sm sm:text-base mt-1 text-amber-600";
                 feedbackEl.innerText = "Isi semua kotak huruf terlebih dahulu!";
                 return;
             }
@@ -972,29 +950,27 @@
                 score += pointsEarned;
                 
                 document.getElementById("score-display").innerText = `Skor: ${score}`;
-                feedbackEl.className = "text-center font-black text-2xl sm:text-3xl mt-2 text-emerald-600 animate-bounce-custom";
+                feedbackEl.className = "text-center font-black text-lg sm:text-2xl mt-1 text-emerald-600 animate-bounce-custom";
                 feedbackEl.innerText = `✨ Luar Biasa! Jawaban Benar (+${pointsEarned} Poin)`;
 
                 inputs.forEach(input => {
-                    input.classList.remove("border-slate-300", "bg-slate-50");
+                    input.classList.remove("border-slate-300", "bg-slate-50", "active-box");
                     input.classList.add("border-emerald-500", "bg-emerald-100", "text-emerald-800");
-                    input.disabled = true;
                 });
 
                 confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
                 showNextButton();
             } else {
                 playWrongSound();
-                feedbackEl.className = "text-center font-black text-xl sm:text-2xl mt-2 text-rose-600";
+                feedbackEl.className = "text-center font-black text-base sm:text-xl mt-1 text-rose-600";
                 feedbackEl.innerText = `❌ Jawaban Kurang Tepat! Kunci: ${correctAnswer}`;
 
                 containerEl.classList.add("animate-shake");
                 setTimeout(() => containerEl.classList.remove("animate-shake"), 500);
 
                 inputs.forEach(input => {
-                    input.classList.remove("border-slate-300", "bg-slate-50");
+                    input.classList.remove("border-slate-300", "bg-slate-50", "active-box");
                     input.classList.add("border-rose-400", "bg-rose-100", "text-rose-800");
-                    input.disabled = true;
                 });
 
                 showNextButton();
@@ -1059,39 +1035,39 @@
             listContainer.innerHTML = "";
 
             if (history.length === 0) {
-                listContainer.innerHTML = `<div class="text-sm font-bold text-slate-400 py-6">Belum ada catatan peringkat.</div>`;
+                listContainer.innerHTML = `<div class="text-xs font-bold text-slate-400 py-4">Belum ada catatan peringkat.</div>`;
                 return;
             }
 
             history.slice(0, 10).forEach((item, idx) => {
-                let badge = `<span class="w-8 text-center font-black text-slate-500 text-sm">#${idx + 1}</span>`;
+                let badge = `<span class="w-6 text-center font-black text-slate-500 text-xs">#${idx + 1}</span>`;
                 let bgStyle = "bg-white border-slate-200";
 
                 if (idx === 0) {
-                    badge = `<span class="text-xl">🥇</span>`;
+                    badge = `<span class="text-lg">🥇</span>`;
                     bgStyle = "bg-amber-100 border-amber-300 font-extrabold";
                 } else if (idx === 1) {
-                    badge = `<span class="text-xl">🥈</span>`;
+                    badge = `<span class="text-lg">🥈</span>`;
                     bgStyle = "bg-slate-100 border-slate-300 font-extrabold";
                 } else if (idx === 2) {
-                    badge = `<span class="text-xl">🥉</span>`;
+                    badge = `<span class="text-lg">🥉</span>`;
                     bgStyle = "bg-orange-100 border-orange-300 font-extrabold";
                 }
 
                 const isCurrentPlayer = item.name === playerName && item.score === score;
 
                 const row = document.createElement("div");
-                row.className = `flex justify-between items-center p-3.5 rounded-2xl border-2 ${bgStyle} text-sm sm:text-base ${isCurrentPlayer ? 'ring-4 ring-indigo-500/50' : ''}`;
+                row.className = `flex justify-between items-center p-2.5 rounded-xl border-2 ${bgStyle} text-xs sm:text-sm ${isCurrentPlayer ? 'ring-2 ring-indigo-500' : ''}`;
                 row.innerHTML = `
-                    <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="flex items-center gap-2 overflow-hidden">
                         ${badge}
                         <div class="flex flex-col text-left">
                             <span class="truncate font-black text-slate-800 ${isCurrentPlayer ? 'text-indigo-600' : ''}">${escapeHtml(item.name)}</span>
-                            <span class="text-xs text-slate-500 font-bold">${item.totalQuestions ? item.totalQuestions + ' Soal' : 'Kuis'} • ${item.date}</span>
+                            <span class="text-[10px] text-slate-500 font-bold">${item.totalQuestions ? item.totalQuestions + ' Soal' : 'Kuis'} • ${item.date}</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-black text-indigo-600 text-lg sm:text-xl">${item.score} Pts</span>
+                    <div class="flex items-center gap-2">
+                        <span class="font-black text-indigo-600 text-base">${item.score} Pts</span>
                     </div>
                 `;
                 listContainer.appendChild(row);
