@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gim Pengenalan Komputer - IFP Touch Edition</title>
+    <title>Gim Pengenalan Komputer - IFP Responsive Edition</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts: Fredoka & Plus Jakarta Sans -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -20,18 +20,6 @@
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
                         fredoka: ['Fredoka', 'cursive'],
-                    },
-                    colors: {
-                        hw: {
-                            light: '#EFF6FF',
-                            DEFAULT: '#3B82F6',
-                            dark: '#1D4ED8',
-                        },
-                        sw: {
-                            light: '#F0FDF4',
-                            DEFAULT: '#22C55E',
-                            dark: '#15803D',
-                        }
                     }
                 }
             }
@@ -52,42 +40,34 @@
             overflow: hidden;
         }
 
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.2); border-radius: 8px; }
+
+        /* Strict Responsive Card & Slot Locking for Big Screens / IFP */
+        .device-card, .slot-box {
+            aspect-ratio: 1 / 1 !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            box-sizing: border-box !important;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
 
-        /* Fixed Dimensions & Robust Card Layout */
         .device-card {
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
             cursor: grab;
             touch-action: none;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
             will-change: transform;
-            aspect-ratio: 1 / 1;
-        }
-        .device-card:active {
-            cursor: grabbing;
-        }
-        .device-card:hover {
-            box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.2);
-            border-color: #60A5FA;
         }
 
-        /* Anti-Flicker & FIXED Drag States (No scale / No shrinking) */
+        .device-card:active { cursor: grabbing; }
+
         .device-card.is-dragging {
-            opacity: 0.4 !important;
+            opacity: 0.3 !important;
             border-style: dashed !important;
             border-color: #3B82F6 !important;
-            /* Scale sengaja dihapus agar tidak mengecil saat di-drag */
         }
 
         .device-card.selected-touch {
@@ -96,26 +76,19 @@
             background-color: #EFF6FF !important;
         }
 
-        /* Drop Target Slots Styling */
-        .slot-box {
-            transition: border-color 0.15s ease, background-color 0.15s ease;
-            aspect-ratio: 1 / 1;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-        }
         .slot-box.drag-over {
             border-color: #3B82F6 !important;
             background-color: #EFF6FF !important;
             box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.3);
         }
 
-        /* Touch Avatar Floating Dragging Effect (Strict 1:1 Scale Match) */
+        /* Avatar Touch Drag Floating Layer */
         .touch-drag-avatar {
             position: fixed;
             pointer-events: none !important;
             z-index: 9999;
             opacity: 0.95;
-            transform: translate(-50%, -50%); /* Tanpa scale(1.05) agar ukurannya presisi */
+            transform: translate(-50%, -50%);
             box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
             border: 2px solid #3B82F6 !important;
             background-color: #FFFFFF !important;
@@ -127,69 +100,70 @@
             0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); }
             50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
         }
-        .btn-check-active {
-            animation: pulseGlow 2s infinite;
-        }
+        .btn-check-active { animation: pulseGlow 2s infinite; }
     </style>
 </head>
 
 <body class="h-screen w-screen overflow-hidden flex flex-col justify-between bg-slate-100 text-slate-800">
 
-    <!-- Header Section -->
+    <!-- Header Section (Locked Maximum Width for Large Screen Stability) -->
     <header class="bg-white border-b border-slate-200 px-3 sm:px-6 py-2 shrink-0 shadow-sm flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-            <button onclick="openHomeMenu()" title="Menu Utama" class="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center font-bold text-lg shadow-md transition-all">
-                <i class="fa-solid fa-house"></i>
-            </button>
-            <div>
-                <h1 class="font-fredoka font-bold text-sm sm:text-lg text-slate-800 leading-tight">Gim Pengenalan Komputer</h1>
-                <p class="text-[10px] sm:text-xs text-slate-500 font-semibold hidden sm:block">IFP Interactive Touch Edition</p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-1.5 sm:gap-2.5">
-            <button onclick="toggleFullscreen()" title="Layar Penuh" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all flex items-center justify-center border border-slate-300">
-                <i id="fs-btn-icon" class="fa-solid fa-expand text-slate-600 text-sm"></i>
-            </button>
-            
-            <button id="reset-btn" onclick="resetGame()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 border border-slate-300">
-                <i class="fa-solid fa-rotate-right text-slate-500"></i>
-                <span class="hidden md:inline">Ulangi Gim</span>
-            </button>
-
-            <button onclick="openLeaderboard()" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 border border-amber-300 shadow-sm">
-                <i class="fa-solid fa-trophy text-amber-500"></i>
-                <span class="hidden md:inline">Peringkat</span>
-            </button>
-
-            <button onclick="openNameModal()" title="Ganti Nama Pemain" class="bg-indigo-50 border border-indigo-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 hover:bg-indigo-100 transition-all cursor-pointer">
-                <i class="fa-solid fa-user-astronaut text-indigo-600 text-xs"></i>
-                <span id="player-name-display" class="text-xs font-extrabold text-indigo-700 font-fredoka truncate max-w-[80px] sm:max-w-[120px]">Pemain</span>
-            </button>
-
-            <div class="bg-blue-50 border border-blue-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1">
-                <i class="fa-solid fa-layer-group text-blue-600 text-xs"></i>
-                <span id="placed-counter" class="text-xs font-extrabold text-blue-700 font-fredoka">0/12</span>
+        <div class="max-w-[1600px] w-full mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <button onclick="openHomeMenu()" title="Menu Utama" class="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white flex items-center justify-center font-bold text-lg shadow-md transition-all">
+                    <i class="fa-solid fa-house"></i>
+                </button>
+                <div>
+                    <h1 class="font-fredoka font-bold text-sm sm:text-lg text-slate-800 leading-tight">Gim Pengenalan Komputer</h1>
+                    <p class="text-[10px] sm:text-xs text-slate-500 font-semibold hidden sm:block">IFP Touch & Large Screen Optimized Edition</p>
+                </div>
             </div>
 
-            <button id="check-answer-btn" disabled onclick="checkAnswers()" class="px-4 py-1.5 bg-slate-300 text-slate-500 font-fredoka font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-not-allowed">
-                <i class="fa-solid fa-circle-check"></i>
-                <span>Cek Jawaban</span>
-            </button>
+            <div class="flex items-center gap-1.5 sm:gap-2.5">
+                <button onclick="toggleFullscreen()" title="Layar Penuh" class="w-9 h-9 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all flex items-center justify-center border border-slate-300">
+                    <i id="fs-btn-icon" class="fa-solid fa-expand text-slate-600 text-sm"></i>
+                </button>
+                
+                <button id="reset-btn" onclick="resetGame()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 border border-slate-300">
+                    <i class="fa-solid fa-rotate-right text-slate-500"></i>
+                    <span class="hidden md:inline">Ulangi Gim</span>
+                </button>
+
+                <button onclick="openLeaderboard()" class="px-2.5 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 border border-amber-300 shadow-sm">
+                    <i class="fa-solid fa-trophy text-amber-500"></i>
+                    <span class="hidden md:inline">Peringkat</span>
+                </button>
+
+                <button onclick="openNameModal()" title="Ganti Nama Pemain" class="bg-indigo-50 border border-indigo-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 hover:bg-indigo-100 transition-all cursor-pointer">
+                    <i class="fa-solid fa-user-astronaut text-indigo-600 text-xs"></i>
+                    <span id="player-name-display" class="text-xs font-extrabold text-indigo-700 font-fredoka truncate max-w-[80px] sm:max-w-[120px]">Pemain</span>
+                </button>
+
+                <div class="bg-blue-50 border border-blue-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1">
+                    <i class="fa-solid fa-layer-group text-blue-600 text-xs"></i>
+                    <span id="placed-counter" class="text-xs font-extrabold text-blue-700 font-fredoka">0/12</span>
+                </div>
+
+                <button id="check-answer-btn" disabled onclick="checkAnswers()" class="px-4 py-1.5 bg-slate-300 text-slate-500 font-fredoka font-bold text-xs sm:text-sm rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-not-allowed">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Cek Jawaban</span>
+                </button>
+            </div>
         </div>
     </header>
 
-    <main class="flex-grow p-1.5 sm:p-2 flex flex-col gap-1.5 sm:gap-2 overflow-hidden max-w-[1920px] w-full mx-auto">
+    <!-- Main Container Fixed Max Width to prevent distortion on 4K/Large Screen -->
+    <main class="flex-grow p-2 sm:p-3 flex flex-col gap-2 overflow-hidden max-w-[1500px] w-full mx-auto justify-center">
 
-        <!-- Question / Function Statement Box -->
-        <section id="question-box" class="bg-white rounded-xl p-1.5 sm:p-2 shadow-sm border-2 border-blue-400 relative overflow-hidden shrink-0 flex items-center justify-between transition-all">
-            <div class="flex items-center gap-2 sm:gap-2.5 flex-grow overflow-hidden">
-                <div class="bg-blue-600 text-white w-8 h-8 sm:w-9 sm:h-9 rounded-lg shrink-0 flex items-center justify-center text-sm sm:text-base font-bold shadow-md">
+        <!-- Question Box -->
+        <section id="question-box" class="bg-white rounded-xl p-2 shadow-sm border-2 border-blue-400 relative overflow-hidden shrink-0 flex items-center justify-between transition-all">
+            <div class="flex items-center gap-2.5 flex-grow overflow-hidden">
+                <div class="bg-blue-600 text-white w-8 h-8 sm:w-10 sm:h-10 rounded-lg shrink-0 flex items-center justify-center text-sm sm:text-lg font-bold shadow-md">
                     <i class="fa-solid fa-gear"></i>
                 </div>
                 <div class="flex-grow overflow-hidden">
                     <div class="flex items-center gap-2 mb-0.5">
-                        <span id="question-badge" class="text-[10px] font-extrabold uppercase tracking-wider text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md font-fredoka">
+                        <span id="question-badge" class="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md font-fredoka">
                             Pertanyaan 1/12
                         </span>
                         <span class="text-[10px] sm:text-xs text-slate-400 font-semibold hidden sm:inline">
@@ -202,37 +176,36 @@
                 </div>
             </div>
 
-            <!-- Manual Question Navigation -->
             <div class="flex items-center gap-1 ml-2 shrink-0 border-l border-slate-200 pl-2">
-                <button id="prev-q-btn" onclick="navigateQuestion(-1)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-xs font-bold">
+                <button id="prev-q-btn" onclick="navigateQuestion(-1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-xs font-bold">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <button id="next-q-btn" onclick="navigateQuestion(1)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-xs font-bold">
+                <button id="next-q-btn" onclick="navigateQuestion(1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-all text-xs font-bold">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
         </section>
 
-        <div class="grid grid-cols-12 gap-1.5 sm:gap-2 flex-grow overflow-hidden h-full">
+        <!-- Dynamic Responsive Main Board Grid -->
+        <div class="grid grid-cols-12 gap-2 flex-grow overflow-hidden h-full items-center">
 
-            <!-- LEFT PANEL: DEVICE SELECTION POOL (Fixed Grid Matrix 3x4) -->
-            <section class="col-span-5 lg:col-span-4 bg-white rounded-xl p-1.5 sm:p-2 border border-slate-200 shadow-sm flex flex-col overflow-hidden h-full">
+            <!-- LEFT PANEL: POOL (Grid 3x4 Rigid Matrix) -->
+            <section class="col-span-5 lg:col-span-4 bg-white rounded-xl p-2 border border-slate-200 shadow-sm flex flex-col overflow-hidden h-full justify-between">
                 <div class="flex items-center justify-between pb-1 border-b border-slate-100 shrink-0 mb-1">
                     <div class="flex items-center gap-1.5">
                         <i class="fa-solid fa-boxes-stacked text-amber-500 text-xs sm:text-sm"></i>
                         <h2 class="font-fredoka font-bold text-slate-800 text-xs sm:text-sm">Pilihan Perangkat</h2>
                     </div>
-                    <span class="text-[9px] sm:text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-200">1 Screen View</span>
+                    <span class="text-[9px] sm:text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-200">12 Item</span>
                 </div>
 
-                <!-- Rigid Fixed Layout Grid Matrix -->
-                <div id="image-pool" class="grid grid-cols-3 grid-rows-4 gap-1.5 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
+                <div id="image-pool" class="grid grid-cols-3 grid-rows-4 gap-1.5 sm:gap-2 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
                     <!-- Cards dynamically generated -->
                 </div>
             </section>
 
-            <!-- RIGHT PANEL: CATEGORY MATCHING SLOTS (HARDWARE & SOFTWARE) -->
-            <section class="col-span-7 lg:col-span-8 bg-white rounded-xl p-1.5 sm:p-2 border border-slate-200 shadow-sm flex flex-col overflow-hidden h-full">
+            <!-- RIGHT PANEL: MATCHING AREA -->
+            <section class="col-span-7 lg:col-span-8 bg-white rounded-xl p-2 border border-slate-200 shadow-sm flex flex-col overflow-hidden h-full justify-between">
                 <div class="flex items-center justify-between pb-1 border-b border-slate-100 shrink-0 mb-1">
                     <div class="flex items-center gap-1.5">
                         <i class="fa-solid fa-bullseye text-blue-600 text-xs sm:text-sm"></i>
@@ -241,33 +214,30 @@
                     <div class="text-[10px] font-semibold text-slate-400 hidden sm:block">Tempatkan ke slot yang sesuai</div>
                 </div>
 
-                <!-- Two Parallel Category Columns -->
-                <div class="grid grid-cols-2 gap-1.5 flex-grow overflow-hidden">
+                <div class="grid grid-cols-2 gap-2 flex-grow overflow-hidden">
                     
                     <!-- HARDWARE AREA -->
-                    <div class="bg-blue-50/60 rounded-xl p-1 sm:p-1.5 border border-blue-200/80 flex flex-col overflow-hidden">
+                    <div class="bg-blue-50/60 rounded-xl p-1.5 border border-blue-200/80 flex flex-col overflow-hidden justify-between">
                         <div class="flex items-center justify-between mb-1 shrink-0 px-1">
                             <span class="font-fredoka font-bold text-blue-800 text-xs flex items-center gap-1">
-                                <i class="fa-solid fa-hard-drive text-blue-600"></i>
-                                HARDWARE
+                                <i class="fa-solid fa-hard-drive text-blue-600"></i> HARDWARE
                             </span>
                             <span class="text-[9px] font-extrabold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">Perangkat Keras</span>
                         </div>
-                        <div id="hardware-slots" class="grid grid-cols-3 grid-rows-2 gap-1.5 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
+                        <div id="hardware-slots" class="grid grid-cols-3 grid-rows-2 gap-1.5 sm:gap-2 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
                             <!-- Hardware Slots -->
                         </div>
                     </div>
 
                     <!-- SOFTWARE AREA -->
-                    <div class="bg-emerald-50/60 rounded-xl p-1 sm:p-1.5 border border-emerald-200/80 flex flex-col overflow-hidden">
+                    <div class="bg-emerald-50/60 rounded-xl p-1.5 border border-emerald-200/80 flex flex-col overflow-hidden justify-between">
                         <div class="flex items-center justify-between mb-1 shrink-0 px-1">
                             <span class="font-fredoka font-bold text-emerald-800 text-xs flex items-center gap-1">
-                                <i class="fa-solid fa-compact-disc text-emerald-600"></i>
-                                SOFTWARE
+                                <i class="fa-solid fa-compact-disc text-emerald-600"></i> SOFTWARE
                             </span>
                             <span class="text-[9px] font-extrabold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">Perangkat Lunak</span>
                         </div>
-                        <div id="software-slots" class="grid grid-cols-3 grid-rows-2 gap-1.5 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
+                        <div id="software-slots" class="grid grid-cols-3 grid-rows-2 gap-1.5 sm:gap-2 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
                             <!-- Software Slots -->
                         </div>
                     </div>
@@ -279,7 +249,7 @@
 
     <!-- MODAL 0: HOME MENU -->
     <div id="home-menu-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border border-slate-100 transform transition-all">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border border-slate-100">
             <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white mx-auto flex items-center justify-center text-2xl mb-3 shadow-lg font-fredoka">
                 <i class="fa-solid fa-house"></i>
             </div>
@@ -287,12 +257,12 @@
             <p class="text-xs text-slate-500 font-semibold mb-4">Pilih opsi atau navigasi gim di bawah ini</p>
 
             <div class="space-y-2">
-                <button onclick="closeHomeMenu(); openLeaderboard();" class="w-full py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm shadow-sm">
+                <button onclick="closeHomeMenu(); openLeaderboard();" class="w-full py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
                     <i class="fa-solid fa-trophy text-amber-500"></i>
                     <span>Lihat Papan Peringkat</span>
                 </button>
 
-                <button onclick="closeHomeMenu(); openNameModal();" class="w-full py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm shadow-sm">
+                <button onclick="closeHomeMenu(); openNameModal();" class="w-full py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-200 font-fredoka font-bold rounded-xl transition-all flex items-center justify-center gap-2 text-xs sm:text-sm">
                     <i class="fa-solid fa-user-pen text-indigo-600"></i>
                     <span>Input / Ganti Nama Pemain</span>
                 </button>
@@ -314,9 +284,9 @@
         </div>
     </div>
 
-    <!-- MODAL 1: INPUT NAMA PEMAIN -->
+    <!-- MODAL 1: INPUT NAMA -->
     <div id="name-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100 transform transition-all">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100">
             <div class="w-16 h-16 rounded-2xl bg-blue-600 text-white mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg font-fredoka">
                 <i class="fa-solid fa-gamepad"></i>
             </div>
@@ -326,7 +296,7 @@
             <form onsubmit="startGameWithPlayerName(event)" class="space-y-4">
                 <div class="text-left">
                     <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5 ml-1">Nama Lengkap / Panggilan</label>
-                    <input type="text" id="player-name-input" required maxlength="20" placeholder="Contoh: Ahmad / Siti" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:outline-none font-bold text-slate-800 text-base shadow-sm transition-all">
+                    <input type="text" id="player-name-input" required maxlength="20" placeholder="Contoh: Ahmad / Siti" class="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:outline-none font-bold text-slate-800 text-base shadow-sm">
                 </div>
 
                 <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-fredoka font-bold text-base rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 active:scale-95">
@@ -340,9 +310,7 @@
     <!-- MODAL 2: HASIL EVALUASI -->
     <div id="result-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 text-center shadow-2xl border border-slate-100 transform transition-all scale-95 opacity-0" id="modal-content">
-            <div id="result-icon-box" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg">
-                <!-- Icon via JS -->
-            </div>
+            <div id="result-icon-box" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-3xl mb-3 shadow-lg"></div>
             
             <h3 id="result-title" class="font-fredoka font-extrabold text-2xl text-slate-800 mb-1">Hasil Evaluasi</h3>
             <p id="result-subtitle" class="text-xs text-slate-500 font-semibold mb-4">Pencocokan Hardware & Software Komputer</p>
@@ -350,9 +318,7 @@
             <div class="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 mb-4">
                 <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Skor Akhir <span id="result-player-name" class="text-indigo-600">Pemain</span></div>
                 <div id="result-score" class="font-fredoka font-extrabold text-4xl text-blue-600 mb-2">0 / 100</div>
-                <div id="result-breakdown" class="text-xs font-semibold text-slate-600 space-y-1">
-                    <!-- Breakdown stats -->
-                </div>
+                <div id="result-breakdown" class="text-xs font-semibold text-slate-600 space-y-1"></div>
             </div>
 
             <div class="flex flex-col gap-2">
@@ -374,7 +340,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: PAPAN PERINGKAT (LEADERBOARD) -->
+    <!-- MODAL 3: LEADERBOARD -->
     <div id="leaderboard-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 text-center shadow-2xl border border-slate-100 flex flex-col max-h-[85vh]">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3 shrink-0">
@@ -392,9 +358,7 @@
                 </button>
             </div>
 
-            <div class="overflow-y-auto custom-scrollbar flex-grow pr-1 space-y-2" id="leaderboard-list">
-                <!-- Leaderboard rows generated dynamically -->
-            </div>
+            <div class="overflow-y-auto custom-scrollbar flex-grow pr-1 space-y-2" id="leaderboard-list"></div>
 
             <div class="pt-3 mt-3 border-t border-slate-100 shrink-0">
                 <button onclick="closeLeaderboard()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-fredoka font-bold rounded-xl transition-all text-sm">
@@ -406,120 +370,37 @@
 
     <script>
         const itemsData = [
-            // HARDWARE
-            {
-                id: 'monitor',
-                name: 'Monitor',
-                type: 'hardware',
-                func: 'menampilkan keluaran visual dan antarmuka layar komputer',
-                img: 'https://image.made-in-china.com/155f0j00mHFkYbMrntus/20-Inch-LED-Computer-Business-Office-Home-HD-IPS-Blue-Light-Eye-Protection-LCD-Monitor.webp'
-            },
-            {
-                id: 'keyboard',
-                name: 'Keyboard',
-                type: 'hardware',
-                func: 'mengetik teks, angka, dan menginput perintah ke komputer',
-                img: 'https://image.made-in-china.com/43f34j00kRQChAfPOUqI/madeinchina-com.jpg'
-            },
-            {
-                id: 'mouse',
-                name: 'Mouse',
-                type: 'hardware',
-                func: 'menggerakkan kursor dan memilih objek pada layar',
-                img: 'https://image.made-in-china.com/43f34j00wAubkBgKwcps/madeinchina-com.jpg'
-            },
-            {
-                id: 'cpu',
-                name: 'CPU',
-                type: 'hardware',
-                func: 'memproses dan mengolah seluruh data serta instruksi komputer',
-                img: 'https://diengcyber.com/wp-content/uploads/2022/02/image-4.png'
-            },
-            {
-                id: 'printer',
-                name: 'Printer',
-                type: 'hardware',
-                func: 'mencetak dokumen atau gambar dari komputer ke kertas',
-                img: 'https://platindokaryaprima.com/wp-content/uploads/2015/02/HP-LaserJet-Pro-P1102-PrinterCE651A.png'
-            },
-            {
-                id: 'speaker',
-                name: 'Speaker',
-                type: 'hardware',
-                func: 'mengeluarkan suara atau audio dari komputer',
-                img: 'https://img.lazcdn.com/g/p/75f89289e611de8259fe8e02852d551f.jpg_720x720q80.jpg_.webp'
-            },
-
-            // SOFTWARE
-            {
-                id: 'word',
-                name: 'Ms Word',
-                type: 'software',
-                func: 'mengolah dan mengetik dokumen berbentuk teks',
-                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Microsoft_Office_Word_%282025%E2%80%93present%29.svg/250px-Microsoft_Office_Word_%282025%E2%80%93present%29.svg.png'
-            },
-            {
-                id: 'excel',
-                name: 'Ms Excel',
-                type: 'software',
-                func: 'mengolah angka, tabel data, dan perhitungan rumus',
-                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Microsoft_Office_Excel_%282025%E2%80%93present%29.svg/250px-Microsoft_Office_Excel_%282025%E2%80%93present%29.svg.png'
-            },
-            {
-                id: 'chrome',
-                name: 'Google Chrome',
-                type: 'software',
-                func: 'menjelajahi dan membuka halaman web di internet',
-                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/250px-Google_Chrome_icon_%28February_2022%29.svg.png'
-            },
-            {
-                id: 'capcut',
-                name: 'CapCut',
-                type: 'software',
-                func: 'mengedit dan memotong video secara kreatif',
-                img: 'https://itbox.id/wp-content/uploads/2023/11/capcut.jpeg'
-            },
-            {
-                id: 'whatsapp',
-                name: 'WhatsApp',
-                type: 'software',
-                func: 'mengirim pesan singkat, dokumen, dan melakukan panggilan',
-                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/250px-WhatsApp.svg.png'
-            },
-            {
-                id: 'youtube',
-                name: 'YouTube',
-                type: 'software',
-                func: 'menonton, mengunggah, dan membagikan video',
-                img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/YouTube_social_white_square_%282017%29.svg/330px-YouTube_social_white_square_%282017%29.svg.png'
-            }
+            { id: 'monitor', name: 'Monitor', type: 'hardware', func: 'menampilkan keluaran visual dan antarmuka layar komputer', img: 'https://image.made-in-china.com/155f0j00mHFkYbMrntus/20-Inch-LED-Computer-Business-Office-Home-HD-IPS-Blue-Light-Eye-Protection-LCD-Monitor.webp' },
+            { id: 'keyboard', name: 'Keyboard', type: 'hardware', func: 'mengetik teks, angka, dan menginput perintah ke komputer', img: 'https://image.made-in-china.com/43f34j00kRQChAfPOUqI/madeinchina-com.jpg' },
+            { id: 'mouse', name: 'Mouse', type: 'hardware', func: 'menggerakkan kursor dan memilih objek pada layar', img: 'https://image.made-in-china.com/43f34j00wAubkBgKwcps/madeinchina-com.jpg' },
+            { id: 'cpu', name: 'CPU', type: 'hardware', func: 'memproses dan mengolah seluruh data serta instruksi komputer', img: 'https://diengcyber.com/wp-content/uploads/2022/02/image-4.png' },
+            { id: 'printer', name: 'Printer', type: 'hardware', func: 'mencetak dokumen atau gambar dari komputer ke kertas', img: 'https://platindokaryaprima.com/wp-content/uploads/2015/02/HP-LaserJet-Pro-P1102-PrinterCE651A.png' },
+            { id: 'speaker', name: 'Speaker', type: 'hardware', func: 'mengeluarkan suara atau audio dari komputer', img: 'https://img.lazcdn.com/g/p/75f89289e611de8259fe8e02852d551f.jpg_720x720q80.jpg_.webp' },
+            { id: 'word', name: 'Ms Word', type: 'software', func: 'mengolah dan mengetik dokumen berbentuk teks', img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Microsoft_Office_Word_%282025%E2%80%93present%29.svg/250px-Microsoft_Office_Word_%282025%E2%80%93present%29.svg.png' },
+            { id: 'excel', name: 'Ms Excel', type: 'software', func: 'mengolah angka, tabel data, dan perhitungan rumus', img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Microsoft_Office_Excel_%282025%E2%80%93present%29.svg/250px-Microsoft_Office_Excel_%282025%E2%80%93present%29.svg.png' },
+            { id: 'chrome', name: 'Google Chrome', type: 'software', func: 'menjelajahi dan membuka halaman web di internet', img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Google_Chrome_icon_%28February_2022%29.svg/250px-Google_Chrome_icon_%28February_2022%29.svg.png' },
+            { id: 'capcut', name: 'CapCut', type: 'software', func: 'mengedit dan memotong video secara kreatif', img: 'https://itbox.id/wp-content/uploads/2023/11/capcut.jpeg' },
+            { id: 'whatsapp', name: 'WhatsApp', type: 'software', func: 'mengirim pesan singkat, dokumen, dan melakukan panggilan', img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/250px-WhatsApp.svg.png' },
+            { id: 'youtube', name: 'YouTube', type: 'software', func: 'menonton, mengunggah, dan membagikan video', img: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/YouTube_social_white_square_%282017%29.svg/330px-YouTube_social_white_square_%282017%29.svg.png' }
         ];
 
-        /* Fallback placeholder */
         const fallbackImg = "https://placehold.co/150x150/e2e8f0/475569?text=Perangkat";
 
-        /* State Game Variables */
-        let questionsList = []; 
-        let currentQuestionIdx = 0; 
-        let slotAssignments = {}; 
-        let questionAnswerMap = {}; 
-        let selectedForTapId = null; 
+        let questionsList = [];
+        let currentQuestionIdx = 0;
+        let slotAssignments = {};
+        let questionAnswerMap = {};
+        let selectedForTapId = null;
         let activeDraggedId = null;
         let touchAvatar = null;
-
         let currentPlayerName = "Pemain";
         let leaderboardData = [];
 
         try {
             const savedData = localStorage.getItem('comp_game_leaderboard');
-            if (savedData) {
-                leaderboardData = JSON.parse(savedData);
-            }
-        } catch(e) {
-            leaderboardData = [];
-        }
+            if (savedData) leaderboardData = JSON.parse(savedData);
+        } catch(e) { leaderboardData = []; }
 
-        /* Sound Synthesizer via Web Audio API */
         const playSound = (type) => {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -533,8 +414,7 @@
                     osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.1);
                     gain.gain.setValueAtTime(0.15, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.1);
+                    osc.start(); osc.stop(ctx.currentTime + 0.1);
                 } else if (type === 'win') {
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(523.25, ctx.currentTime);
@@ -543,14 +423,12 @@
                     osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.24);
                     gain.gain.setValueAtTime(0.2, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.4);
+                    osc.start(); osc.stop(ctx.currentTime + 0.4);
                 } else if (type === 'click') {
                     osc.frequency.setValueAtTime(320, ctx.currentTime);
                     gain.gain.setValueAtTime(0.08, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.04);
-                    osc.start();
-                    osc.stop(ctx.currentTime + 0.04);
+                    osc.start(); osc.stop(ctx.currentTime + 0.04);
                 }
             } catch (e) {}
         };
@@ -567,36 +445,21 @@
         function toggleFullscreen() {
             playSound('click');
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log("Error attempting fullscreen:", err.message);
-                });
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen();
             }
         }
 
         document.addEventListener('fullscreenchange', () => {
             const fsIcon = document.getElementById('fs-btn-icon');
             if (fsIcon) {
-                if (document.fullscreenElement) {
-                    fsIcon.className = 'fa-solid fa-compress text-blue-600 text-sm';
-                } else {
-                    fsIcon.className = 'fa-solid fa-expand text-slate-600 text-sm';
-                }
+                fsIcon.className = document.fullscreenElement ? 'fa-solid fa-compress text-blue-600 text-sm' : 'fa-solid fa-expand text-slate-600 text-sm';
             }
         });
 
-        function openHomeMenu() {
-            playSound('click');
-            document.getElementById('home-menu-modal').classList.remove('hidden');
-        }
-
-        function closeHomeMenu() {
-            playSound('click');
-            document.getElementById('home-menu-modal').classList.add('hidden');
-        }
+        function openHomeMenu() { playSound('click'); document.getElementById('home-menu-modal').classList.remove('hidden'); }
+        function closeHomeMenu() { playSound('click'); document.getElementById('home-menu-modal').classList.add('hidden'); }
 
         function openNameModal() {
             playSound('click');
@@ -637,10 +500,8 @@
             playSound('click');
             const modal = document.getElementById('result-modal');
             const modalContent = document.getElementById('modal-content');
-
             modalContent.classList.remove('scale-100', 'opacity-100');
             modalContent.classList.add('scale-95', 'opacity-0');
-
             setTimeout(() => {
                 modal.classList.add('hidden');
                 openNameModal();
@@ -661,10 +522,8 @@
         function closeModalAndShowLeaderboard() {
             const modal = document.getElementById('result-modal');
             const modalContent = document.getElementById('modal-content');
-
             modalContent.classList.remove('scale-100', 'opacity-100');
             modalContent.classList.add('scale-95', 'opacity-0');
-
             setTimeout(() => {
                 modal.classList.add('hidden');
                 openLeaderboard();
@@ -680,8 +539,7 @@
                     <div class="py-8 text-center text-slate-400 font-semibold text-xs">
                         <i class="fa-solid fa-trophy text-3xl text-slate-300 mb-2 block"></i>
                         <span>Belum ada data peringkat.<br>Jadilah pemain pertama yang mencetak skor!</span>
-                    </div>
-                `;
+                    </div>`;
                 return;
             }
 
@@ -690,7 +548,6 @@
             leaderboardData.forEach((item, index) => {
                 const isCurrent = (item.name === currentPlayerName);
                 let rankBadge = `<span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center font-fredoka">${index + 1}</span>`;
-
                 if (index === 0) rankBadge = `<span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-700 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-crown text-amber-500"></i></span>`;
                 else if (index === 1) rankBadge = `<span class="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-medal text-slate-500"></i></span>`;
                 else if (index === 2) rankBadge = `<span class="w-6 h-6 rounded-lg bg-amber-700/10 text-amber-800 font-bold text-xs flex items-center justify-center font-fredoka"><i class="fa-solid fa-award text-amber-700"></i></span>`;
@@ -718,7 +575,6 @@
             questionAnswerMap = {};
             selectedForTapId = null;
             currentQuestionIdx = 0;
-
             questionsList = shuffle(itemsData);
 
             renderActiveQuestion();
@@ -727,10 +583,7 @@
             updatePlacedCounter();
         }
 
-        function resetGame() {
-            playSound('click');
-            initGame();
-        }
+        function resetGame() { playSound('click'); initGame(); }
 
         function renderActiveQuestion() {
             const currentItem = questionsList[currentQuestionIdx];
@@ -752,14 +605,12 @@
 
         function renderImagePool() {
             imagePoolEl.innerHTML = '';
-            
             itemsData.forEach(item => {
                 const isPlaced = Object.values(slotAssignments).includes(item.id);
                 if (!isPlaced) {
                     const card = createCardElement(item);
                     imagePoolEl.appendChild(card);
                 } else {
-                    // Placeholder kosong dengan rasio 1:1 presisi agar tidak merubah ukuran layout
                     const placeholder = document.createElement('div');
                     placeholder.className = 'w-full h-full border-2 border-dashed border-slate-200 rounded-lg aspect-square opacity-30';
                     imagePoolEl.appendChild(placeholder);
@@ -772,15 +623,13 @@
             card.id = `card-${item.id}`;
             card.setAttribute('data-id', item.id);
             card.setAttribute('draggable', 'true');
-            
-            /* Presisi Kotak 1:1 */
-            card.className = "device-card group bg-white border-2 border-slate-200 hover:border-blue-400 rounded-lg p-1 flex flex-col items-center justify-between text-center shadow-sm relative overflow-hidden h-full w-full pointer-events-auto";
+            card.className = "device-card group bg-white border-2 border-slate-200 hover:border-blue-400 rounded-lg p-1 flex flex-col items-center justify-between text-center shadow-sm relative overflow-hidden pointer-events-auto";
 
             card.innerHTML = `
-                <div class="w-full flex-grow flex items-center justify-center p-0.5 overflow-hidden relative min-h-0 pointer-events-none">
+                <div class="w-full flex-grow flex items-center justify-center p-1 overflow-hidden relative min-h-0 pointer-events-none">
                     <img src="${item.img}" alt="${item.name}" 
                          onerror="this.onerror=null; this.src='${fallbackImg}';"
-                         class="h-9 sm:h-11 w-auto max-w-full object-contain drop-shadow-sm pointer-events-none" />
+                         class="max-h-full max-w-full w-auto h-auto object-contain drop-shadow-sm pointer-events-none" />
                 </div>
                 <div class="w-full bg-slate-50 group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-200 rounded py-0.5 px-0.5 shrink-0 transition-colors pointer-events-none">
                     <span class="font-fredoka font-bold text-[9px] sm:text-[10px] text-slate-800 group-hover:text-blue-900 line-clamp-1 block leading-tight pointer-events-none">${item.name}</span>
@@ -806,19 +655,19 @@
             slot.id = `slot-${slotKey}`;
             slot.setAttribute('data-slot-key', slotKey);
             slot.setAttribute('data-category', categoryName.toLowerCase());
-            slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-lg p-1 flex flex-col items-center justify-center h-full transition-all text-center relative overflow-hidden w-full";
+            slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-lg p-1 flex flex-col items-center justify-center transition-all text-center relative overflow-hidden";
 
             const assignedItemId = slotAssignments[slotKey];
 
             if (assignedItemId) {
                 const item = itemsData.find(i => i.id === assignedItemId);
                 const isHw = slotKey.startsWith('hw');
-                slot.className = `slot-box bg-white border-2 border-solid ${isHw ? 'border-blue-300' : 'border-emerald-300'} rounded-lg p-1 flex flex-col items-center justify-between h-full relative overflow-hidden shadow-sm w-full`;
+                slot.className = `slot-box bg-white border-2 border-solid ${isHw ? 'border-blue-300' : 'border-emerald-300'} rounded-lg p-1 flex flex-col items-center justify-between relative overflow-hidden shadow-sm`;
                 slot.innerHTML = `
-                    <div class="w-full flex-grow p-0.5 flex items-center justify-center overflow-hidden min-h-0 pointer-events-none">
+                    <div class="w-full flex-grow p-1 flex items-center justify-center overflow-hidden min-h-0 pointer-events-none">
                         <img src="${item.img}" alt="${item.name}" 
                              onerror="this.onerror=null; this.src='${fallbackImg}';"
-                             class="h-9 sm:h-11 w-auto max-w-full object-contain pointer-events-none drop-shadow-sm" />
+                             class="max-h-full max-w-full w-auto h-auto object-contain pointer-events-none drop-shadow-sm" />
                     </div>
                     <div class="w-full ${isHw ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'} border rounded py-0.5 px-0.5 shrink-0 pointer-events-none">
                         <span class="font-fredoka font-bold text-[8px] sm:text-[9px] ${isHw ? 'text-blue-900' : 'text-emerald-900'} truncate block leading-tight pointer-events-none">${item.name}</span>
@@ -841,8 +690,7 @@
         }
 
         function addDragAndHoverEvents(element, item) {
-            // Tap / Click to select for IFP Touch fallback
-            element.addEventListener('click', (e) => {
+            element.addEventListener('click', () => {
                 if (selectedForTapId === item.id) {
                     selectedForTapId = null;
                     element.classList.remove('selected-touch');
@@ -853,7 +701,6 @@
                 }
             });
 
-            // Desktop Drag Events Anti-Flicker
             element.addEventListener('dragstart', (e) => {
                 activeDraggedId = item.id;
                 element.classList.add('is-dragging');
@@ -866,12 +713,10 @@
                 activeDraggedId = null;
             });
 
-            // Touch Screen / IFP Direct Drag Handler
             element.addEventListener('touchstart', (e) => {
                 const touch = e.touches[0];
                 activeDraggedId = item.id;
 
-                // Create Floating Touch Avatar (Presisi Ukuran Kotak)
                 touchAvatar = element.cloneNode(true);
                 touchAvatar.classList.add('touch-drag-avatar');
                 touchAvatar.style.width = element.offsetWidth + 'px';
@@ -890,7 +735,6 @@
                 touchAvatar.style.left = touch.clientX + 'px';
                 touchAvatar.style.top = touch.clientY + 'px';
 
-                // Real-time IFP Touch Target Detection
                 const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
                 highlightTouchTarget(targetEl);
             }, { passive: false });
@@ -921,9 +765,7 @@
             removeSlotHighlights();
             if (targetEl) {
                 const slot = targetEl.closest('.slot-box');
-                if (slot) {
-                    slot.classList.add('drag-over');
-                }
+                if (slot) slot.classList.add('drag-over');
             }
         }
 
@@ -937,17 +779,13 @@
                 slot.classList.add('drag-over');
             });
 
-            slot.addEventListener('dragleave', () => {
-                slot.classList.remove('drag-over');
-            });
+            slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
 
             slot.addEventListener('drop', (e) => {
                 e.preventDefault();
                 slot.classList.remove('drag-over');
                 const itemId = e.dataTransfer.getData('text/plain') || activeDraggedId;
-                if (itemId) {
-                    placeItemInSlot(itemId, slotKey);
-                }
+                if (itemId) placeItemInSlot(itemId, slotKey);
             });
 
             slot.addEventListener('click', () => {
@@ -961,29 +799,21 @@
         function placeItemInSlot(itemId, slotKey) {
             if (slotAssignments[slotKey]) return;
 
-            // Remove item from any previous slot
             Object.keys(slotAssignments).forEach(key => {
-                if (slotAssignments[key] === itemId) {
-                    delete slotAssignments[key];
-                }
+                if (slotAssignments[key] === itemId) delete slotAssignments[key];
             });
 
-            // Remove previous mapping for this item in questions
             Object.keys(questionAnswerMap).forEach(qIdx => {
-                if (questionAnswerMap[qIdx] === itemId) {
-                    delete questionAnswerMap[qIdx];
-                }
+                if (questionAnswerMap[qIdx] === itemId) delete questionAnswerMap[qIdx];
             });
 
             slotAssignments[slotKey] = itemId;
             questionAnswerMap[currentQuestionIdx] = itemId;
 
             playSound('place');
-
             renderImagePool();
             renderSlots();
             updatePlacedCounter();
-
             findNextUnansweredQuestion();
         }
 
@@ -1007,9 +837,7 @@
             delete slotAssignments[slotKey];
 
             Object.keys(questionAnswerMap).forEach(qIdx => {
-                if (questionAnswerMap[qIdx] === itemId) {
-                    delete questionAnswerMap[qIdx];
-                }
+                if (questionAnswerMap[qIdx] === itemId) delete questionAnswerMap[qIdx];
             });
 
             renderImagePool();
@@ -1034,7 +862,6 @@
             let correctCategoryCount = 0;
             let correctFunctionCount = 0;
 
-            // 1. EVALUASI KETEPATAN TATA LETAK HARDWARE & SOFTWARE (50 Poin)
             Object.keys(slotAssignments).forEach(slotKey => {
                 const itemId = slotAssignments[slotKey];
                 const item = itemsData.find(i => i.id === itemId);
@@ -1045,19 +872,12 @@
                 const isHardwareSlot = slotKey.startsWith('hw');
                 const isSoftwareSlot = slotKey.startsWith('sw');
 
-                let isCategoryCorrect = false;
-                if (isHardwareSlot && item.type === 'hardware') isCategoryCorrect = true;
-                if (isSoftwareSlot && item.type === 'software') isCategoryCorrect = true;
-
+                let isCategoryCorrect = (isHardwareSlot && item.type === 'hardware') || (isSoftwareSlot && item.type === 'software');
                 if (isCategoryCorrect) correctCategoryCount++;
 
                 if (slotEl) {
                     slotEl.classList.remove('border-slate-300', 'border-dashed', 'border-blue-300', 'border-emerald-300');
-                    if (isCategoryCorrect) {
-                        slotEl.classList.add('border-emerald-500', 'bg-emerald-50/70');
-                    } else {
-                        slotEl.classList.add('border-rose-500', 'bg-rose-50/70');
-                    }
+                    slotEl.classList.add(isCategoryCorrect ? 'border-emerald-500' : 'border-rose-500', isCategoryCorrect ? 'bg-emerald-50/70' : 'bg-rose-50/70');
 
                     const badge = document.createElement('div');
                     badge.className = `absolute top-0.5 left-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px] text-white font-bold shadow-md z-10 ${isCategoryCorrect ? 'bg-emerald-500' : 'bg-rose-500'}`;
@@ -1066,12 +886,8 @@
                 }
             });
 
-            // 2. EVALUASI PENCOCOKAN FUNGSI / SOAL (50 Poin)
             questionsList.forEach((qItem, idx) => {
-                const answeredItemId = questionAnswerMap[idx];
-                if (answeredItemId === qItem.id) {
-                    correctFunctionCount++;
-                }
+                if (questionAnswerMap[idx] === qItem.id) correctFunctionCount++;
             });
 
             const categoryScore = Math.round((correctCategoryCount / 12) * 50);
@@ -1079,7 +895,6 @@
             const totalScore = categoryScore + functionScore;
 
             saveScoreToLeaderboard(currentPlayerName, totalScore);
-
             showModal(totalScore, correctCategoryCount, correctFunctionCount, categoryScore, functionScore);
         }
 
@@ -1094,9 +909,7 @@
                 leaderboardData.push({ name: name, score: score, date: "Baru Saja" });
             }
 
-            try {
-                localStorage.setItem('comp_game_leaderboard', JSON.stringify(leaderboardData));
-            } catch(e) {}
+            try { localStorage.setItem('comp_game_leaderboard', JSON.stringify(leaderboardData)); } catch(e) {}
         }
 
         function showModal(score, correctCat, correctFunc, catScore, funcScore) {
@@ -1146,10 +959,8 @@
         function closeModalAndReset() {
             const modal = document.getElementById('result-modal');
             const modalContent = document.getElementById('modal-content');
-
             modalContent.classList.remove('scale-100', 'opacity-100');
             modalContent.classList.add('scale-95', 'opacity-0');
-
             setTimeout(() => {
                 modal.classList.add('hidden');
                 initGame();
