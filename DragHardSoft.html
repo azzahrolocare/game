@@ -63,67 +63,63 @@
             border-radius: 8px;
         }
 
-        /* Card Normal & Drag Styling Optimized for Single Screen IFP */
+        /* Fixed Dimensions & Robust Card Layout */
         .device-card {
             transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
             cursor: grab;
-            touch-action: none; /* Prevents touch scrolling while dragging */
+            touch-action: none;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            will-change: transform;
+            aspect-ratio: 1 / 1; /* Mencegah kartu melar */
         }
         .device-card:active {
             cursor: grabbing;
         }
         .device-card:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 16px -4px rgba(59, 130, 246, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.2);
             border-color: #60A5FA;
         }
-        .device-card:hover img {
-            transform: scale(1.08);
-        }
 
-        .device-card img {
-            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        /* Active Dragging States */
+        /* Anti-Flicker & Fixed Drag States */
         .device-card.is-dragging {
-            opacity: 0.3;
-            transform: scale(0.92);
-            border-style: dashed;
-            border-color: #3B82F6;
+            opacity: 0.4 !important;
+            transform: scale(0.95);
+            border-style: dashed !important;
+            border-color: #3B82F6 !important;
         }
 
-        /* Tap selected state for IFP touch screen */
         .device-card.selected-touch {
             outline: 3px solid #3B82F6;
             outline-offset: 1px;
-            transform: scale(1.03);
             background-color: #EFF6FF !important;
-            box-shadow: 0 6px 18px -3px rgba(59, 130, 246, 0.35);
         }
 
-        /* Drop Target Slots Styling */
+        /* Drop Target Slots Styling dengan Aspect Ratio Tetap */
         .slot-box {
-            transition: all 0.2s ease;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+            aspect-ratio: 1 / 1; /* Konsistensi ukuran slot */
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         .slot-box.drag-over {
             border-color: #3B82F6 !important;
             background-color: #EFF6FF !important;
-            transform: scale(1.03);
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.3);
         }
 
-        /* Touch Avatar Floating Dragging Effect on IFP */
+        /* Touch Avatar Floating Dragging Effect */
         .touch-drag-avatar {
             position: fixed;
-            pointer-events: none;
+            pointer-events: none !important;
             z-index: 9999;
             opacity: 0.95;
-            transform: translate(-50%, -50%) scale(1.1) rotate(-2deg);
-            box-shadow: 0 20px 35px -5px rgba(15, 23, 42, 0.35), 0 0 20px rgba(59, 130, 246, 0.5);
-            border: 3px solid #3B82F6 !important;
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 15px 30px rgba(15, 23, 42, 0.3);
+            border: 2px solid #3B82F6 !important;
             background-color: #FFFFFF !important;
-            border-radius: 0.85rem;
+            border-radius: 0.75rem;
             will-change: left, top;
         }
 
@@ -219,7 +215,7 @@
 
         <div class="grid grid-cols-12 gap-1.5 sm:gap-2 flex-grow overflow-hidden h-full">
 
-            <!-- LEFT PANEL: DEVICE SELECTION POOL (Compact Grid to Fit One Screen) -->
+            <!-- LEFT PANEL: DEVICE SELECTION POOL (Fixed Grid Matrix 3x4) -->
             <section class="col-span-5 lg:col-span-4 bg-white rounded-xl p-1.5 sm:p-2 border border-slate-200 shadow-sm flex flex-col overflow-hidden h-full">
                 <div class="flex items-center justify-between pb-1 border-b border-slate-100 shrink-0 mb-1">
                     <div class="flex items-center gap-1.5">
@@ -229,8 +225,8 @@
                     <span class="text-[9px] sm:text-[10px] bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-200">1 Screen View</span>
                 </div>
 
-                <!-- Single Screen Compact Grid Layout -->
-                <div id="image-pool" class="grid grid-cols-3 gap-1 sm:gap-1.5 p-0.5 flex-grow overflow-hidden items-stretch justify-items-stretch">
+                <!-- Rigid Fixed Layout Grid Matrix -->
+                <div id="image-pool" class="grid grid-cols-3 grid-rows-4 gap-1 sm:gap-1.5 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
                     <!-- Cards dynamically generated -->
                 </div>
             </section>
@@ -257,7 +253,7 @@
                             </span>
                             <span class="text-[9px] font-extrabold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">Perangkat Keras</span>
                         </div>
-                        <div id="hardware-slots" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-1 p-0.5 flex-grow overflow-hidden items-stretch">
+                        <div id="hardware-slots" class="grid grid-cols-3 grid-rows-2 gap-1 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
                             <!-- Hardware Slots -->
                         </div>
                     </div>
@@ -271,7 +267,7 @@
                             </span>
                             <span class="text-[9px] font-extrabold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">Perangkat Lunak</span>
                         </div>
-                        <div id="software-slots" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-1 p-0.5 flex-grow overflow-hidden items-stretch">
+                        <div id="software-slots" class="grid grid-cols-3 grid-rows-2 gap-1 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
                             <!-- Software Slots -->
                         </div>
                     </div>
@@ -762,6 +758,11 @@
                 if (!isPlaced) {
                     const card = createCardElement(item);
                     imagePoolEl.appendChild(card);
+                } else {
+                    // Placeholder kosong agar posisi grid tetap kokoh dan tidak melar
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'w-full h-full border border-dashed border-slate-200 rounded-lg aspect-square opacity-30';
+                    imagePoolEl.appendChild(placeholder);
                 }
             });
         }
@@ -772,17 +773,17 @@
             card.setAttribute('data-id', item.id);
             card.setAttribute('draggable', 'true');
             
-            /* Compact Card Size for Single Screen View */
-            card.className = "device-card group bg-white border-2 border-slate-200 hover:border-blue-400 rounded-lg p-0.5 flex flex-col items-center justify-between text-center shadow-sm relative overflow-hidden h-full min-h-0 w-full";
+            /* Rigid Square Card Aspect */
+            card.className = "device-card group bg-white border-2 border-slate-200 hover:border-blue-400 rounded-lg p-1 flex flex-col items-center justify-between text-center shadow-sm relative overflow-hidden h-full w-full pointer-events-auto";
 
             card.innerHTML = `
-                <div class="w-full flex-grow flex items-center justify-center p-0.5 overflow-hidden relative min-h-0">
+                <div class="w-full flex-grow flex items-center justify-center p-0.5 overflow-hidden relative min-h-0 pointer-events-none">
                     <img src="${item.img}" alt="${item.name}" 
                          onerror="this.onerror=null; this.src='${fallbackImg}';"
-                         class="device-img max-h-8 sm:max-h-9 max-w-full object-contain pointer-events-none drop-shadow-sm transition-transform duration-200" />
+                         class="device-img max-h-10 sm:max-h-12 max-w-full object-contain drop-shadow-sm transition-transform duration-150 pointer-events-none" />
                 </div>
-                <div class="w-full bg-slate-50 group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-200 rounded py-0.5 px-0.5 shrink-0 transition-colors">
-                    <span class="font-fredoka font-bold text-[9px] sm:text-[10px] text-slate-800 group-hover:text-blue-900 line-clamp-1 block leading-tight">${item.name}</span>
+                <div class="w-full bg-slate-50 group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-200 rounded py-0.5 px-0.5 shrink-0 transition-colors pointer-events-none">
+                    <span class="font-fredoka font-bold text-[9px] sm:text-[10px] text-slate-800 group-hover:text-blue-900 line-clamp-1 block leading-tight pointer-events-none">${item.name}</span>
                 </div>
             `;
 
@@ -805,22 +806,22 @@
             slot.id = `slot-${slotKey}`;
             slot.setAttribute('data-slot-key', slotKey);
             slot.setAttribute('data-category', categoryName.toLowerCase());
-            slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-lg p-0.5 flex flex-col items-center justify-center h-full min-h-0 transition-all text-center relative overflow-hidden w-full";
+            slot.className = "slot-box bg-white border-2 border-dashed border-slate-300 hover:border-blue-400 rounded-lg p-1 flex flex-col items-center justify-center h-full transition-all text-center relative overflow-hidden w-full";
 
             const assignedItemId = slotAssignments[slotKey];
 
             if (assignedItemId) {
                 const item = itemsData.find(i => i.id === assignedItemId);
                 const isHw = slotKey.startsWith('hw');
-                slot.className = `slot-box bg-white border-2 border-solid ${isHw ? 'border-blue-300' : 'border-emerald-300'} rounded-lg p-0.5 flex flex-col items-center justify-between h-full min-h-0 relative overflow-hidden shadow-sm w-full`;
+                slot.className = `slot-box bg-white border-2 border-solid ${isHw ? 'border-blue-300' : 'border-emerald-300'} rounded-lg p-1 flex flex-col items-center justify-between h-full relative overflow-hidden shadow-sm w-full`;
                 slot.innerHTML = `
-                    <div class="w-full flex-grow p-0.5 flex items-center justify-center overflow-hidden min-h-0">
+                    <div class="w-full flex-grow p-0.5 flex items-center justify-center overflow-hidden min-h-0 pointer-events-none">
                         <img src="${item.img}" alt="${item.name}" 
                              onerror="this.onerror=null; this.src='${fallbackImg}';"
-                             class="max-h-8 sm:max-h-9 max-w-full object-contain pointer-events-none drop-shadow-sm" />
+                             class="max-h-10 sm:max-h-12 max-w-full object-contain pointer-events-none drop-shadow-sm" />
                     </div>
-                    <div class="w-full ${isHw ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'} border rounded py-0.5 px-0.5 shrink-0">
-                        <span class="font-fredoka font-bold text-[8px] sm:text-[9px] ${isHw ? 'text-blue-900' : 'text-emerald-900'} truncate block leading-tight">${item.name}</span>
+                    <div class="w-full ${isHw ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'} border rounded py-0.5 px-0.5 shrink-0 pointer-events-none">
+                        <span class="font-fredoka font-bold text-[8px] sm:text-[9px] ${isHw ? 'text-blue-900' : 'text-emerald-900'} truncate block leading-tight pointer-events-none">${item.name}</span>
                     </div>
                     <button onclick="removeItemFromSlot('${slotKey}')" class="absolute top-0.5 right-0.5 w-4 h-4 bg-rose-500 hover:bg-rose-600 text-white rounded-full text-[9px] flex items-center justify-center shadow-md transition-all z-10 active:scale-95">
                         <i class="fa-solid fa-xmark"></i>
@@ -852,7 +853,7 @@
                 }
             });
 
-            // Desktop Drag Events
+            // Desktop Drag Events Anti-Flicker
             element.addEventListener('dragstart', (e) => {
                 activeDraggedId = item.id;
                 element.classList.add('is-dragging');
