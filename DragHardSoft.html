@@ -39,10 +39,11 @@
     </script>
 
     <style>
-        * {
+        *, *::before, *::after {
             user-select: none;
             -webkit-user-select: none;
             touch-action: manipulation;
+            box-sizing: border-box !important;
         }
 
         body {
@@ -65,41 +66,40 @@
 
         /* Fixed Dimensions & Robust Card Layout */
         .device-card {
-            transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
             cursor: grab;
             touch-action: none;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
             will-change: transform;
-            aspect-ratio: 1 / 1; /* Mencegah kartu melar */
+            aspect-ratio: 1 / 1;
         }
         .device-card:active {
             cursor: grabbing;
         }
         .device-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.2);
             border-color: #60A5FA;
         }
 
-        /* Anti-Flicker & Fixed Drag States */
+        /* Anti-Flicker & FIXED Drag States (No scale / No shrinking) */
         .device-card.is-dragging {
             opacity: 0.4 !important;
-            transform: scale(0.95);
             border-style: dashed !important;
             border-color: #3B82F6 !important;
+            /* Scale sengaja dihapus agar tidak mengecil saat di-drag */
         }
 
         .device-card.selected-touch {
             outline: 3px solid #3B82F6;
-            outline-offset: 1px;
+            outline-offset: -1px;
             background-color: #EFF6FF !important;
         }
 
-        /* Drop Target Slots Styling dengan Aspect Ratio Tetap */
+        /* Drop Target Slots Styling */
         .slot-box {
             transition: border-color 0.15s ease, background-color 0.15s ease;
-            aspect-ratio: 1 / 1; /* Konsistensi ukuran slot */
+            aspect-ratio: 1 / 1;
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
         }
@@ -109,17 +109,17 @@
             box-shadow: inset 0 0 10px rgba(59, 130, 246, 0.3);
         }
 
-        /* Touch Avatar Floating Dragging Effect */
+        /* Touch Avatar Floating Dragging Effect (Strict 1:1 Scale Match) */
         .touch-drag-avatar {
             position: fixed;
             pointer-events: none !important;
             z-index: 9999;
             opacity: 0.95;
-            transform: translate(-50%, -50%) scale(1.05);
-            box-shadow: 0 15px 30px rgba(15, 23, 42, 0.3);
+            transform: translate(-50%, -50%); /* Tanpa scale(1.05) agar ukurannya presisi */
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
             border: 2px solid #3B82F6 !important;
             background-color: #FFFFFF !important;
-            border-radius: 0.75rem;
+            border-radius: 0.5rem;
             will-change: left, top;
         }
 
@@ -226,7 +226,7 @@
                 </div>
 
                 <!-- Rigid Fixed Layout Grid Matrix -->
-                <div id="image-pool" class="grid grid-cols-3 grid-rows-4 gap-1 sm:gap-1.5 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
+                <div id="image-pool" class="grid grid-cols-3 grid-rows-4 gap-1.5 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
                     <!-- Cards dynamically generated -->
                 </div>
             </section>
@@ -253,7 +253,7 @@
                             </span>
                             <span class="text-[9px] font-extrabold text-blue-600 bg-blue-100 px-1.5 py-0.5 rounded-full">Perangkat Keras</span>
                         </div>
-                        <div id="hardware-slots" class="grid grid-cols-3 grid-rows-2 gap-1 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
+                        <div id="hardware-slots" class="grid grid-cols-3 grid-rows-2 gap-1.5 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
                             <!-- Hardware Slots -->
                         </div>
                     </div>
@@ -267,7 +267,7 @@
                             </span>
                             <span class="text-[9px] font-extrabold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded-full">Perangkat Lunak</span>
                         </div>
-                        <div id="software-slots" class="grid grid-cols-3 grid-rows-2 gap-1 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
+                        <div id="software-slots" class="grid grid-cols-3 grid-rows-2 gap-1.5 p-0.5 flex-grow overflow-hidden items-center justify-items-center">
                             <!-- Software Slots -->
                         </div>
                     </div>
@@ -759,9 +759,9 @@
                     const card = createCardElement(item);
                     imagePoolEl.appendChild(card);
                 } else {
-                    // Placeholder kosong agar posisi grid tetap kokoh dan tidak melar
+                    // Placeholder kosong dengan rasio 1:1 presisi agar tidak merubah ukuran layout
                     const placeholder = document.createElement('div');
-                    placeholder.className = 'w-full h-full border border-dashed border-slate-200 rounded-lg aspect-square opacity-30';
+                    placeholder.className = 'w-full h-full border-2 border-dashed border-slate-200 rounded-lg aspect-square opacity-30';
                     imagePoolEl.appendChild(placeholder);
                 }
             });
@@ -773,14 +773,14 @@
             card.setAttribute('data-id', item.id);
             card.setAttribute('draggable', 'true');
             
-            /* Rigid Square Card Aspect */
+            /* Presisi Kotak 1:1 */
             card.className = "device-card group bg-white border-2 border-slate-200 hover:border-blue-400 rounded-lg p-1 flex flex-col items-center justify-between text-center shadow-sm relative overflow-hidden h-full w-full pointer-events-auto";
 
             card.innerHTML = `
                 <div class="w-full flex-grow flex items-center justify-center p-0.5 overflow-hidden relative min-h-0 pointer-events-none">
                     <img src="${item.img}" alt="${item.name}" 
                          onerror="this.onerror=null; this.src='${fallbackImg}';"
-                         class="device-img max-h-10 sm:max-h-12 max-w-full object-contain drop-shadow-sm transition-transform duration-150 pointer-events-none" />
+                         class="h-9 sm:h-11 w-auto max-w-full object-contain drop-shadow-sm pointer-events-none" />
                 </div>
                 <div class="w-full bg-slate-50 group-hover:bg-blue-50 border border-slate-200 group-hover:border-blue-200 rounded py-0.5 px-0.5 shrink-0 transition-colors pointer-events-none">
                     <span class="font-fredoka font-bold text-[9px] sm:text-[10px] text-slate-800 group-hover:text-blue-900 line-clamp-1 block leading-tight pointer-events-none">${item.name}</span>
@@ -818,7 +818,7 @@
                     <div class="w-full flex-grow p-0.5 flex items-center justify-center overflow-hidden min-h-0 pointer-events-none">
                         <img src="${item.img}" alt="${item.name}" 
                              onerror="this.onerror=null; this.src='${fallbackImg}';"
-                             class="max-h-10 sm:max-h-12 max-w-full object-contain pointer-events-none drop-shadow-sm" />
+                             class="h-9 sm:h-11 w-auto max-w-full object-contain pointer-events-none drop-shadow-sm" />
                     </div>
                     <div class="w-full ${isHw ? 'bg-blue-50 border-blue-200' : 'bg-emerald-50 border-emerald-200'} border rounded py-0.5 px-0.5 shrink-0 pointer-events-none">
                         <span class="font-fredoka font-bold text-[8px] sm:text-[9px] ${isHw ? 'text-blue-900' : 'text-emerald-900'} truncate block leading-tight pointer-events-none">${item.name}</span>
@@ -871,7 +871,7 @@
                 const touch = e.touches[0];
                 activeDraggedId = item.id;
 
-                // Create Floating Touch Avatar
+                // Create Floating Touch Avatar (Presisi Ukuran Kotak)
                 touchAvatar = element.cloneNode(true);
                 touchAvatar.classList.add('touch-drag-avatar');
                 touchAvatar.style.width = element.offsetWidth + 'px';
