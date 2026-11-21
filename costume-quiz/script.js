@@ -186,7 +186,7 @@ let folderStore = {
     folders: []
 };
 
-// Folder dan File yang sedang dibuka/dilihat di halaman pengaturan soal
+// Folder dan File yang sedang dibuka/dilihat di halaman pengaturan
 let viewingFolderId = '';
 let viewingFileId = '';
 
@@ -282,7 +282,6 @@ function loadFolderStore() {
     }
 
     updateActiveFolderBadgeUI();
-    clampTargetCorrectToAvailableQuestions();
 }
 
 function saveFolderStore() {
@@ -292,7 +291,6 @@ function saveFolderStore() {
         console.error('Gagal menyimpan data folder ke localStorage:', e);
     }
     updateActiveFolderBadgeUI();
-    clampTargetCorrectToAvailableQuestions();
 }
 
 function getActiveFolder() {
@@ -303,11 +301,6 @@ function getActiveFile() {
     const folder = getActiveFolder();
     if (!folder) return null;
     return folder.files.find(fl => fl.id === folderStore.activeFileId) || folder.files[0] || null;
-}
-
-function getActiveQuestionCount() {
-    const activeFile = getActiveFile();
-    return activeFile && Array.isArray(activeFile.questions) ? activeFile.questions.length : 0;
 }
 
 function getViewingFolder() {
@@ -331,7 +324,6 @@ function updateActiveFolderBadgeUI() {
     const badgeName = document.getElementById('activeFolderBadge');
     const badgeCount = document.getElementById('questionCountBadge');
     const headerActiveName = document.getElementById('headerActiveFolderName');
-    const maxTargetBadge = document.getElementById('maxTargetQuestionsBadge');
 
     const folderName = activeFolder ? activeFolder.name : 'Belum dipilih';
     const fileName = activeFile ? activeFile.name : '-';
@@ -341,7 +333,6 @@ function updateActiveFolderBadgeUI() {
     if (badgeName) badgeName.textContent = fullTopicLabel;
     if (badgeCount) badgeCount.textContent = `${qCount} Soal`;
     if (headerActiveName) headerActiveName.textContent = `${fullTopicLabel} (${qCount} soal)`;
-    if (maxTargetBadge) maxTargetBadge.textContent = qCount;
 
     // Update tampilan banyaknya soal di setiap tombol mode (Menu Utama)
     document.querySelectorAll('.mode-question-count').forEach(el => {
@@ -355,6 +346,9 @@ function updateActiveFolderBadgeUI() {
     document.querySelectorAll('.active-topic-label').forEach(el => {
         el.textContent = fullTopicLabel;
     });
+
+    // Sinkronkan batas & label target jawaban benar dengan jumlah soal file aktif
+    try { updateTargetCorrectLabels(); } catch (e) { /* gameState belum siap */ }
 }
 
 function escapeHtml(str) {
@@ -365,14 +359,13 @@ function escapeHtml(str) {
         .replace(/"/g, '&quot;');
 }
 
-// Render semua bagian UI Pengaturan Folder & File Soal
+// Render semua bagian UI Pengaturan (Folder & File Soal)
 function renderFolderManagerUI() {
     renderFolderList();
     renderTargetFolderDropdown();
     renderTargetFileDropdown();
     renderViewingFileQuestions();
     updateActiveFolderBadgeUI();
-    clampTargetCorrectToAvailableQuestions();
 }
 
 function renderFolderList() {
@@ -818,10 +811,8 @@ function moveQuestionToAnotherFile(questionIndex) {
         return;
     }
 
-    const choicesText = allTargets.map((t, i) => `${i + 1}. ${t.folder.name} -> ${t.file.name}`).join('
-');
-    const input = prompt(`Pindahkan soal ke tujuan nomor berapa?
-${choicesText}`);
+    const choicesText = allTargets.map((t, i) => `${i + 1}. ${t.folder.name} -> ${t.file.name}`).join('\n');
+    const input = prompt(`Pindahkan soal ke tujuan nomor berapa?\n${choicesText}`);
     if (input === null) return;
 
     const chosenIdx = parseInt(input.trim(), 10) - 1;
@@ -1044,11 +1035,6 @@ function exportSelectedFileJson() {
 
 const STORAGE_KEY_TARGET_CORRECT = 'afifedu_target_correct_v1';
 
-function getMaxAllowedTargetCorrect() {
-    const qCount = getActiveQuestionCount();
-    return qCount > 0 ? qCount : 1;
-}
-
 function loadTargetCorrectSetting() {
     try {
         const saved = parseInt(localStorage.getItem(STORAGE_KEY_TARGET_CORRECT), 10);
@@ -1069,74 +1055,67 @@ function saveTargetCorrectSetting(val) {
     }
 }
 
-function clampTargetCorrectToAvailableQuestions() {
-    const maxAllowed = getMaxAllowedTargetCorrect();
-    const input = document.getElementById('inputTargetCorrect');
-    if (input) {
-        input.max = String(maxAllowed);
-        input.min = '1';
+// Batas maksimum target = jumlah soal pada file soal yang sedang aktif
+function getMaxTargetCorrect() {
+    let count = 0;
+    try {
+        const file = getActiveFile();
+        count = file && Array.isArray(file.questions) ? file.questions.length : 0;
+    } catch (e) {
+        count = 0;
     }
+    return Math.max(1, count);
+}
 
-    let current = (typeof gameState !== 'undefined' && gameState.targetCorrectCount)
-        ? gameState.targetCorrectCount
-        : loadTargetCorrectSetting();
-
-    if (isNaN(current) || current < 1) {
-        current = 1;
-    }
-    if (current > maxAllowed) {
-        current = maxAllowed;
-    }
-
-    if (typeof gameState !== 'undefined') {
-        gameState.targetCorrectCount = current;
-    }
-    saveTargetCorrectSetting(current);
-    updateTargetCorrectLabels();
-    return current;
+// Target efektif: pilihan pengguna, tetapi tidak boleh melebihi jumlah soal yang ada
+function getEffectiveTargetCorrect() {
+    const pref = Math.max(1, parseInt(gameState.targetCorrectCount, 10) || 5);
+    return Math.min(pref, getMaxTargetCorrect());
 }
 
 function getTargetCorrectCount() {
-    return clampTargetCorrectToAvailableQuestions();
+    return getEffectiveTargetCorrect();
 }
 
 function updateTargetCorrectLabels() {
-    const maxAllowed = getMaxAllowedTargetCorrect();
-    const target = Math.min(Math.max(1, gameState.targetCorrectCount || 1), maxAllowed);
-    gameState.targetCorrectCount = target;
-
+    const target = getEffectiveTargetCorrect();
+    const maxTarget = getMaxTargetCorrect();
     const input = document.getElementById('inputTargetCorrect');
     if (input) {
-        input.max = String(maxAllowed);
+        input.max = maxTarget;
         if (document.activeElement !== input) {
             input.value = target;
         }
     }
-    const maxBadge = document.getElementById('maxTargetQuestionsBadge');
-    if (maxBadge) {
-        maxBadge.textContent = getActiveQuestionCount();
+    const hint = document.getElementById('targetCorrectMaxHint');
+    if (hint) {
+        hint.textContent = `Maksimal ${maxTarget} (sesuai jumlah soal pada file aktif)`;
     }
     document.querySelectorAll('.target-correct-label').forEach(el => {
         el.textContent = target;
     });
 }
 
-function onTargetCorrectChange() {
+function onTargetCorrectChange(event) {
     const input = document.getElementById('inputTargetCorrect');
     if (!input) return;
-    const maxAllowed = getMaxAllowedTargetCorrect();
-    input.max = String(maxAllowed);
-
-    let val = parseInt(input.value, 10);
+    const maxTarget = getMaxTargetCorrect();
+    const raw = parseInt(input.value, 10);
+    let val = raw;
+    let clamped = false;
     if (isNaN(val) || val < 1) {
         val = 1;
-    } else if (val > maxAllowed) {
-        val = maxAllowed;
+        clamped = !isNaN(raw);
+    } else if (val > maxTarget) {
+        val = maxTarget; // target tidak boleh melebihi jumlah soal
+        clamped = true;
     }
-
-    input.value = val;
     gameState.targetCorrectCount = val;
     saveTargetCorrectSetting(val);
+    // Tampilkan nilai yang sudah dikoreksi (saat melebihi batas atau saat selesai mengisi)
+    if (clamped || (event && event.type === 'change')) {
+        input.value = val;
+    }
     updateTargetCorrectLabels();
 }
 
@@ -1162,7 +1141,7 @@ const gameState = {
         currentQuestionObj: null,
         isLocked: false
     },
-    targetCorrectCount: loadTargetCorrectSetting(), // jumlah ketentuan soal yang harus dijawab secara benar (maks <= jumlah soal aktif)
+    targetCorrectCount: loadTargetCorrectSetting(), // jumlah ketentuan soal yang harus dijawab secara benar
     ropePosition: 50, // posisi tali (50 = tengah, 0 = kiri menang, 100 = kanan menang)
     currentGameType: 'tarik-tambang' // 'tarik-tambang', 'panjat-pinang', or 'balap-karung'
 };
@@ -1215,7 +1194,7 @@ function checkAnswer(player, selectedOption) {
 
     playerState.isLocked = true;
 
-    const targetWin = clampTargetCorrectToAvailableQuestions();
+    const targetWin = getEffectiveTargetCorrect();
 
     if (selectedOption === correctOption) {
         // Jawaban benar
@@ -1399,7 +1378,7 @@ function updateScoreDisplay(player) {
         gameScreen = '#gameScreenBalapKarung';
     }
     
-    const targetWin = clampTargetCorrectToAvailableQuestions();
+    const targetWin = getEffectiveTargetCorrect();
     const scoreElement = document.querySelector(`${gameScreen} .${player}-player .score-value`);
     
     if (scoreElement && gameState.currentGameType === 'panjat-pinang') {
@@ -1430,7 +1409,7 @@ function updateClimberPosition(player) {
     // ============================================
     // PENGATURAN PANJAT PINANG (DINAMIS SESUAI TARGET)
     // ============================================
-    const TOTAL_STEPS = clampTargetCorrectToAvailableQuestions(); // Jumlah jawaban benar untuk menang
+    const TOTAL_STEPS = getEffectiveTargetCorrect(); // Jumlah jawaban benar untuk menang
     const MAX_HEIGHT_PERCENT = 75;   // Tinggi maksimal (% dari tiang)
     
     // Hitung persentase ketinggian
@@ -1479,7 +1458,7 @@ function updateRacerPosition(player) {
     // ============================================
     // PENGATURAN BALAP KARUNG (3D PERSPECTIVE)
     // ============================================
-    const TOTAL_HOPS = clampTargetCorrectToAvailableQuestions(); // Jumlah hop untuk menang sesuai target
+    const TOTAL_HOPS = getEffectiveTargetCorrect(); // Jumlah hop untuk menang sesuai target
     
     // Different track lengths for 3D perspective
     // Player di jalur atas (merah/right) memiliki jarak lebih pendek karena perspective
@@ -1700,7 +1679,7 @@ function resetGame() {
     gameState.rightPlayer.isLocked = false;
     
     updateActiveFolderBadgeUI();
-    clampTargetCorrectToAvailableQuestions();
+    updateTargetCorrectLabels();
 
     if (gameState.currentGameType === 'tarik-tambang') {
         updateRopePosition();
@@ -1714,7 +1693,7 @@ function resetGame() {
             climbImage.style.display = 'none';
         });
         
-        // Update score display untuk reset ke 0/target
+        // Update score display untuk reset ke 0/7
         updateScoreDisplay('left');
         updateScoreDisplay('right');
     } else if (gameState.currentGameType === 'balap-karung') {
@@ -1750,7 +1729,7 @@ function resetGame() {
             hopImage.style.display = 'none';
         }
         
-        // Update score display untuk reset ke 0/target
+        // Update score display untuk reset ke 0/10
         updateScoreDisplay('left');
         updateScoreDisplay('right');
     }
@@ -1803,10 +1782,9 @@ function showGameTypeMenu() {
     const homeBtn = document.getElementById('homeBtn');
     if (homeBtn) homeBtn.style.display = 'none';
     updateActiveFolderBadgeUI();
-    clampTargetCorrectToAvailableQuestions();
 }
 
-// Fungsi untuk menampilkan menu Pengaturan (Target Jawaban, Folder & File Soal)
+// Fungsi untuk menampilkan menu Pengaturan (target jawaban benar, folder & file soal)
 function showCustomQuestionMenu() {
     document.getElementById('gameTypeMenu').style.display = 'none';
     document.getElementById('customQuestionMenu').style.display = 'flex';
@@ -1828,7 +1806,7 @@ function selectGameType(gameType) {
         showCustomQuestionMenu();
         return;
     }
-    clampTargetCorrectToAvailableQuestions();
+    onTargetCorrectChange();
     gameState.currentGameType = gameType;
     showCountdown();
 }
@@ -1936,7 +1914,7 @@ function backToGameTypeMenu() {
 
 // Initialize - muat data folder, ketentuan target benar & tampilkan menu game type
 loadFolderStore();
-clampTargetCorrectToAvailableQuestions();
+updateTargetCorrectLabels();
 showGameTypeMenu();
 
 // ============================================
@@ -2094,7 +2072,7 @@ function recalculateRacerPositions() {
     if (!raceTrack) return;
     
     const trackWidth = raceTrack.offsetWidth;
-    const TOTAL_HOPS = clampTargetCorrectToAvailableQuestions();
+    const TOTAL_HOPS = getEffectiveTargetCorrect();
     
     // Recalculate left racer position (blue - jalur bawah)
     const leftRacer = document.querySelector('#gameScreenBalapKarung .left-racer');
