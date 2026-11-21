@@ -49,7 +49,9 @@
     <div id="gameTypeMenu" class="menu-screen">
         <div class="menu-container">
             <h1 class="menu-title">Permainan Kuis Edukasi</h1>
-            <p class="menu-subtitle">Pilih Tema Permainan (<span id="questionCountBadge">0 Soal Tersedia</span>)</p>
+            <p class="menu-subtitle">
+                Folder Aktif: <strong id="activeFolderBadge">-</strong> (<span id="questionCountBadge">0 Soal</span>)
+            </p>
             <div class="menu-buttons">
                 <button class="menu-btn game-type-btn tarik-tambang" onclick="selectGameType('tarik-tambang')">
                     <img src="https://game.afifedu.com/icon_tarik.png" alt="Tarik Tambang" class="menu-icon">
@@ -67,27 +69,65 @@
                     <span>Balap Karung</span>
                 </button>
                 <button class="menu-btn custom-soal-btn" onclick="showCustomQuestionMenu()">
-                    📝 Kelola Kostum Soal
+                    📁 Kelola Folder & Kostum Soal
                 </button>
             </div>
         </div>
         <div class="copyright-footer">
-            <p>© AfifEdu 2025 | <span id="version-indicator">v2.0.0 - Custom Quiz</span></p>
+            <p>© AfifEdu 2025 | <span id="version-indicator">v2.1.0 - Folder & JSON Quiz</span></p>
             <p style="margin-top: 5px; font-size: 0.9em; opacity: 0.8;">Created By Herwin Hamid</p>
         </div>
     </div>
 
-    <!-- Menu Kostum Soal (Untuk Semua Mata Pelajaran) -->
+    <!-- Menu Kostum Soal Berbasis Folder Mata Pelajaran -->
     <div id="customQuestionMenu" class="menu-screen">
         <div class="menu-container custom-soal-container">
-            <h1 class="menu-title">Kostum Soal Pelajaran</h1>
-            <p class="menu-subtitle">Masukkan soal pilihan ganda (A, B, C, D) untuk semua mata pelajaran</p>
+            <div class="custom-header-bar">
+                <div>
+                    <h1 class="menu-title">Bank Soal Per Mata Pelajaran</h1>
+                    <p class="menu-subtitle">Pilih folder mata pelajaran, aktifkan untuk dimainkan, atau import file JSON</p>
+                </div>
+                <div class="active-status-pill">
+                    <span>Dipakai Main:</span>
+                    <strong id="headerActiveFolderName">-</strong>
+                </div>
+            </div>
             
-            <div class="custom-soal-content">
-                <!-- Form Tambah Soal -->
+            <div class="custom-soal-workspace">
+                <!-- Kolom 1: Daftar Folder Mata Pelajaran -->
+                <div class="folder-sidebar-card">
+                    <div class="card-section-header">
+                        <h3>📁 Folder Pelajaran</h3>
+                    </div>
+
+                    <!-- Tambah Folder Baru -->
+                    <div class="add-folder-row">
+                        <input type="text" id="inputNewFolderName" class="soal-input" placeholder="Nama Mapel (mis: IPA, B. Inggris)">
+                        <button type="button" class="add-folder-btn" onclick="createNewFolder()" title="Buat Folder Baru">+ Folder</button>
+                    </div>
+
+                    <!-- Daftar Folder -->
+                    <div id="folderListContainer" class="folder-list-container">
+                        <!-- Folder dirender lewat JS -->
+                    </div>
+                </div>
+
+                <!-- Kolom 2: Form Tambah Soal + Import JSON ke Folder Terpilih -->
                 <div class="soal-form-card">
-                    <h3>Tambah Soal Baru</h3>
-                    <input type="text" id="inputQuestionText" class="soal-input" placeholder="Tulis pertanyaan di sini (contoh: Ibukota Indonesia adalah...)">
+                    <div class="card-section-header">
+                        <h3>✍️ Input & Import JSON</h3>
+                    </div>
+
+                    <!-- Pilih Folder Tujuan Penyimpanan -->
+                    <div class="target-folder-box">
+                        <label for="selectTargetFolder">Simpan ke Folder:</label>
+                        <select id="selectTargetFolder" class="soal-select target-folder-select" onchange="onTargetFolderSelectChange()">
+                            <!-- Opsi folder dirender lewat JS -->
+                        </select>
+                    </div>
+
+                    <!-- Form Tambah Soal Manual -->
+                    <input type="text" id="inputQuestionText" class="soal-input" placeholder="Tulis pertanyaan di sini...">
                     <div class="options-input-grid">
                         <input type="text" id="inputOptionA" class="soal-input" placeholder="Pilihan A">
                         <input type="text" id="inputOptionB" class="soal-input" placeholder="Pilihan B">
@@ -95,47 +135,48 @@
                         <input type="text" id="inputOptionD" class="soal-input" placeholder="Pilihan D">
                     </div>
                     <div class="form-bottom-row">
-                        <label for="inputCorrectOption">Kunci Jawaban:</label>
+                        <label for="inputCorrectOption">Kunci:</label>
                         <select id="inputCorrectOption" class="soal-select">
                             <option value="A">A</option>
                             <option value="B">B</option>
                             <option value="C">C</option>
                             <option value="D">D</option>
                         </select>
-                        <button type="button" class="add-soal-btn" onclick="addCustomQuestion()">+ Tambah Soal</button>
+                        <button type="button" class="add-soal-btn" onclick="addCustomQuestion()">+ Simpan Soal</button>
+                    </div>
+
+                    <!-- Area Import & Export File JSON pada Folder Terpilih -->
+                    <div class="json-io-box">
+                        <div class="json-io-title">📂 Import / Export File JSON (ke folder terpilih di atas)</div>
+                        <div class="json-io-actions">
+                            <input type="file" id="jsonFileInput" accept=".json,application/json" style="display: none;" onchange="handleJsonFileUpload(event)">
+                            <button type="button" class="json-btn upload-json-btn" onclick="triggerJsonUpload()">📤 Import File .JSON</button>
+                            <button type="button" class="json-btn download-template-btn" onclick="downloadJsonTemplate()">📥 Contoh .JSON</button>
+                            <button type="button" class="json-btn export-json-btn" onclick="exportSelectedFolderJson()">💾 Export Folder</button>
+                        </div>
+                        <p class="json-hint">Format JSON: array berisi <code>{"question":"...","options":{"A":"...","B":"...","C":"...","D":"..."},"answer":"A"}</code></p>
                     </div>
                 </div>
 
-                <!-- Import Massal & Daftar Soal -->
+                <!-- Kolom 3: Daftar Soal dalam Folder yang Sedang Dibuka -->
                 <div class="soal-list-card">
                     <div class="soal-list-header">
-                        <h3>Daftar Soal (<span id="totalCustomQuestions">0</span>)</h3>
-                        <div class="soal-actions-group">
-                            <button type="button" class="mini-action-btn import-btn" onclick="toggleBulkImport()">📥 Import Teks</button>
-                            <button type="button" class="mini-action-btn reset-default-btn" onclick="resetDefaultQuestions()">🔄 Soal Contoh</button>
-                            <button type="button" class="mini-action-btn clear-all-btn" onclick="clearAllCustomQuestions()">🗑️ Hapus Semua</button>
+                        <div class="viewing-folder-info">
+                            <h3>Isi Folder: <span id="viewingFolderTitle">-</span> (<span id="totalCustomQuestions">0</span>)</h3>
                         </div>
-                    </div>
-
-                    <!-- Box Import Massal (Hidden by default) -->
-                    <div id="bulkImportBox" class="bulk-import-box" style="display: none;">
-                        <p class="bulk-hint">Format per baris: <b>Pertanyaan | Opsi A | Opsi B | Opsi C | Opsi D | Kunci (A/B/C/D)</b></p>
-                        <textarea id="bulkImportText" class="bulk-textarea" placeholder="Contoh:
-Planet terdekat dengan matahari adalah? | Venus | Merkurius | Bumi | Mars | B
-2 + 5 x 2 = ? | 14 | 12 | 10 | 7 | B"></textarea>
-                        <div class="bulk-btn-row">
-                            <button type="button" class="add-soal-btn" onclick="processBulkImport()">Simpan Import</button>
-                            <button type="button" class="mini-action-btn" onclick="toggleBulkImport()">Batal</button>
+                        <div class="soal-actions-group">
+                            <button type="button" id="activateViewingFolderBtn" class="mini-action-btn activate-btn" onclick="activateViewingFolder()">✅ Aktifkan Folder Ini</button>
+                            <button type="button" class="mini-action-btn clear-all-btn" onclick="clearViewingFolderQuestions()">🗑️ Kosongkan</button>
                         </div>
                     </div>
 
                     <div id="customQuestionList" class="custom-question-list">
-                        <!-- List soal akan dirender oleh JS -->
+                        <!-- List soal dalam folder dirender lewat JS -->
                     </div>
                 </div>
             </div>
 
-            <button class="back-btn" onclick="backToGameTypeMenu()">← Simpan & Kembali</button>
+            <button class="back-btn" onclick="backToGameTypeMenu()">← Simpan & Kembali ke Menu Utama</button>
         </div>
     </div>
 

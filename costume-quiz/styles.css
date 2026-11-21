@@ -3202,7 +3202,7 @@ html {
 }
 
 /* ============================================ */
-/* CUSTOM SOAL & MULTIPLE CHOICE OPTIONS STYLES */
+/* FOLDER MANAGER, JSON IO & MULTIPLE CHOICE    */
 /* ============================================ */
 
 .custom-soal-btn {
@@ -3215,39 +3215,73 @@ html {
 }
 
 .custom-soal-container {
-    max-width: min(92vw, 950px) !important;
-    width: 92vw !important;
-    max-height: 92vh !important;
-    padding: clamp(16px, 2.5vh, 30px) clamp(18px, 3vw, 40px) !important;
+    max-width: min(96vw, 1280px) !important;
+    width: 96vw !important;
+    max-height: 94vh !important;
+    padding: clamp(14px, 2vh, 24px) clamp(16px, 2.5vw, 32px) !important;
     display: flex;
     flex-direction: column;
-    gap: clamp(10px, 1.5vh, 16px);
+    gap: clamp(10px, 1.4vh, 14px);
 }
 
-.custom-soal-content {
+.custom-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    text-align: left;
+}
+
+.custom-header-bar .menu-title {
+    font-size: clamp(1.15rem, 2.2vw, 1.75rem);
+    margin-bottom: 2px;
+    text-align: left;
+}
+
+.custom-header-bar .menu-subtitle {
+    font-size: clamp(0.78rem, 1.2vw, 0.95rem);
+    margin-bottom: 0;
+    text-align: left;
+}
+
+.active-status-pill {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.28);
+}
+
+.custom-soal-workspace {
     display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: clamp(12px, 2vw, 24px);
+    grid-template-columns: 0.95fr 1.15fr 1.25fr;
+    gap: clamp(10px, 1.5vw, 18px);
     text-align: left;
     overflow: hidden;
     flex: 1;
     min-height: 0;
 }
 
-@media screen and (max-width: 820px) {
-    .custom-soal-content {
+@media screen and (max-width: 1024px) {
+    .custom-soal-workspace {
         grid-template-columns: 1fr;
         overflow-y: auto;
         touch-action: pan-y;
     }
 }
 
+.folder-sidebar-card,
 .soal-form-card,
 .soal-list-card {
-    background: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.78);
     border-radius: 18px;
-    padding: clamp(12px, 1.8vh, 20px);
-    border: 1px solid rgba(255, 255, 255, 0.85);
+    padding: clamp(12px, 1.6vh, 18px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
@@ -3255,22 +3289,194 @@ html {
     min-height: 0;
 }
 
-.soal-form-card h3,
-.soal-list-card h3 {
-    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+.card-section-header h3,
+.soal-list-header h3 {
+    font-size: clamp(0.95rem, 1.4vw, 1.1rem);
     color: #1a237e;
     margin: 0;
 }
 
-.soal-input,
-.soal-select,
-.bulk-textarea {
-    width: 100%;
+/* Folder Sidebar */
+.add-folder-row {
+    display: flex;
+    gap: 6px;
+}
+
+.add-folder-btn {
+    flex: none;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.folder-list-container {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+    max-height: 360px;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+}
+
+.folder-item {
+    background: #ffffff;
+    border-radius: 12px;
     padding: 10px 12px;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.folder-item:hover {
+    border-color: #93c5fd;
+}
+
+.folder-item.viewing {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.folder-item.active-play {
+    box-shadow: 0 3px 10px rgba(16, 185, 129, 0.2);
+}
+
+.folder-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.folder-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex: 1;
+}
+
+.folder-icon {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.folder-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.folder-count-pill {
+    font-size: 0.74rem;
+    font-weight: 600;
+    background: #e2e8f0;
+    color: #334155;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.folder-item-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.active-tag {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #059669;
+    background: #d1fae5;
+    padding: 3px 9px;
+    border-radius: 8px;
+}
+
+.folder-use-btn {
+    flex: none;
+    height: auto;
+    padding: 4px 10px;
+    font-size: 0.76rem;
+    border-radius: 8px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-weight: 700;
+    box-shadow: none;
+}
+
+.folder-use-btn:hover {
+    background: #bfdbfe;
+}
+
+.folder-mini-btns {
+    display: flex;
+    gap: 4px;
+}
+
+.folder-icon-btn {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    padding: 0;
+    border-radius: 7px;
+    background: #f1f5f9;
+    font-size: 0.8rem;
+    box-shadow: none;
+}
+
+.folder-icon-btn.danger {
+    background: #fee2e2;
+}
+
+/* Target Folder Box & Inputs */
+.target-folder-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #eff6ff;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid #bfdbfe;
+}
+
+.target-folder-box label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #1e40af;
+    white-space: nowrap;
+}
+
+.target-folder-select {
+    flex: 1;
+    padding: 6px 10px !important;
+    font-weight: 600;
+}
+
+.soal-input,
+.soal-select {
+    width: 100%;
+    padding: 9px 11px;
     border-radius: 10px;
     border: 1px solid rgba(26, 35, 126, 0.25);
-    background: rgba(255, 255, 255, 0.95);
-    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.96);
+    font-size: 0.86rem;
     color: #1e293b;
     outline: none;
     -webkit-user-select: text;
@@ -3279,8 +3485,7 @@ html {
 }
 
 .soal-input:focus,
-.soal-select:focus,
-.bulk-textarea:focus {
+.soal-select:focus {
     border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
@@ -3288,36 +3493,35 @@ html {
 .options-input-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 7px;
 }
 
 .form-bottom-row {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 2px;
+    gap: 8px;
 }
 
 .form-bottom-row label {
-    font-size: 0.88rem;
+    font-size: 0.84rem;
     font-weight: 600;
     color: #1e293b;
     white-space: nowrap;
 }
 
 .form-bottom-row .soal-select {
-    width: 75px;
+    width: 70px;
     flex-shrink: 0;
     font-weight: 700;
 }
 
 .add-soal-btn {
     flex: 1;
-    height: 42px;
-    border-radius: 12px;
+    height: 40px;
+    border-radius: 10px;
     background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white;
-    font-size: 0.92rem;
+    font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
 }
@@ -3326,6 +3530,73 @@ html {
     background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
 }
 
+/* JSON Import / Export Box */
+.json-io-box {
+    margin-top: auto;
+    background: #f8fafc;
+    border: 1px dashed #64748b;
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.json-io-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.json-io-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.json-btn {
+    flex: 1;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 8px;
+    font-size: 0.76rem;
+    border-radius: 8px;
+    font-weight: 700;
+    box-shadow: none;
+    white-space: nowrap;
+}
+
+.upload-json-btn {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    color: #ffffff;
+}
+
+.download-template-btn {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.export-json-btn {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.json-hint {
+    font-size: 0.7rem;
+    color: #475569;
+    margin: 0;
+    line-height: 1.3;
+    word-break: break-word;
+}
+
+.json-hint code {
+    background: #e2e8f0;
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+/* Question List Column */
 .soal-list-header {
     display: flex;
     align-items: center;
@@ -3342,56 +3613,30 @@ html {
 
 .mini-action-btn {
     height: auto;
+    min-height: 32px;
     flex: none;
-    padding: 6px 10px;
-    font-size: 0.78rem;
+    padding: 5px 10px;
+    font-size: 0.76rem;
     border-radius: 8px;
     background: #e2e8f0;
     color: #1e293b;
-    font-weight: 600;
+    font-weight: 700;
     box-shadow: none;
 }
 
-.mini-action-btn.import-btn {
-    background: #dbeafe;
-    color: #1d4ed8;
+.mini-action-btn.activate-btn {
+    background: #d1fae5;
+    color: #065f46;
 }
 
-.mini-action-btn.reset-default-btn {
-    background: #fef3c7;
-    color: #b45309;
+.mini-action-btn.activate-btn:disabled {
+    opacity: 0.85;
+    cursor: default;
 }
 
 .mini-action-btn.clear-all-btn {
     background: #fee2e2;
     color: #b91c1c;
-}
-
-.bulk-import-box {
-    background: rgba(241, 245, 249, 0.95);
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px dashed #64748b;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.bulk-hint {
-    font-size: 0.78rem;
-    color: #334155;
-    margin: 0;
-}
-
-.bulk-textarea {
-    min-height: 85px;
-    resize: vertical;
-    font-size: 0.82rem;
-}
-
-.bulk-btn-row {
-    display: flex;
-    gap: 8px;
 }
 
 .custom-question-list {
@@ -3401,7 +3646,7 @@ html {
     flex-direction: column;
     gap: 8px;
     padding-right: 4px;
-    max-height: 320px;
+    max-height: 360px;
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
 }
@@ -3413,7 +3658,7 @@ html {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.06);
 }
@@ -3424,7 +3669,7 @@ html {
 }
 
 .soal-item-q {
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     color: #0f172a;
     margin-bottom: 5px;
     word-wrap: break-word;
@@ -3433,8 +3678,8 @@ html {
 .soal-item-opts {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 4px 10px;
-    font-size: 0.78rem;
+    gap: 3px 8px;
+    font-size: 0.75rem;
     color: #475569;
 }
 
@@ -3443,25 +3688,42 @@ html {
     font-weight: 700;
 }
 
+.soal-item-side-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.move-soal-btn,
 .delete-soal-btn {
     flex: none;
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
-    min-height: 30px;
-    border-radius: 8px;
-    background: #fee2e2;
-    color: #dc2626;
-    font-size: 0.85rem;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: 7px;
+    font-size: 0.8rem;
     padding: 0;
     box-shadow: none;
+}
+
+.move-soal-btn {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.delete-soal-btn {
+    background: #fee2e2;
+    color: #dc2626;
 }
 
 .empty-soal-msg {
     text-align: center;
     padding: 25px 10px;
     color: #64748b;
-    font-size: 0.88rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
 }
 
 /* Override question-box & answer-box for text-based lesson questions */
@@ -3485,7 +3747,7 @@ html {
     text-overflow: ellipsis;
 }
 
-/* Options Pad (A, B, C, D) replacing numeric keypad */
+/* Options Pad (A, B, C, D) */
 .options-pad {
     display: flex;
     flex-direction: column;
