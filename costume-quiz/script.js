@@ -318,56 +318,6 @@ function getFolderTotalQuestions(folder) {
     return folder.files.reduce((sum, fl) => sum + (Array.isArray(fl.questions) ? fl.questions.length : 0), 0);
 }
 
-const STORAGE_KEY_QUESTION_LIMIT = 'afifedu_quiz_question_limit_v1';
-let configuredQuestionLimit = parseInt(localStorage.getItem(STORAGE_KEY_QUESTION_LIMIT) || '5', 10);
-if (isNaN(configuredQuestionLimit) || configuredQuestionLimit < 1) {
-    configuredQuestionLimit = 5;
-}
-
-function getAvailableQuestionCount() {
-    const activeFile = getActiveFile();
-    return (activeFile && Array.isArray(activeFile.questions)) ? activeFile.questions.length : 0;
-}
-
-function getEffectiveQuestionLimit() {
-    const maxQ = getAvailableQuestionCount();
-    if (maxQ <= 0) return Math.max(1, configuredQuestionLimit);
-    return Math.min(Math.max(1, configuredQuestionLimit), maxQ);
-}
-
-function onQuestionLimitChange() {
-    const input = document.getElementById('inputQuestionLimit');
-    if (!input) return;
-    const maxQ = getAvailableQuestionCount();
-    let val = parseInt(input.value, 10);
-    if (isNaN(val) || val < 1) {
-        val = 1;
-    }
-    if (maxQ > 0 && val > maxQ) {
-        val = maxQ;
-        input.value = val;
-    }
-    configuredQuestionLimit = val;
-    try {
-        localStorage.setItem(STORAGE_KEY_QUESTION_LIMIT, String(configuredQuestionLimit));
-    } catch (e) {}
-    updateActiveFolderBadgeUI();
-}
-
-function setQuestionLimitAll() {
-    const maxQ = getAvailableQuestionCount();
-    const targetVal = maxQ > 0 ? maxQ : 1;
-    configuredQuestionLimit = targetVal;
-    const input = document.getElementById('inputQuestionLimit');
-    if (input) {
-        input.value = targetVal;
-    }
-    try {
-        localStorage.setItem(STORAGE_KEY_QUESTION_LIMIT, String(configuredQuestionLimit));
-    } catch (e) {}
-    updateActiveFolderBadgeUI();
-}
-
 function updateActiveFolderBadgeUI() {
     const activeFolder = getActiveFolder();
     const activeFile = getActiveFile();
@@ -380,48 +330,18 @@ function updateActiveFolderBadgeUI() {
     const qCount = activeFile ? activeFile.questions.length : 0;
     const fullTopicLabel = activeFolder && activeFile ? `${folderName} - ${fileName}` : folderName;
 
-    // Sinkronkan input jumlah ketentuan soal
-    const limitInput = document.getElementById('inputQuestionLimit');
-    const maxBtnSpan = document.getElementById('maxAvailableQuestionsBtn');
-    const limitHint = document.getElementById('questionLimitHint');
-
-    if (maxBtnSpan) maxBtnSpan.textContent = qCount;
-    if (limitInput) {
-        if (qCount > 0) {
-            limitInput.max = qCount;
-            if (configuredQuestionLimit > qCount) {
-                configuredQuestionLimit = qCount;
-            }
-        } else {
-            limitInput.removeAttribute('max');
-        }
-        if (document.activeElement !== limitInput) {
-            limitInput.value = configuredQuestionLimit;
-        }
-    }
-
-    const effectiveLimit = getEffectiveQuestionLimit();
-    if (limitHint) {
-        limitHint.textContent = qCount > 0
-            ? `Mengeluarkan ${effectiveLimit} dari ${qCount} soal tersedia (${effectiveLimit} jawaban benar untuk menang)`
-            : `Belum ada soal di file aktif`;
-    }
-
     if (badgeName) badgeName.textContent = fullTopicLabel;
     if (badgeCount) badgeCount.textContent = `${qCount} Soal`;
     if (headerActiveName) headerActiveName.textContent = `${fullTopicLabel} (${qCount} soal)`;
 
-    // Update tampilan banyaknya soal yang akan dikeluarkan di setiap tombol mode (Menu Utama)
+    // Update tampilan banyaknya soal di setiap tombol mode (Menu Utama)
     document.querySelectorAll('.mode-question-count').forEach(el => {
-        el.textContent = `${effectiveLimit} / ${qCount} Soal (${fileName})`;
+        el.textContent = `${qCount} Soal Tersedia (${fileName})`;
     });
 
     // Update tampilan banyaknya soal & topik aktif di dalam setiap layar mode permainan
     document.querySelectorAll('.mode-total-questions-label').forEach(el => {
-        el.textContent = `${effectiveLimit} Soal`;
-    });
-    document.querySelectorAll('.target-soal-count').forEach(el => {
-        el.textContent = effectiveLimit;
+        el.textContent = `${qCount} Soal`;
     });
     document.querySelectorAll('.active-topic-label').forEach(el => {
         el.textContent = fullTopicLabel;
@@ -1107,35 +1027,90 @@ function exportSelectedFileJson() {
 }
 
 // ============================================
-// GAME STATE
+// GAME STATE & KETENTUAN TARGET JAWABAN BENAR
 // ============================================
+
+const STORAGE_KEY_TARGET_CORRECT = 'afifedu_target_correct_v1';
+
+function loadTargetCorrectSetting() {
+    try {
+        const saved = parseInt(localStorage.getItem(STORAGE_KEY_TARGET_CORRECT), 10);
+        if (!isNaN(saved) && saved >= 1) {
+            return saved;
+        }
+    } catch (e) {
+        console.error('Gagal memuat target jawaban benar:', e);
+    }
+    return 5;
+}
+
+function saveTargetCorrectSetting(val) {
+    try {
+        localStorage.setItem(STORAGE_KEY_TARGET_CORRECT, String(val));
+    } catch (e) {
+        console.error('Gagal menyimpan target jawaban benar:', e);
+    }
+}
+
+function getTargetCorrectCount() {
+    const input = document.getElementById('inputTargetCorrect');
+    if (input) {
+        const parsed = parseInt(input.value, 10);
+        if (!isNaN(parsed) && parsed >= 1) {
+            return parsed;
+        }
+    }
+    return gameState.targetCorrectCount || 5;
+}
+
+function updateTargetCorrectLabels() {
+    const target = gameState.targetCorrectCount || 5;
+    const input = document.getElementById('inputTargetCorrect');
+    if (input && document.activeElement !== input) {
+        input.value = target;
+    }
+    document.querySelectorAll('.target-correct-label').forEach(el => {
+        el.textContent = target;
+    });
+}
+
+function onTargetCorrectChange() {
+    const input = document.getElementById('inputTargetCorrect');
+    if (!input) return;
+    let val = parseInt(input.value, 10);
+    if (isNaN(val) || val < 1) {
+        val = 1;
+    } else if (val > 500) {
+        val = 500;
+    }
+    gameState.targetCorrectCount = val;
+    saveTargetCorrectSetting(val);
+    updateTargetCorrectLabels();
+}
 
 // Inisialisasi game state
 const gameState = {
     leftPlayer: {
         answer: '',
         score: 0,
-        climbPosition: 0, // untuk panjat pinang (0 - targetQuestionCount)
-        racePosition: 0,   // untuk balap karung (0 - targetQuestionCount)
+        climbPosition: 0, // untuk panjat pinang
+        racePosition: 0,   // untuk balap karung
         lastQuestionIndex: -1, // index soal terakhir untuk mencegah duplikat
-        questionOrder: [],
-        questionPointer: 0,
+        questionQueue: [],     // antrean semua soal agar seluruh isi soal dikeluarkan tanpa terlewat
         currentQuestionObj: null,
         isLocked: false
     },
     rightPlayer: {
         answer: '',
         score: 0,
-        climbPosition: 0, // untuk panjat pinang (0 - targetQuestionCount)
-        racePosition: 0,   // untuk balap karung (0 - targetQuestionCount)
+        climbPosition: 0, // untuk panjat pinang
+        racePosition: 0,   // untuk balap karung
         lastQuestionIndex: -1, // index soal terakhir untuk mencegah duplikat
-        questionOrder: [],
-        questionPointer: 0,
+        questionQueue: [],     // antrean semua soal agar seluruh isi soal dikeluarkan tanpa terlewat
         currentQuestionObj: null,
         isLocked: false
     },
-    targetQuestionCount: 5, // jumlah ketentuan soal yang perlu dijawab/dikeluarkan pada sesi aktif
-    sessionQuestionPool: [], // daftar soal sejumlah targetQuestionCount untuk sesi aktif
+    targetCorrectCount: loadTargetCorrectSetting(), // jumlah ketentuan soal yang harus dijawab secara benar
     ropePosition: 50, // posisi tali (50 = tengah, 0 = kiri menang, 100 = kanan menang)
     currentGameType: 'tarik-tambang' // 'tarik-tambang', 'panjat-pinang', or 'balap-karung'
 };
@@ -1188,32 +1163,33 @@ function checkAnswer(player, selectedOption) {
 
     playerState.isLocked = true;
 
+    const targetWin = Math.max(1, gameState.targetCorrectCount || 5);
+
     if (selectedOption === correctOption) {
         // Jawaban benar
+        playerState.score++;
         updateAnswer(player, `✅ ${selectedOption}. ${selectedText}`, 'correct');
         if (selectedBtn) selectedBtn.classList.add('opt-btn-correct');
-        playerState.score++;
-        const targetCount = Math.max(1, gameState.targetQuestionCount);
         
         if (gameState.currentGameType === 'tarik-tambang') {
-            // Logic untuk Tarik Tambang (pergeseran proporsional terhadap ketentuan jumlah soal)
-            const stepPull = 50 / targetCount;
+            // Logic untuk Tarik Tambang: langkah tali proporsional terhadap ketentuan jumlah soal benar
+            const stepSize = 50 / targetWin;
             if (player === 'left') {
-                gameState.ropePosition = Math.max(0, gameState.ropePosition - stepPull);
+                gameState.ropePosition = Math.max(0, gameState.ropePosition - stepSize);
             } else {
-                gameState.ropePosition = Math.min(100, gameState.ropePosition + stepPull);
+                gameState.ropePosition = Math.min(100, gameState.ropePosition + stepSize);
             }
             updateRopePosition();
             
-            // Cek kemenangan Tarik Tambang
-            if (gameState.ropePosition <= 0.001) {
+            // Cek kemenangan Tarik Tambang berdasarkan ketentuan jumlah benar atau ujung tali
+            if (gameState.leftPlayer.score >= targetWin || gameState.ropePosition <= 0.01) {
                 setTimeout(() => {
-                    showWinnerModal('Pemain Kiri', `Selamat! Anda berhasil menarik tali ke garis akhir (${targetCount} soal)!`);
+                    showWinnerModal('Pemain Kiri', `Selamat! Anda berhasil menjawab ${targetWin} soal dengan benar dan menarik tali ke garis akhir!`);
                 }, 400);
                 return true;
-            } else if (gameState.ropePosition >= 99.999) {
+            } else if (gameState.rightPlayer.score >= targetWin || gameState.ropePosition >= 99.99) {
                 setTimeout(() => {
-                    showWinnerModal('Pemain Kanan', `Selamat! Anda berhasil menarik tali ke garis akhir (${targetCount} soal)!`);
+                    showWinnerModal('Pemain Kanan', `Selamat! Anda berhasil menjawab ${targetWin} soal dengan benar dan menarik tali ke garis akhir!`);
                 }, 400);
                 return true;
             }
@@ -1231,16 +1207,16 @@ function checkAnswer(player, selectedOption) {
             updateClimberPosition(player);
             updateScoreDisplay(player); // Update tampilan score
             
-            // Cek kemenangan Panjat Pinang sesuai ketentuan jumlah soal
-            const WINNING_STEPS = targetCount;
+            // Cek kemenangan Panjat Pinang berdasarkan ketentuan jumlah benar
+            const WINNING_STEPS = targetWin;
             if (gameState.leftPlayer.climbPosition >= WINNING_STEPS) {
                 setTimeout(() => {
-                    showWinnerModal('Pemain Kiri', `Selamat! Anda berhasil mencapai puncak tiang pinang (${WINNING_STEPS} soal)!`);
+                    showWinnerModal('Pemain Kiri', `Selamat! Anda berhasil menjawab ${targetWin} soal dengan benar dan mencapai puncak tiang pinang!`);
                 }, 600);
                 return true;
             } else if (gameState.rightPlayer.climbPosition >= WINNING_STEPS) {
                 setTimeout(() => {
-                    showWinnerModal('Pemain Kanan', `Selamat! Anda berhasil mencapai puncak tiang pinang (${WINNING_STEPS} soal)!`);
+                    showWinnerModal('Pemain Kanan', `Selamat! Anda berhasil menjawab ${targetWin} soal dengan benar dan mencapai puncak tiang pinang!`);
                 }, 600);
                 return true;
             }
@@ -1258,16 +1234,16 @@ function checkAnswer(player, selectedOption) {
             updateRacerPosition(player);
             updateScoreDisplay(player); // Update tampilan score
             
-            // Cek kemenangan Balap Karung sesuai ketentuan jumlah soal
-            const WINNING_HOPS = targetCount;
+            // Cek kemenangan Balap Karung berdasarkan ketentuan jumlah benar
+            const WINNING_HOPS = targetWin;
             if (gameState.leftPlayer.racePosition >= WINNING_HOPS) {
                 setTimeout(() => {
-                    showWinnerModal('Pemain Kiri', `Selamat! Anda berhasil mencapai garis finish (${WINNING_HOPS} soal)!`);
+                    showWinnerModal('Pemain Kiri', `Selamat! Anda berhasil menjawab ${targetWin} soal dengan benar dan mencapai garis finish!`);
                 }, 600);
                 return true;
             } else if (gameState.rightPlayer.racePosition >= WINNING_HOPS) {
                 setTimeout(() => {
-                    showWinnerModal('Pemain Kanan', `Selamat! Anda berhasil mencapai garis finish (${WINNING_HOPS} soal)!`);
+                    showWinnerModal('Pemain Kanan', `Selamat! Anda berhasil menjawab ${targetWin} soal dengan benar dan mencapai garis finish!`);
                 }, 600);
                 return true;
             }
@@ -1371,19 +1347,19 @@ function updateScoreDisplay(player) {
         gameScreen = '#gameScreenBalapKarung';
     }
     
+    const targetWin = Math.max(1, gameState.targetCorrectCount || 5);
     const scoreElement = document.querySelector(`${gameScreen} .${player}-player .score-value`);
-    const targetCount = Math.max(1, gameState.targetQuestionCount);
     
     if (scoreElement && gameState.currentGameType === 'panjat-pinang') {
         const score = player === 'left' ? 
             gameState.leftPlayer.climbPosition : 
             gameState.rightPlayer.climbPosition;
-        scoreElement.textContent = `${score}/${targetCount}`;
+        scoreElement.textContent = `${score}/${targetWin}`;
     } else if (scoreElement && gameState.currentGameType === 'balap-karung') {
         const score = player === 'left' ? 
             gameState.leftPlayer.racePosition : 
             gameState.rightPlayer.racePosition;
-        scoreElement.textContent = `${score}/${targetCount}`;
+        scoreElement.textContent = `${score}/${targetWin}`;
     }
 }
 
@@ -1400,13 +1376,13 @@ function updateClimberPosition(player) {
         gameState.rightPlayer.climbPosition;
     
     // ============================================
-    // PENGATURAN PANJAT PINANG (DINAMIS SESUAI INPUT JUMLAH SOAL)
+    // PENGATURAN PANJAT PINANG (DINAMIS SESUAI TARGET)
     // ============================================
-    const TOTAL_STEPS = Math.max(1, gameState.targetQuestionCount); // Jumlah jawaban benar untuk menang
+    const TOTAL_STEPS = Math.max(1, gameState.targetCorrectCount || 5); // Jumlah jawaban benar untuk menang
     const MAX_HEIGHT_PERCENT = 75;   // Tinggi maksimal (% dari tiang)
     
     // Hitung persentase ketinggian
-    const heightPercentage = (climbPosition / TOTAL_STEPS) * MAX_HEIGHT_PERCENT;
+    const heightPercentage = Math.min(MAX_HEIGHT_PERCENT, (climbPosition / TOTAL_STEPS) * MAX_HEIGHT_PERCENT);
     
     // Cek posisi dan ganti gambar sesuai
     if (climbPosition === 0) {
@@ -1449,9 +1425,9 @@ function updateRacerPosition(player) {
         gameState.rightPlayer.racePosition;
     
     // ============================================
-    // PENGATURAN BALAP KARUNG (3D PERSPECTIVE - DINAMIS SESUAI INPUT JUMLAH SOAL)
+    // PENGATURAN BALAP KARUNG (3D PERSPECTIVE)
     // ============================================
-    const TOTAL_HOPS = Math.max(1, gameState.targetQuestionCount); // Jumlah hop untuk menang
+    const TOTAL_HOPS = Math.max(1, gameState.targetCorrectCount || 5); // Jumlah hop untuk menang sesuai target
     
     // Different track lengths for 3D perspective
     // Player di jalur atas (merah/right) memiliki jarak lebih pendek karena perspective
@@ -1463,7 +1439,7 @@ function updateRacerPosition(player) {
         // Finish line di 82%
         FINISH_PIXEL = trackWidth * 0.82;     // 82% - finish line
         
-        // Bagi merata sesuai ketentuan jumlah soal
+        // Bagi merata sesuai target jawaban benar
         HOP_DISTANCE = (FINISH_PIXEL - START_PIXEL) / TOTAL_HOPS;
     } else {
         // Red player - jalur atas (lebih pendek karena perspective)
@@ -1471,7 +1447,7 @@ function updateRacerPosition(player) {
         // Finish line dengan perspective (lebih dekat)
         FINISH_PIXEL = trackWidth * 0.78;     // 78% - finish line perspective (lebih pendek)
         
-        // Bagi merata sesuai ketentuan jumlah soal
+        // Bagi merata sesuai target jawaban benar
         HOP_DISTANCE = (FINISH_PIXEL - START_PIXEL) / TOTAL_HOPS;
     }
     
@@ -1576,65 +1552,45 @@ function closeModal() {
     showCountdown();
 }
 
-function shuffleArrayCopy(arr) {
-    const copy = arr.slice();
-    for (let i = copy.length - 1; i > 0; i--) {
+// Fungsi helper untuk mengacak urutan indeks soal (Fisher-Yates Shuffle)
+function createShuffledQuestionIndices(totalLength, excludeFirstIndex = -1) {
+    const indices = Array.from({ length: totalLength }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
+        [indices[i], indices[j]] = [indices[j], indices[i]];
     }
-    return copy;
+    // Hindari soal pertama putaran baru sama persis dengan soal terakhir putaran sebelumnya jika soal > 1
+    if (indices.length > 1 && indices[0] === excludeFirstIndex) {
+        const swapIdx = 1 + Math.floor(Math.random() * (indices.length - 1));
+        [indices[0], indices[swapIdx]] = [indices[swapIdx], indices[0]];
+    }
+    return indices;
 }
 
-function buildSessionQuestionPool() {
+// Fungsi untuk mengambil soal dari seluruh isi soal yang ada (semua soal pasti keluar merata)
+function getNextQuestionFromActiveFile(playerState) {
     const activeFile = getActiveFile();
-    const rawPool = (activeFile && activeFile.questions.length > 0)
+    const pool = (activeFile && activeFile.questions.length > 0)
         ? activeFile.questions
         : defaultFolderStore.folders[0].files[0].questions;
-
-    const targetCount = Math.min(Math.max(1, configuredQuestionLimit), rawPool.length);
-    gameState.targetQuestionCount = targetCount;
-    gameState.sessionQuestionPool = shuffleArrayCopy(rawPool).slice(0, targetCount);
-
-    const indices = gameState.sessionQuestionPool.map((_, i) => i);
-    gameState.leftPlayer.questionOrder = shuffleArrayCopy(indices);
-    gameState.leftPlayer.questionPointer = 0;
-    gameState.rightPlayer.questionOrder = shuffleArrayCopy(indices);
-    gameState.rightPlayer.questionPointer = 0;
-}
-
-// Fungsi untuk mengambil soal berikutnya dari paket soal sesi aktif (sejumlah ketentuan input)
-function getNextQuestionForPlayer(player) {
-    const pool = gameState.sessionQuestionPool.length > 0
-        ? gameState.sessionQuestionPool
-        : defaultFolderStore.folders[0].files[0].questions;
-    const playerState = player === 'left' ? gameState.leftPlayer : gameState.rightPlayer;
 
     if (pool.length === 1) {
         return { item: pool[0], index: 0 };
     }
 
-    if (!Array.isArray(playerState.questionOrder) || playerState.questionOrder.length !== pool.length) {
-        playerState.questionOrder = shuffleArrayCopy(pool.map((_, i) => i));
-        playerState.questionPointer = 0;
+    // Filter indeks yang masih valid terhadap ukuran pool saat ini
+    playerState.questionQueue = (playerState.questionQueue || []).filter(idx => idx >= 0 && idx < pool.length);
+
+    // Jika antrean habis, isi ulang dengan seluruh indeks soal yang diacak sehingga semua isi soal dikeluarkan
+    if (playerState.questionQueue.length === 0) {
+        playerState.questionQueue = createShuffledQuestionIndices(pool.length, playerState.lastQuestionIndex);
     }
 
-    if (playerState.questionPointer >= playerState.questionOrder.length) {
-        // Jika seluruh soal dalam ketentuan sudah keluar namun pemain belum selesai (karena salah menjawab),
-        // acak ulang daftar soal ketentuan tanpa mengulang soal terakhir secara langsung
-        let reshuffled = shuffleArrayCopy(pool.map((_, i) => i));
-        if (reshuffled[0] === playerState.lastQuestionIndex && reshuffled.length > 1) {
-            [reshuffled[0], reshuffled[1]] = [reshuffled[1], reshuffled[0]];
-        }
-        playerState.questionOrder = reshuffled;
-        playerState.questionPointer = 0;
-    }
-
-    const nextIdx = playerState.questionOrder[playerState.questionPointer];
-    playerState.questionPointer++;
-    return { item: pool[nextIdx], index: nextIdx };
+    const nextIndex = playerState.questionQueue.shift();
+    return { item: pool[nextIndex], index: nextIndex };
 }
 
-// Fungsi untuk generate soal baru dari file soal yang diaktifkan sesuai ketentuan jumlah soal
+// Fungsi untuk generate soal baru dari file soal yang diaktifkan
 function generateNewQuestion(player) {
     let gameScreen;
     if (gameState.currentGameType === 'tarik-tambang') {
@@ -1649,7 +1605,7 @@ function generateNewQuestion(player) {
     const questionBox = section.querySelector('.question-box');
     const playerState = player === 'left' ? gameState.leftPlayer : gameState.rightPlayer;
 
-    const { item, index } = getNextQuestionForPlayer(player);
+    const { item, index } = getNextQuestionFromActiveFile(playerState);
     
     playerState.lastQuestionIndex = index;
     playerState.currentQuestionObj = item;
@@ -1686,11 +1642,13 @@ function resetGame() {
     gameState.rightPlayer.racePosition = 0;
     gameState.leftPlayer.lastQuestionIndex = -1;
     gameState.rightPlayer.lastQuestionIndex = -1;
+    gameState.leftPlayer.questionQueue = [];
+    gameState.rightPlayer.questionQueue = [];
     gameState.leftPlayer.isLocked = false;
     gameState.rightPlayer.isLocked = false;
     
-    buildSessionQuestionPool();
     updateActiveFolderBadgeUI();
+    updateTargetCorrectLabels();
 
     if (gameState.currentGameType === 'tarik-tambang') {
         updateRopePosition();
@@ -1817,6 +1775,7 @@ function selectGameType(gameType) {
         showCustomQuestionMenu();
         return;
     }
+    onTargetCorrectChange();
     gameState.currentGameType = gameType;
     showCountdown();
 }
@@ -1922,8 +1881,9 @@ function backToGameTypeMenu() {
     showGameTypeMenu();
 }
 
-// Initialize - muat data folder & tampilkan menu game type
+// Initialize - muat data folder, ketentuan target benar & tampilkan menu game type
 loadFolderStore();
+updateTargetCorrectLabels();
 showGameTypeMenu();
 
 // ============================================
@@ -2081,15 +2041,14 @@ function recalculateRacerPositions() {
     if (!raceTrack) return;
     
     const trackWidth = raceTrack.offsetWidth;
+    const TOTAL_HOPS = Math.max(1, gameState.targetCorrectCount || 5);
     
-    const totalHops = Math.max(1, gameState.targetQuestionCount);
-
     // Recalculate left racer position (blue - jalur bawah)
     const leftRacer = document.querySelector('#gameScreenBalapKarung .left-racer');
     if (leftRacer) {
         const START_LEFT = trackWidth * 0.035;    // Sama dengan updateRacerPosition (4%)
         const FINISH_LEFT = trackWidth * 0.82;   // Finish line di 82%
-        const HOP_DISTANCE_LEFT = (FINISH_LEFT - START_LEFT) / totalHops;
+        const HOP_DISTANCE_LEFT = (FINISH_LEFT - START_LEFT) / TOTAL_HOPS;
         
         const leftPosition = START_LEFT + (gameState.leftPlayer.racePosition * HOP_DISTANCE_LEFT);
         leftRacer.style.left = `${leftPosition}px`;
@@ -2101,7 +2060,7 @@ function recalculateRacerPositions() {
     if (rightRacer) {
         const START_RIGHT = trackWidth * 0.065;  // Sama dengan updateRacerPosition
         const FINISH_RIGHT = trackWidth * 0.78;  // Finish line perspective (78%)
-        const HOP_DISTANCE_RIGHT = (FINISH_RIGHT - START_RIGHT) / totalHops;
+        const HOP_DISTANCE_RIGHT = (FINISH_RIGHT - START_RIGHT) / TOTAL_HOPS;
         
         const rightPosition = START_RIGHT + (gameState.rightPlayer.racePosition * HOP_DISTANCE_RIGHT);
         rightRacer.style.left = `${rightPosition}px`;
