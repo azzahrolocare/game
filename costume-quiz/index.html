@@ -52,6 +52,14 @@
             <p class="menu-subtitle">
                 Aktif: <strong id="activeFolderBadge">-</strong> (<span id="questionCountBadge">0 Soal</span>)
             </p>
+            <div class="question-limit-box">
+                <label for="inputQuestionLimit">🎯 Ketentuan Jumlah Soal per Mode:</label>
+                <div class="question-limit-controls">
+                    <input type="number" id="inputQuestionLimit" class="question-limit-input" min="1" value="5" onchange="onQuestionLimitChange()" oninput="onQuestionLimitChange()">
+                    <button type="button" class="question-limit-all-btn" onclick="setQuestionLimitAll()">Semua (<span id="maxAvailableQuestionsBtn">0</span>)</button>
+                </div>
+                <small id="questionLimitHint" class="question-limit-hint">Target jawaban benar / soal yang dikeluarkan: 5 soal</small>
+            </div>
             <div class="menu-buttons">
                 <button class="menu-btn game-type-btn tarik-tambang" onclick="selectGameType('tarik-tambang')">
                     <img src="https://game.afifedu.com/icon_tarik.png" alt="Tarik Tambang" class="menu-icon">
@@ -219,7 +227,7 @@
                 <div class="tug-of-war-scene"></div>
                 <div class="center-line"></div>
             </div>
-            <p class="instruction">Jawab soal dengan benar untuk menarik tali!</p>
+            <p class="instruction" id="tarikTambangInstruction">Jawab soal dengan benar untuk menarik tali! (<span class="target-soal-count">5</span> jawaban benar untuk menang)</p>
         </div>
 
         <!-- Bagian Pemain Kanan -->
@@ -247,7 +255,7 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Benar: <span class="score-value">0/7</span> (<span class="mode-total-questions-label">0 Soal</span>)</div>
+            <div class="score-indicator">Benar: <span class="score-value">0/5</span> (<span class="mode-total-questions-label">5 Soal</span>)</div>
         </div>
 
         <!-- Bagian Tengah -->
@@ -273,7 +281,7 @@
                     </div>
                 </div>
             </div>
-            <p class="instruction">Jawab soal untuk memanjat tiang! (7 jawaban benar untuk menang)</p>
+            <p class="instruction" id="panjatPinangInstruction">Jawab soal untuk memanjat tiang! (<span class="target-soal-count">5</span> jawaban benar untuk menang)</p>
         </div>
 
         <!-- Bagian Pemain Kanan -->
@@ -286,7 +294,7 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Benar: <span class="score-value">0/7</span> (<span class="mode-total-questions-label">0 Soal</span>)</div>
+            <div class="score-indicator">Benar: <span class="score-value">0/5</span> (<span class="mode-total-questions-label">5 Soal</span>)</div>
         </div>
     </div>
 
@@ -302,7 +310,7 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Posisi: <span class="score-value">0/10</span> (<span class="mode-total-questions-label">0 Soal</span>)</div>
+            <div class="score-indicator">Posisi: <span class="score-value">0/5</span> (<span class="mode-total-questions-label">5 Soal</span>)</div>
         </div>
 
         <!-- Bagian Tengah -->
@@ -327,7 +335,7 @@
                     </div>
                 </div>
             </div>
-            <p class="instruction">Jawab soal untuk melompat maju! (10 lompatan untuk menang)</p>
+            <p class="instruction" id="balapKarungInstruction">Jawab soal untuk melompat maju! (<span class="target-soal-count">5</span> jawaban benar untuk menang)</p>
         </div>
 
         <!-- Bagian Pemain Kanan -->
@@ -340,7 +348,7 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Posisi: <span class="score-value">0/10</span> (<span class="mode-total-questions-label">0 Soal</span>)</div>
+            <div class="score-indicator">Posisi: <span class="score-value">0/5</span> (<span class="mode-total-questions-label">5 Soal</span>)</div>
         </div>
     </div>
 
