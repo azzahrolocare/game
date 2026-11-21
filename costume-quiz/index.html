@@ -506,7 +506,7 @@
                     ⚙️ Kelola / Buat Soal
                 </button>
                 <div class="quiz-badge-info" id="activeQuizSummary">
-                    Mapel: Kuis Lomba Edukasi • 10 Soal Tersedia
+                    Mapel: Pengetahuan Umum • 10 Soal Tersedia
                 </div>
             </div>
         </div>
@@ -553,4 +553,365 @@
                     </svg>
                 </div>
             </div>
-            <p class="instruction">Pilih jawaban yang benar untuk menarik tali
+            <p class="instruction">Pilih jawaban yang benar untuk menarik tali!</p>
+        </div>
+
+        <div class="player-section right-player">
+            <div class="mcq-question-box" id="tt-right-q">Memuat soal...</div>
+            <div class="mcq-options-grid" id="tt-right-opts"></div>
+        </div>
+    </div>
+
+    <!-- Game Screen - Panjat Pinang -->
+    <div id="gameScreenPanjatPinang" class="game-container panjat-pinang-game" style="display: none;">
+        <div class="player-section left-player">
+            <div class="mcq-question-box" id="pp-left-q">Memuat soal...</div>
+            <div class="mcq-options-grid" id="pp-left-opts"></div>
+            <div class="score-indicator">Benar: <span class="score-value" id="pp-left-score">0/7</span></div>
+        </div>
+
+        <div class="center-section panjat-pinang-center">
+            <h1 class="dynamic-game-title">Panjat Pinang</h1>
+            <div class="game-field panjat-pinang-field">
+                <!-- Tiang Kiri -->
+                <div class="pole-container left-pole">
+                    <img src="https://game.afifedu.com/panjat_pinang/tiang.png" alt="Tiang Pinang" class="pole-image">
+                    <div class="climber-container left-climber" id="pp-left-climber">
+                        <img src="https://game.afifedu.com/panjat_pinang/standleft.png" alt="Pemain Kiri" class="climber-image stand">
+                        <img src="https://game.afifedu.com/panjat_pinang/climbleft.png" alt="Pemain Kiri Memanjat" class="climber-image climb" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- Tiang Kanan -->
+                <div class="pole-container right-pole">
+                    <img src="https://game.afifedu.com/panjat_pinang/tiang.png" alt="Tiang Pinang" class="pole-image">
+                    <div class="climber-container right-climber" id="pp-right-climber">
+                        <img src="https://game.afifedu.com/panjat_pinang/standright.png" alt="Pemain Kanan" class="climber-image stand">
+                        <img src="https://game.afifedu.com/panjat_pinang/climbright.png" alt="Pemain Kanan Memanjat" class="climber-image climb" style="display: none;">
+                    </div>
+                </div>
+            </div>
+            <p class="instruction">Jawab benar untuk memanjat tiang! (7 jawaban benar untuk menang)</p>
+        </div>
+
+        <div class="player-section right-player">
+            <div class="mcq-question-box" id="pp-right-q">Memuat soal...</div>
+            <div class="mcq-options-grid" id="pp-right-opts"></div>
+            <div class="score-indicator">Benar: <span class="score-value" id="pp-right-score">0/7</span></div>
+        </div>
+    </div>
+
+    <!-- Game Screen - Balap Karung -->
+    <div id="gameScreenBalapKarung" class="game-container balap-karung-game" style="display: none;">
+        <div class="player-section left-player">
+            <div class="mcq-question-box" id="bk-left-q">Memuat soal...</div>
+            <div class="mcq-options-grid" id="bk-left-opts"></div>
+            <div class="score-indicator">Posisi: <span class="score-value" id="bk-left-score">0/10</span></div>
+        </div>
+
+        <div class="center-section balap-karung-center">
+            <h1 class="dynamic-game-title">Balap Karung</h1>
+            <div class="game-field balap-karung-field">
+                <div class="race-track">
+                    <img src="https://game.afifedu.com/balap_karung/track.png" alt="Track" class="track-image">
+
+                    <!-- Racer Kiri -->
+                    <div class="racer-container left-racer" id="bk-left-racer" style="left: 5%; transition: left 0.4s ease;">
+                        <img src="https://game.afifedu.com/balap_karung/blue_stand.png" alt="Pemain Kiri" class="racer-image stand" onerror="handleRacerImgError(this, 'blue', 'stand')">
+                        <img src="https://game.afifedu.com/balap_karung/blue_hop.png" alt="Pemain Kiri Hop" class="racer-image hop" style="display: none;" onerror="handleRacerImgError(this, 'blue', 'hop')">
+                    </div>
+
+                    <!-- Racer Kanan -->
+                    <div class="racer-container right-racer" id="bk-right-racer" style="left: 5%; transition: left 0.4s ease;">
+                        <img src="https://game.afifedu.com/balap_karung/red_stand.png" alt="Pemain Kanan" class="racer-image stand" onerror="handleRacerImgError(this, 'red', 'stand')">
+                        <img src="https://game.afifedu.com/balap_karung/red_hop.png" alt="Pemain Kanan Hop" class="racer-image hop" style="display: none;" onerror="handleRacerImgError(this, 'red', 'hop')">
+                    </div>
+                </div>
+            </div>
+            <p class="instruction">Jawab benar untuk melompat maju! (10 lompatan untuk menang)</p>
+        </div>
+
+        <div class="player-section right-player">
+            <div class="mcq-question-box" id="bk-right-q">Memuat soal...</div>
+            <div class="mcq-options-grid" id="bk-right-opts"></div>
+            <div class="score-indicator">Posisi: <span class="score-value" id="bk-right-score">0/10</span></div>
+        </div>
+    </div>
+
+    <!-- Modal Pemenang -->
+    <div id="winnerModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h2 id="winnerText">🎉 Pemain Menang! 🎉</h2>
+            <p id="winnerMessage">Selamat! Anda berhasil memenangkan pertandingan!</p>
+            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                <button class="play-again-btn" onclick="restartCurrentMode()">Main Lagi</button>
+                <button class="play-again-btn" style="background: #64748b;" onclick="backToGameTypeMenu()">Menu Utama</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Countdown Overlay -->
+    <div id="countdownOverlay" class="countdown-overlay" style="display: none;">
+        <div class="countdown-content">
+            <div id="countdownNumber" class="countdown-number">3</div>
+            <div id="countdownText" class="countdown-text">Bersiap...</div>
+        </div>
+    </div>
+
+    <!-- Modal Editor Custom Soal -->
+    <div id="quizEditorModal" class="editor-modal">
+        <div class="editor-box">
+            <div class="editor-header">
+                <h2>⚙️ Kelola Bank Soal Pilihan Ganda</h2>
+                <button class="editor-close" onclick="closeQuizEditor()">✕</button>
+            </div>
+
+            <div class="editor-tabs">
+                <button class="editor-tab active" onclick="switchEditorTab('list', this)">📋 Daftar Soal (<span id="tabCountBadge">0</span>)</button>
+                <button class="editor-tab" onclick="switchEditorTab('add', this)">➕ Tambah / Edit Soal</button>
+                <button class="editor-tab" onclick="switchEditorTab('bulk', this)">📥 Impor Cepat (Teks / JSON)</button>
+            </div>
+
+            <div class="editor-body">
+                <!-- Pengaturan Judul Mapel -->
+                <div class="form-group" style="background: #eff6ff; padding: 12px; border-radius: 12px; border: 1px solid #bfdbfe;">
+                    <label for="quizSubjectInput">Nama Mata Pelajaran / Judul Kuis:</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="quizSubjectInput" class="form-control" placeholder="Contoh: Informatika Kelas 7 - Perangkat Keras">
+                        <button class="btn-primary-sm" onclick="saveQuizSubject()">Simpan Judul</button>
+                    </div>
+                </div>
+
+                <!-- TAB 1: DAFTAR SOAL -->
+                <div id="editorTab-list">
+                    <div id="questionListContainer"></div>
+                </div>
+
+                <!-- TAB 2: TAMBAH / EDIT SOAL SATUAN -->
+                <div id="editorTab-add" style="display: none;">
+                    <input type="hidden" id="editQuestionIndex" value="-1">
+                    <div class="form-group">
+                        <label>Pertanyaan:</label>
+                        <textarea id="inputQText" class="form-control" rows="2" placeholder="Tulis pertanyaan di sini..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Pilihan Jawaban:</label>
+                        <div class="options-input-grid">
+                            <div class="opt-input-wrap"><span>A</span><input type="text" id="inputOptA" class="form-control" placeholder="Pilihan A"></div>
+                            <div class="opt-input-wrap"><span>B</span><input type="text" id="inputOptB" class="form-control" placeholder="Pilihan B"></div>
+                            <div class="opt-input-wrap"><span>C</span><input type="text" id="inputOptC" class="form-control" placeholder="Pilihan C"></div>
+                            <div class="opt-input-wrap"><span>D</span><input type="text" id="inputOptD" class="form-control" placeholder="Pilihan D"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Kunci Jawaban Benar:</label>
+                        <select id="inputCorrectOpt" class="form-control" style="max-width: 220px;">
+                            <option value="0">Pilihan A</option>
+                            <option value="1">Pilihan B</option>
+                            <option value="2">Pilihan C</option>
+                            <option value="3">Pilihan D</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-success-sm" onclick="saveSingleQuestion()">💾 Simpan Soal</button>
+                        <button class="btn-danger-sm" onclick="resetSingleForm()">Batal / Reset Form</button>
+                    </div>
+                </div>
+
+                <!-- TAB 3: IMPOR CEPAT / BACKUP -->
+                <div id="editorTab-bulk" style="display: none;">
+                    <div class="form-group">
+                        <label>Tempel Banyak Soal Sekaligus (Format Baris):</label>
+                        <p style="font-size: 0.84rem; color: #475569; margin: 0 0 8px 0;">
+                            Format per baris: <code>Pertanyaan | Opsi A | Opsi B | Opsi C | Opsi D | Kunci(A/B/C/D)</code>
+                        </p>
+                        <textarea id="bulkTextInput" class="form-control" rows="6" placeholder="Ibu kota negara Indonesia adalah... | Bandung | Surabaya | Jakarta | Medan | C&#10;Perangkat keras komputer untuk mengetik adalah... | Monitor | Keyboard | Mouse | Speaker | B"></textarea>
+                        <div style="margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn-success-sm" onclick="importBulkText(false)">➕ Tambahkan ke Daftar</button>
+                            <button class="btn-primary-sm" onclick="importBulkText(true)">🔄 Ganti Semua Soal</button>
+                        </div>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 16px 0;">
+                    <div class="form-group">
+                        <label>Cadangkan / Muat File JSON:</label>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="btn-primary-sm" onclick="exportQuestionsJSON()">⬇️ Download JSON</button>
+                            <label class="btn-success-sm" style="cursor: pointer; display: inline-block;">
+                                ⬆️ Upload File JSON
+                                <input type="file" accept=".json" style="display: none;" onchange="importQuestionsJSON(event)">
+                            </label>
+                            <button class="btn-danger-sm" onclick="resetToDefaultQuestions()">♻️ Reset ke Soal Contoh</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editor-footer">
+                <span style="font-size: 0.85rem; color: #64748b;">Otomatis tersimpan di browser perangkat ini.</span>
+                <button class="btn-primary-sm" onclick="closeQuizEditor()">Selesai & Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fallback Image Handler -->
+    <script>
+        function handleRacerImgError(imgEl, color, pose) {
+            if (imgEl.dataset.fallbackApplied) return;
+            imgEl.dataset.fallbackApplied = 'true';
+            imgEl.onerror = null;
+
+            const shirtColor = color === 'red' ? '#e74c3c' : '#3498db';
+            const sackColor = color === 'red' ? '#d35400' : '#c08b5c';
+            const yOffset = pose === 'hop' ? -12 : 0;
+            const legBend = pose === 'hop' ? 'M38,95 Q50,82 62,95' : 'M38,105 L62,105';
+
+            const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+                <g transform="translate(0, ${yOffset})">
+                    <circle cx="50" cy="24" r="14" fill="#fbd3b0" stroke="#333" stroke-width="2.5"/>
+                    <rect x="35" y="15" width="30" height="6" rx="2" fill="#e74c3c"/>
+                    <rect x="35" y="21" width="30" height="5" rx="2" fill="#ffffff"/>
+                    <circle cx="45" cy="26" r="2" fill="#222"/>
+                    <circle cx="55" cy="26" r="2" fill="#222"/>
+                    <path d="M45,31 Q50,35 55,31" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/>
+                    <rect x="36" y="38" width="28" height="24" rx="6" fill="${shirtColor}" stroke="#333" stroke-width="2.5"/>
+                    <circle cx="34" cy="58" r="5" fill="#fbd3b0" stroke="#333" stroke-width="2"/>
+                    <circle cx="66" cy="58" r="5" fill="#fbd3b0" stroke="#333" stroke-width="2"/>
+                    <path d="M32,58 L68,58 L72,105 Q50,112 28,105 Z" fill="${sackColor}" stroke="#5d4037" stroke-width="2.5"/>
+                    <path d="${legBend}" fill="none" stroke="#5d4037" stroke-width="2" stroke-dasharray="4,3"/>
+                </g>
+            </svg>`;
+            imgEl.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+        }
+    </script>
+
+    <!-- Web Audio API Synthesizer untuk Musik Latar & Efek Suara (SFX) -->
+    <script>
+        const SoundEngine = (() => {
+            let ctx = null;
+            let isMuted = false;
+            let bgmTimer = null;
+            let bgmStep = 0;
+            let currentMood = 'menu';
+
+            const notes = {
+                C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+                C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, R: 0
+            };
+
+            const menuMelody = [
+                'C5','E5','G5','E5', 'F5','A5','G5','R',
+                'E5','G5','C5','D5', 'E5','D5','C5','R',
+                'D5','F5','A5','F5', 'E5','G5','C5','R',
+                'D5','B4','C5','E5', 'C5','R','R','R'
+            ];
+
+            const gameMelody = [
+                'G4','C5','E5','C5', 'G5','G5','E5','C5',
+                'A4','D5','F5','D5', 'A5','A5','G5','E5',
+                'G4','C5','E5','G5', 'A5','G5','E5','C5',
+                'D5','E5','D5','B4', 'C5','E5','C5','R'
+            ];
+
+            function init() {
+                if (!ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    ctx = new AudioCtx();
+                }
+                if (ctx.state === 'suspended') ctx.resume();
+            }
+
+            function playTone(freq, duration, type = 'sine', volume = 0.15, slideTo = null) {
+                if (isMuted || !freq) return;
+                init();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, now);
+                if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+                gain.gain.setValueAtTime(volume, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            }
+
+            const sfx = {
+                click() { playTone(620, 0.07, 'triangle', 0.14, 820); },
+                nav() {
+                    playTone(440, 0.08, 'sine', 0.15);
+                    setTimeout(() => playTone(660, 0.12, 'sine', 0.15), 55);
+                },
+                correct() {
+                    playTone(523.25, 0.09, 'triangle', 0.22);
+                    setTimeout(() => playTone(659.25, 0.09, 'triangle', 0.22), 65);
+                    setTimeout(() => playTone(783.99, 0.18, 'triangle', 0.25, 987.77), 130);
+                },
+                wrong() {
+                    playTone(220, 0.14, 'sawtooth', 0.12, 160);
+                    setTimeout(() => playTone(185, 0.18, 'sawtooth', 0.12, 140), 110);
+                },
+                countdownTick(isGo = false) {
+                    if (isGo) playTone(880, 0.35, 'triangle', 0.28, 1046.5);
+                    else playTone(440, 0.15, 'sine', 0.22);
+                },
+                win() {
+                    [
+                        { f: 523.25, t: 0, d: 0.14 },
+                        { f: 659.25, t: 120, d: 0.14 },
+                        { f: 783.99, t: 240, d: 0.14 },
+                        { f: 1046.50, t: 380, d: 0.35 },
+                        { f: 783.99, t: 620, d: 0.14 },
+                        { f: 1046.50, t: 780, d: 0.55 }
+                    ].forEach(n => setTimeout(() => playTone(n.f, n.d, 'triangle', 0.25), n.t));
+                }
+            };
+
+            function startBGM(mood = 'menu') {
+                currentMood = mood;
+                if (bgmTimer) clearInterval(bgmTimer);
+                const tempoMs = mood === 'game' ? 210 : 280;
+                bgmTimer = setInterval(() => {
+                    if (isMuted || !ctx || ctx.state !== 'running') return;
+                    const seq = currentMood === 'game' ? gameMelody : menuMelody;
+                    const noteName = seq[bgmStep % seq.length];
+                    const freq = notes[noteName];
+                    if (freq > 0) {
+                        playTone(freq, (tempoMs / 1000) * 0.85, 'sine', 0.055);
+                        if (bgmStep % 4 === 0) playTone(freq / 2, (tempoMs / 1000) * 1.4, 'triangle', 0.045);
+                    }
+                    bgmStep++;
+                }, tempoMs);
+            }
+
+            function toggleMute() {
+                init();
+                isMuted = !isMuted;
+                const btn = document.getElementById('audioToggleBtn');
+                document.getElementById('iconSoundOn').style.display = isMuted ? 'none' : 'block';
+                document.getElementById('iconSoundOff').style.display = isMuted ? 'block' : 'none';
+                btn.classList.toggle('muted', isMuted);
+                if (!isMuted) sfx.click();
+            }
+
+            return { init, sfx, startBGM, toggleMute };
+        })();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const unlockAudio = () => {
+                SoundEngine.init();
+                SoundEngine.startBGM('menu');
+                document.removeEventListener('pointerdown', unlockAudio);
+                document.removeEventListener('keydown', unlockAudio);
+            };
+            document.addEventListener('pointerdown', unlockAudio);
+            document.addEventListener('keydown', unlockAudio);
+        });
+    </script>
+
+    <!-- File JS Utama (Custom Soal Pilihan Ganda) -->
+    <script src="nscript.js"></script>
+</body>
+</html>
