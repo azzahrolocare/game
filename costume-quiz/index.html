@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#a8d8ff">
+    <meta name="format-detection" content="telephone=no">
+    <title>Custom Kuis Arcade - Lomba Edukasi</title>
+    <link rel="icon" type="image/x-icon" href="https://game.afifedu.com/favicon.ico">
+    <link rel="stylesheet" href="https://game.afifedu.com/styles.css">
+
+    <!-- Preload critical images -->
+    <link rel="preload" as="image" href="https://game.afifedu.com/icon_home.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/icon_tarik.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/icon_panjat.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/icon_balap_karung.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/tiang.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/standleft.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/standright.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/climbleft.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/climbright.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/track.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/blue_stand.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/blue_hop.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/red_stand.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/red_hop.png">
+
+    <style>
+        /* Tombol Kontrol Audio */
+        .audio-btn {
+            position: fixed;
+            top: 15px;
+            right: 68px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #4a90e2;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s, background 0.2s;
+            padding: 0;
+        }
+        .audio-btn:hover { transform: scale(1.08); background: #ffffff; }
+        .audio-btn:active { transform: scale(0.95); }
+        .audio-btn svg { width: 22px; height: 22px; }
+        .audio-btn.muted { border-color: #e74c3c; color: #e74c3c; opacity: 0.85; }
+
+        /* Tombol Kelola Soal di Menu Utama */
+        .custom-quiz-bar {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-manage-soal {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 12px 24px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #e65100, 0 8px 16px rgba(0,0,0,0.18);
+            transition: transform 0.15s, box-shadow 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-manage-soal:hover { transform: translateY(-2px); }
+        .btn-manage-soal:active { transform: translateY(3px); box-shadow: 0 2px 0 #e65100; }
+
+        .quiz-badge-info {
+            background: rgba(255, 255, 255, 0.85);
+            color: #2c3e50;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(74, 144, 226, 0.3);
+        }
+
+        /* Layout Soal & Pilihan Ganda pada Layar Game */
+        .player-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 12px !important;
+        }
+        .mcq-question-box {
+            background: #ffffff;
+            border: 3px solid #3498db;
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+            font-weight: 700;
+            color: #1e293b;
+            min-height: 92px;
+            max-height: 145px;
+            overflow-y: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.35;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        .right-player .mcq-question-box {
+            border-color: #e74c3c;
+        }
+
+        .mcq-options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+        }
+        .mcq-option-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            text-align: left;
+            background: #ffffff;
+            border: 2.5px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 10px 12px;
+            font-size: clamp(0.88rem, 1.25vw, 1.08rem);
+            font-weight: 600;
+            color: #1e293b;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #cbd5e1;
+            transition: transform 0.1s, background 0.15s, border-color 0.15s;
+            line-height: 1.25;
+        }
+        .mcq-option-btn:hover:not(:disabled) {
+            background: #f0f9ff;
+            border-color: #3b82f6;
+        }
+        .mcq-option-btn:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #cbd5e1;
+        }
+        .mcq-option-btn:disabled {
+            opacity: 0.75;
+            cursor: not-allowed;
+        }
+        .mcq-opt-letter {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #3498db;
+            color: #fff;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+        }
+        .right-player .mcq-opt-letter {
+            background: #e74c3c;
+        }
+        .mcq-opt-text {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        /* Feedback Benar / Salah */
+        .mcq-option-btn.opt-correct {
+            background: #dcfce7 !important;
+            border-color: #22c55e !important;
+            box-shadow: 0 3px 0 #16a34a !important;
+            color: #14532d !important;
+        }
+        .mcq-option-btn.opt-correct .mcq-opt-letter {
+            background: #16a34a !important;
+        }
+        .mcq-option-btn.opt-wrong {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            box-shadow: 0 3px 0 #dc2626 !important;
+            color: #7f1d1d !important;
+            animation: shakeBtn 0.35s ease;
+        }
+        .mcq-option-btn.opt-wrong .mcq-opt-letter {
+            background: #dc2626 !important;
+        }
+        @keyframes shakeBtn {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-4px); }
+        }
+
+        /* Visual Tarik Tambang */
+        .tug-of-war-scene {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Area arena & tiang Panjat Pinang */
+        .panjat-pinang-field {
+            position: relative !important;
+            display: flex !important;
+            justify-content: space-around !important;
+            align-items: flex-end !important;
+            height: 100% !important;
+            min-height: 260px !important;
+            padding: 0 24px 12px 24px !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+        }
+        .panjat-pinang-field .pole-container {
+            position: relative !important;
+            display: inline-flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
+            height: 100% !important;
+            width: auto !important;
+            overflow: visible !important;
+        }
+        .panjat-pinang-field .pole-image {
+            display: block !important;
+            height: 88% !important;
+            max-height: 340px !important;
+            width: auto !important;
+            object-fit: contain !important;
+        }
+        #pp-left-climber,
+        #pp-right-climber {
+            position: absolute !important;
+            bottom: 6% !important;
+            left: 50% !important;
+            transform: translateX(-50%) translateY(0px) !important;
+            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1) !important;
+            z-index: 20 !important;
+            pointer-events: none !important;
+        }
+        #pp-left-climber .climber-image,
+        #pp-right-climber .climber-image {
+            display: block !important;
+            width: clamp(48px, 6.5vw, 76px) !important;
+            height: auto !important;
+            object-fit: contain !important;
+        }
+
+        /* Modal Editor Custom Soal */
+        .editor-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(4px);
+            z-index: 2500;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        .editor-modal.active {
+            display: flex;
+        }
+        .editor-box {
+            background: #ffffff;
+            width: 100%;
+            max-width: 820px;
+            max-height: 90vh;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 3px solid #4a90e2;
+        }
+        .editor-header {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .editor-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        .editor-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: #fff;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .editor-tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-bottom: 1px solid #cbd5e1;
+            padding: 0 16px;
+            gap: 6px;
+        }
+        .editor-tab {
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-size: 0.95rem;
+        }
+        .editor-tab.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+            background: #fff;
+            border-radius: 8px 8px 0 0;
+        }
+        .editor-body {
+            padding: 18px 20px;
+            overflow-y: auto;
+            flex: 1;
+            color: #1e293b;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 0.92rem;
+            color: #334155;
+        }
+        .form-control {
+            width: 100%;
+            padding: 9px 12px;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        .options-input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (max-width: 600px) {
+            .options-input-grid { grid-template-columns: 1fr; }
+        }
+        .opt-input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .opt-input-wrap span {
+            font-weight: 800;
+            background: #e2e8f0;
+            padding: 8px 11px;
+            border-radius: 8px;
+        }
+        .btn-primary-sm {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.92rem;
+        }
+        .btn-success-sm {
+            background: #16a34a;
+            color: #fff;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.92rem;
+        }
+        .btn-danger-sm {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.82rem;
+        }
+        .question-list-item {
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .q-item-info { flex: 1; }
+        .q-item-title { font-weight: 700; margin-bottom: 5px; color: #0f172a; }
+        .q-item-opts { font-size: 0.85rem; color: #475569; display: flex; flex-wrap: wrap; gap: 8px; }
+        .q-item-opts span.is-ans {
+            background: #dcfce7;
+            color: #15803d;
+            font-weight: 700;
+            padding: 1px 7px;
+            border-radius: 6px;
+            border: 1px solid #86efac;
+        }
+        .editor-footer {
+            padding: 12px 20px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio Toggle Button -->
+    <button id="audioToggleBtn" class="audio-btn" onclick="SoundEngine.toggleMute()" title="Suara & Musik">
+        <svg id="iconSoundOn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+        <svg id="iconSoundOff" style="display:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+    </button>
+
+    <!-- Fullscreen Button -->
+    <button id="fullscreenBtn" class="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+        <svg class="fullscreen-icon expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+        <svg class="fullscreen-icon collapse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+        </svg>
+    </button>
+
+    <!-- Home Button -->
+    <button id="homeBtn" class="home-btn" onclick="backToGameTypeMenu()" title="Menu Utama" style="display: none;">
+        <img src="https://game.afifedu.com/icon_home.png" alt="Home" class="home-icon">
+    </button>
+
+    <!-- Menu Utama: Pilih Tema Permainan & Kelola Custom Soal -->
+    <div id="gameTypeMenu" class="menu-screen active" style="display: flex;">
+        <div class="menu-container">
+            <h1 class="menu-title" id="mainQuizTitleDisplay">Kuis Lomba Edukasi</h1>
+            <p class="menu-subtitle">Pilih Arena Permainan</p>
+            <div class="menu-buttons">
+                <button class="menu-btn game-type-btn tarik-tambang" onclick="startGameMode('tarik-tambang')">
+                    <img src="https://game.afifedu.com/icon_tarik.png" alt="Tarik Tambang" class="menu-icon">
+                    <div class="game-type-text">
+                        <span class="game-type-title">Tarik Tambang</span>
+                    </div>
+                </button>
+                <button class="menu-btn game-type-btn panjat-pinang" onclick="startGameMode('panjat-pinang')">
+                    <img src="https://game.afifedu.com/icon_panjat.png" alt="Panjat Pinang" class="menu-icon">
+                    <span>Panjat Pinang</span>
+                </button>
+                <button class="menu-btn game-type-btn balap-karung" onclick="startGameMode('balap-karung')">
+                    <img src="https://game.afifedu.com/icon_balap_karung.png" alt="Balap Karung" class="menu-icon">
+                    <span>Balap Karung</span>
+                </button>
+            </div>
+
+            <!-- Bar Pengaturan Custom Soal -->
+            <div class="custom-quiz-bar">
+                <button class="btn-manage-soal" onclick="openQuizEditor()">
+                    ⚙️ Kelola / Buat Soal
+                </button>
+                <div class="quiz-badge-info" id="activeQuizSummary">
+                    Mapel: Kuis Lomba Edukasi • 10 Soal Tersedia
+                </div>
+            </div>
+        </div>
+        <div class="copyright-footer">
+            <p>© Az-Zahro Arcade 2026 | <span id="version-indicator">v3.0 Custom Quiz</span></p>
+            <p style="margin-top: 5px; font-size: 0.9em; opacity: 0.8;">Created By Az-Zahro IT</p>
+        </div>
+    </div>
+
+    <!-- Game Screen - Tarik Tambang -->
+    <div id="gameScreenTarikTambang" class="game-container" style="display: none;">
+        <div class="player-section left-player">
+            <div class="mcq-question-box" id="tt-left-q">Memuat soal...</div>
+            <div class="mcq-options-grid" id="tt-left-opts"></div>
+        </div>
+
+        <div class="center-section">
+            <h1 class="dynamic-game-title">Tarik Tambang</h1>
+            <div class="game-field" style="overflow: hidden; position: relative;">
+                <div class="tug-of-war-scene" id="tugScene">
+                    <svg viewBox="0 0 420 220" width="100%" height="100%" style="max-height: 260px;">
+                        <line x1="210" y1="20" x2="210" y2="200" stroke="#ef4444" stroke-width="3" stroke-dasharray="6,6"/>
+                        <line x1="40" y1="130" x2="380" y2="130" stroke="#92400e" stroke-width="8" stroke-linecap="round"/>
+                        <polygon points="210,130 202,152 218,152" fill="#dc2626"/>
+                        <circle cx="210" cy="130" r="6" fill="#fbbf24" stroke="#92400e" stroke-width="2"/>
+
+                        <g transform="translate(85, 65)">
+                            <circle cx="25" cy="22" r="15" fill="#fbd3b0" stroke="#1e293b" stroke-width="2.5"/>
+                            <rect x="10" y="12" width="30" height="6" rx="2" fill="#2563eb"/>
+                            <rect x="10" y="38" width="30" height="36" rx="8" fill="#2563eb" stroke="#1e293b" stroke-width="2.5"/>
+                            <line x1="18" y1="74" x2="8" y2="105" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="32" y1="74" x2="42" y2="105" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="35" y1="48" x2="65" y2="65" stroke="#fbd3b0" stroke-width="6" stroke-linecap="round"/>
+                        </g>
+
+                        <g transform="translate(285, 65)">
+                            <circle cx="25" cy="22" r="15" fill="#fbd3b0" stroke="#1e293b" stroke-width="2.5"/>
+                            <rect x="10" y="12" width="30" height="6" rx="2" fill="#dc2626"/>
+                            <rect x="10" y="38" width="30" height="36" rx="8" fill="#dc2626" stroke="#1e293b" stroke-width="2.5"/>
+                            <line x1="18" y1="74" x2="8" y2="105" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="32" y1="74" x2="42" y2="105" stroke="#1e293b" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="15" y1="48" x2="-15" y2="65" stroke="#fbd3b0" stroke-width="6" stroke-linecap="round"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+            <p class="instruction">Pilih jawaban yang benar untuk menarik tali
