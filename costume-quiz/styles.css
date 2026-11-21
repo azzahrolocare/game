@@ -282,7 +282,7 @@ body.fullscreen .fullscreen-icon.collapse {
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.6);
     animation: fadeIn 0.5s ease-out;
-    max-width: min(85vw, 900px);
+    max-width: min(92vw, 960px);
     width: fit-content;
     min-width: clamp(280px, 40vw, 500px);
     max-height: calc(100vh - clamp(80px, 12vh, 200px));
@@ -293,6 +293,11 @@ body.fullscreen .fullscreen-icon.collapse {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.main-menu-container {
+    width: min(90vw, 820px);
+    max-width: min(90vw, 820px);
 }
 
 /* Compact version for level selection menus - TANPA SCROLL, AUTO ADJUST */
@@ -355,12 +360,28 @@ body.fullscreen .fullscreen-icon.collapse {
 .menu-buttons {
     display: flex;
     flex-direction: column;
-    gap: clamp(8px, 1.2vh, 16px);  /* Gap lebih kecil untuk fit di layar */
+    gap: clamp(10px, 1.5vh, 18px);
     width: 100%;
-    max-width: 500px;
+    max-width: 720px;
     margin: 0 auto;
-    flex: 0 1 auto;  /* Flex shrink jika perlu */
+    flex: 0 1 auto;
     justify-content: center;
+}
+
+/* Grid 2 kolom untuk 3 mode permainan (Tarik Tambang, Panjat Pinang, Balap Karung) */
+.game-modes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(10px, 1.5vw, 18px);
+    width: 100%;
+}
+
+/* Tombol mode ke-3 (Balap Karung) berada di tengah bawah 2 kolom */
+.game-modes-grid .game-type-btn:nth-child(3) {
+    grid-column: 1 / -1;
+    max-width: calc(50% - clamp(5px, 0.75vw, 9px));
+    width: 100%;
+    justify-self: center;
 }
 
 .menu-btn {
@@ -489,7 +510,6 @@ body.fullscreen .fullscreen-icon.collapse {
 }
 
 .back-btn {
-    /* margin-top diatur khusus di .menu-container .back-btn untuk jarak konsisten */
     padding: clamp(10px, 1.5vh, 18px) clamp(25px, 3vw, 45px);
     font-size: clamp(0.85rem, 1.8vw, 1.1rem);
     font-weight: 600;
@@ -523,14 +543,11 @@ body.fullscreen .fullscreen-icon.collapse {
     opacity: 1;
 }
 
-/* Compact back button for level selection */
 .compact .back-btn {
-    /* margin-top diatur di .menu-container .back-btn untuk konsistensi */
     padding: 12px 35px;
     font-size: 0.95em;
 }
 
-/* Menu content wrapper untuk spacing simetris */
 .menu-container > *:first-child {
     margin-top: 0;
 }
@@ -539,32 +556,13 @@ body.fullscreen .fullscreen-icon.collapse {
     margin-bottom: 0;
 }
 
-/* Spacing khusus untuk back button - JARAK KONSISTEN DI SEMUA RESOLUSI */
 .menu-container .back-btn {
-    margin-top: clamp(8px, 1.5vh, 20px);  /* Jarak konsisten - DIKURANGI agar pas di layar */
-    flex-shrink: 0;  /* Mencegah tombol terpotong */
+    margin-top: clamp(8px, 1.5vh, 20px);
+    flex-shrink: 0;
 }
 
-/* Ensure equal spacing for menus without back button */
-#gameTypeMenu .menu-container,
-#mathModeMenuTarikTambang .menu-container,
-#mathModeMenuPanjatPinang .menu-container,
-#mathModeMenuBalapKarung .menu-container {
+#gameTypeMenu .menu-container {
     justify-content: center;
-}
-
-/* Level menus with back button - AUTO ADJUST tanpa scroll */
-#levelMenuAddition .menu-container,
-#levelMenuSubtraction .menu-container,
-#levelMenuMultiplication .menu-container,
-#levelMenuDivision .menu-container {
-    justify-content: space-between;
-    height: auto;  /* Tinggi otomatis menyesuaikan konten */
-    max-height: 95vh;  /* Maksimal 95% tinggi viewport */
-    min-height: 0;  /* Tidak ada minimum height */
-    overflow: visible;  /* TIDAK ADA SCROLL - semua harus terlihat */
-    padding: clamp(12px, 2vh, 25px) clamp(20px, 3vw, 50px);  /* Padding responsif lebih kecil */
-    gap: clamp(8px, 1.5vh, 20px);  /* Gap antar elemen lebih kecil */
 }
 
 .back-btn:hover {
@@ -715,38 +713,6 @@ body.fullscreen .fullscreen-icon.collapse {
     100% { transform: scale(1); }
 }
 
-.keypad {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(6px, 1vh, 15px);
-    width: 100%;
-    padding: clamp(8px, 1.5vh, 20px);
-    background: rgba(255, 255, 255, 0.25);
-    border-radius: clamp(10px, 1.5vw, 25px);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.keypad-row {
-    display: flex;
-    gap: clamp(6px, 1vw, 15px);
-    justify-content: space-between;
-}
-
-/* Row 5 (for subtraction mode) - hidden by default */
-.keypad-row-5 {
-    display: none;
-}
-
-.keypad-row-5.visible {
-    display: flex;
-}
-
-.keypad-row-5 .go-btn-alt {
-    width: 100%;
-}
-
 button {
     flex: 1;
     height: clamp(45px, 7vh, 85px);
@@ -763,7 +729,6 @@ button {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     will-change: transform;
-    /* Ensure text/number is perfectly centered */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -771,179 +736,9 @@ button {
     line-height: 1;
 }
 
-/* Remove heavy pseudo-elements for game buttons */
-.keypad button::before,
-.keypad button::after {
-    display: none;
-}
-
-/* Simplified hover effects on keypad for better performance */
-.keypad button:hover {
-    transform: none !important;
-    /* Background color will be handled per button type */
-}
-
-/* Faster active state with depth effect */
-.keypad button:active {
-    transform: scale(0.97);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
-                0 1px 2px rgba(0, 0, 0, 0.08);
-}
-
-/* Keep hover for menu buttons only */
 .menu-btn:hover,
 .back-btn:hover {
     transform: translateY(-1px);
-}
-
-.number-btn {
-    background: #ffffff;
-    color: #2c3e50;
-    position: relative;
-    z-index: 2;
-}
-
-/* Remove hover, only keep active state */
-.number-btn:active {
-    background: #e8ecf1;
-}
-
-.minus-btn {
-    background: #ff9800;
-    color: white;
-    display: none;
-    order: 1;
-    position: relative;
-    z-index: 2;
-}
-
-/* Remove hover, only keep active state */
-.minus-btn:active {
-    background: #f57c00;
-}
-
-.minus-btn.visible {
-    display: flex;
-    flex: 1;
-    order: 1;
-    align-items: center;
-    justify-content: center;
-}
-
-.decimal-btn {
-    background: #795548;
-    color: white;
-    display: none;
-    order: 2;
-    position: relative;
-    z-index: 2;
-    font-size: 1.8em;
-    font-weight: 700;
-}
-
-/* Remove hover, only keep active state */
-.decimal-btn:active {
-    background: #5d4037;
-}
-
-.decimal-btn.visible {
-    display: flex;
-    flex: 1;
-    order: 2;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Order untuk mode addition/multiplication: [C] [0] [Go] */
-.keypad-row-4 .clear-btn {
-    order: 3;
-}
-
-.keypad-row-4 .number-btn {
-    order: 4;
-}
-
-.keypad-row-4 .go-btn {
-    order: 5;
-}
-
-/* Order untuk mode subtraction: [−] [0] [C] */
-.keypad-row-4.subtraction-mode .minus-btn {
-    order: 1;
-}
-
-.keypad-row-4.subtraction-mode .number-btn {
-    order: 3;
-}
-
-.keypad-row-4.subtraction-mode .clear-btn {
-    order: 4;
-}
-
-.keypad-row-4.subtraction-mode .go-btn {
-    order: 5;
-}
-
-/* Order untuk mode division: [.] [0] [C] */
-.keypad-row-4.division-mode .decimal-btn {
-    order: 1;
-}
-
-.keypad-row-4.division-mode .number-btn {
-    order: 2;
-}
-
-.keypad-row-4.division-mode .clear-btn {
-    order: 3;
-}
-
-.keypad-row-4.division-mode .go-btn {
-    order: 4;
-}
-
-.clear-btn {
-    background: #ff5252;
-    color: white;
-    position: relative;
-}
-
-/* Remove hover, only keep active state */
-.clear-btn:active {
-    background: #f44336;
-}
-
-.go-btn {
-    background: #42a5f5;
-    color: white;
-    position: relative;
-}
-
-/* Remove hover, only keep active state */
-.go-btn:active {
-    background: #2196f3;
-}
-
-.go-btn.hidden {
-    display: none;
-    flex: 0;
-    width: 0;
-    min-width: 0;
-    padding: 0;
-    border-width: 0;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-}
-
-.go-btn-alt {
-    background: #42a5f5;
-    color: white;
-    position: relative;
-}
-
-/* Remove hover, only keep active state */
-.go-btn-alt:active {
-    background: #2196f3;
 }
 
 /* Score Indicator */
@@ -990,50 +785,16 @@ button {
     height: 100%;
 }
 
-/* Panjat Pinang title spacing */
 .panjat-pinang-center h1 {
     margin-top: 0;
     margin-bottom: clamp(15px, 2vh, 30px);
     flex-shrink: 0;
 }
 
-/* Panjat Pinang instruction spacing */
 .panjat-pinang-center .instruction {
     margin-top: clamp(15px, 2vh, 30px);
     margin-bottom: 0;
     flex-shrink: 0;
-}
-
-.menu-return-btn {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 10px 20px;
-    font-size: 0.85em;
-    background: rgba(255, 255, 255, 0.4);
-    color: #1a237e;
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
-                0 2px 4px rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(10px);
-    z-index: 100;
-}
-
-.menu-return-btn:hover {
-    background: rgba(255, 255, 255, 0.6);
-    color: #1a237e;
-    transform: translateX(-50%) translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15),
-                0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-.menu-return-btn:active {
-    transform: translateX(-50%) translateY(0) scale(0.98);
 }
 
 h1 {
@@ -1050,13 +811,13 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;  /* Changed to hidden to prevent overlap */
-    padding: 0 20px;    /* Add padding to create safe zone */
+    overflow: hidden;
+    padding: 0 20px;
 }
 
 .tug-of-war-scene {
     width: 100%;
-    max-width: clamp(350px, 40vw, 600px);  /* Reduced max-width to prevent overlap */
+    max-width: clamp(350px, 40vw, 600px);
     height: clamp(150px, 25vh, 300px);
     background-image: url('https://game.afifedu.com/character.png');
     background-size: contain;
@@ -1065,7 +826,7 @@ h1 {
     position: relative;
     left: 0;
     transition: left 0.3s ease-out;
-    margin: 0 auto;  /* Center the scene */
+    margin: 0 auto;
 }
 
 .center-line {
@@ -1087,8 +848,6 @@ h1 {
     text-overflow: ellipsis;
     max-width: 100%;
 }
-
-/* Efek hover pada tombol sudah didefinisikan di atas dengan gradient modern */
 
 /* Modal Styles */
 .modal {
@@ -1113,12 +872,8 @@ h1 {
 }
 
 @keyframes fadeInModal {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .modal-content {
@@ -1149,12 +904,8 @@ h1 {
 }
 
 @keyframes modalShine {
-    0%, 100% {
-        transform: translate(0, 0);
-    }
-    50% {
-        transform: translate(10%, 10%);
-    }
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(10%, 10%); }
 }
 
 @keyframes modalSlideIn {
@@ -1222,40 +973,6 @@ h1 {
     margin: 0 auto;
 }
 
-.play-again-btn::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.play-again-btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(102, 126, 234, 0.2);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.play-again-btn:hover::before {
-    opacity: 1;
-}
-
-.play-again-btn:active::after {
-    width: 300px;
-    height: 300px;
-}
-
 .play-again-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35),
@@ -1290,29 +1007,21 @@ h1 {
 /* CHROME ANDROID & TOUCH DEVICE OPTIMIZATIONS */
 /* ============================================ */
 
-/* Disable tap highlight on Chrome Android */
 * {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Optimize touch targets for mobile */
 @media (hover: none) and (pointer: coarse) {
     button {
         min-height: 48px;
         min-width: 48px;
     }
     
-    .keypad button {
-        padding: 12px;
-    }
-    
-    /* Larger touch targets for game buttons */
     .menu-btn {
         min-height: 56px;
     }
 }
 
-/* Handle safe areas for devices with notches */
 @supports (padding: max(0px)) {
     .game-container {
         padding-left: max(20px, env(safe-area-inset-left));
@@ -1328,13 +1037,11 @@ h1 {
     }
 }
 
-/* Ultra-wide display adjustments */
 .ultra-wide .game-container {
     max-width: 2560px;
     margin: 0 auto;
 }
 
-/* Tall display adjustments */
 .tall-display .game-container {
     flex-direction: column;
     gap: 20px;
@@ -1344,7 +1051,6 @@ h1 {
     width: min(90vw, 400px);
 }
 
-/* High DPI display optimizations */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
     * {
         image-rendering: -webkit-optimize-contrast;
@@ -1358,67 +1064,16 @@ h1 {
     }
 }
 
-/* Smooth scrolling prevention for all devices */
 html {
     scroll-behavior: auto !important;
     overscroll-behavior: none;
 }
 
-/* Force hardware acceleration for better performance */
 .game-container,
 .menu-screen,
 .modal {
     transform: translateZ(0);
     will-change: transform;
-}
-
-/* Optimize animations for mobile and touch devices */
-@media (hover: none) and (pointer: coarse) {
-    * {
-        animation-duration: 0.2s !important;
-    }
-    
-    /* Disable all button transitions on touch devices for instant feedback */
-    .keypad button {
-        transition: none !important;
-    }
-    
-    .keypad button:active {
-        transform: scale(0.95);
-        opacity: 0.8;
-    }
-    
-    /* Disable hover effects on touch devices */
-    .keypad button:hover {
-        transform: none;
-    }
-}
-
-/* Optimize hover states on keypad buttons - keep shape but remove heavy effects */
-.keypad .number-btn:hover {
-    background: #f8f9fa;
-    transform: none !important;
-}
-
-.keypad .minus-btn:hover {
-    background: #fb8c00;
-    transform: none !important;
-}
-
-.keypad .decimal-btn:hover {
-    background: #6d4c41;
-    transform: none !important;
-}
-
-.keypad .clear-btn:hover {
-    background: #ef5350;
-    transform: none !important;
-}
-
-.keypad .go-btn:hover,
-.keypad .go-btn-alt:hover {
-    background: #5393f6;
-    transform: none !important;
 }
 
 /* ============================================ */
@@ -1451,12 +1106,8 @@ html {
 }
 
 @keyframes fadeInOverlay {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .countdown-content {
@@ -1512,7 +1163,6 @@ html {
     }
 }
 
-/* Animasi khusus untuk "Mulai!" - Optimized for smooth performance */
 .countdown-number.start {
     animation: startAnimation 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     font-size: 12em;
@@ -1563,14 +1213,11 @@ html {
     background: linear-gradient(180deg, #87ceeb 0%, #98d8e8 50%, #90ee90 100%);
 }
 
-/* ============================================ */
-/* PENGATURAN UKURAN TIANG (EDIT DI SINI)     */
-/* ============================================ */
 .panjat-pinang-field {
     position: relative;
     width: 100%;
     max-width: 600px;
-    height: clamp(400px, 60vh, 770px);  /* Responsive height */
+    height: clamp(400px, 60vh, 770px);
     display: flex;
     justify-content: space-around;
     align-items: flex-end;
@@ -1583,7 +1230,7 @@ html {
 .pole-container {
     position: relative;
     width: clamp(120px, 15vw, 200px);
-    height: 100%;              /* Follow parent height */
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1595,7 +1242,7 @@ html {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    height: 100%;              /* Follow container height */
+    height: 100%;
     width: auto;
     max-width: none;
     object-fit: contain;
@@ -1623,29 +1270,23 @@ html {
     height: 100%;
     object-fit: contain;
     object-position: center bottom;
-    transition: none !important; /* NO TRANSITION untuk gambar */
+    transition: none !important;
 }
 
-/* ============================================ */
-/* PENGATURAN POSISI KARAKTER (EDIT DI SINI)  */
-/* ============================================ */
-
-/* Stand image: offset ke samping dengan transform */
 .left-climber .climber-image.stand {
-    transform: translateX(-60%);  /* Stand kiri: geser ke kiri */
+    transform: translateX(-60%);
 }
 
 .right-climber .climber-image.stand {
-    transform: translateX(60%);   /* Stand kanan: geser ke kanan */
+    transform: translateX(60%);
 }
 
-/* Climb image: sedikit offset untuk positioning di tiang */
 .left-climber .climber-image.climb {
-    transform: translateX(-12%);  /* Climb kiri: geser sedikit ke kiri */
+    transform: translateX(-12%);
 }
 
 .right-climber .climber-image.climb {
-    transform: translateX(10%);   /* Climb kanan: geser sedikit ke kanan */
+    transform: translateX(10%);
 }
 
 .climber-image.stand {
@@ -1656,27 +1297,25 @@ html {
     display: none;
 }
 
-/* Animation for climbing - DISABLED karena conflict dengan translateX */
-/* Tidak pakai animation tambahan, cukup smooth transition dari bottom saja */
-
-/* Game type buttons */
+/* Game type buttons (dalam grid 2 kolom) */
 .game-type-btn {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: clamp(8px, 1.5vw, 20px);
-    padding: clamp(10px, 1.8vh, 25px) clamp(15px, 2.5vw, 35px) !important;
+    gap: clamp(8px, 1.2vw, 16px);
+    padding: clamp(10px, 1.6vh, 20px) clamp(12px, 1.8vw, 24px) !important;
     position: relative;
     overflow: hidden;
     width: 100%;
+    min-width: 0 !important;
     white-space: normal;
-    min-height: clamp(60px, 8vh, 90px);
+    min-height: clamp(64px, 9vh, 96px);
 }
 
 .game-type-btn .menu-icon {
-    width: clamp(50px, 8vw, 120px);
-    height: clamp(50px, 8vw, 120px);
+    width: clamp(46px, 6.2vw, 88px);
+    height: clamp(46px, 6.2vw, 88px);
     object-fit: contain;
     flex-shrink: 0;
     position: relative;
@@ -1692,29 +1331,28 @@ html {
 
 .game-type-btn span {
     text-align: center;
-    font-size: clamp(0.95rem, 2.2vw, 1.5rem);
-    letter-spacing: clamp(0.5px, 0.15vw, 2px);
+    font-size: clamp(0.88rem, 1.65vw, 1.3rem);
+    letter-spacing: clamp(0.4px, 0.12vw, 1.4px);
     position: relative;
     z-index: 2;
     white-space: normal;
 }
 
-/* Samakan ukuran font untuk semua game type */
 .game-type-btn.tarik-tambang .game-type-title {
     font-size: 1em !important;
     font-weight: 600 !important;
 }
 
 .game-type-btn.tarik-tambang .game-type-subtitle {
-    font-size: 0.4em !important;
-    font-weight: 400 !important;
+    font-size: 0.48em !important;
+    font-weight: 500 !important;
     font-style: italic !important;
-    line-height: 1;
+    line-height: 1.1;
     margin-top: 0;
-    padding-top: clamp(4px, 0.8vh, 12px);
+    padding-top: clamp(4px, 0.7vh, 10px);
+    opacity: 0.92;
 }
 
-/* Game type text container with title and subtitle */
 .game-type-text {
     display: flex;
     flex-direction: column;
@@ -1722,12 +1360,13 @@ html {
     gap: calc(1px * var(--gap-scale));
     position: relative;
     z-index: 2;
+    min-width: 0;
 }
 
 .game-type-title {
     text-align: center;
     font-size: 1.0em !important;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
     white-space: nowrap;
     font-weight: 600;
 }
@@ -1735,17 +1374,16 @@ html {
 .game-type-subtitle {
     text-align: center;
     font-size: 0.65em !important;
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-    opacity: 0.8;
+    letter-spacing: 0.4px;
+    white-space: normal;
+    opacity: 0.85;
     font-weight: 400;
     font-style: italic;
-    padding-top: clamp(4px, 0.8vh, 12px);
+    padding-top: clamp(4px, 0.7vh, 10px);
 }
 
 .game-type-btn.tarik-tambang {
     background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-    padding: calc(18px * var(--padding-scale)) calc(15px * var(--padding-scale)) !important;
 }
 
 .game-type-btn.tarik-tambang:hover {
@@ -1772,7 +1410,6 @@ html {
 /* RESPONSIVE - ADDITIONAL ADJUSTMENTS         */
 /* ============================================ */
 
-/* Ultra HD / 4K Displays (3840px and above) - Interactive Flat Panel */
 @media screen and (min-width: 3840px) {
     :root {
         --scale-factor: 1.8;
@@ -1804,7 +1441,6 @@ html {
         min-height: 140px;
     }
     
-    /* Tarik Tambang specific for 4K */
     .tug-of-war-scene {
         max-width: 800px;
     }
@@ -1814,7 +1450,6 @@ html {
     }
 }
 
-/* QHD / 2K Displays (2560px - 3839px) */
 @media screen and (min-width: 2560px) and (max-width: 3839px) {
     :root {
         --scale-factor: 1.3;
@@ -1840,7 +1475,6 @@ html {
     }
 }
 
-/* Full HD (1920px - 2559px) */
 @media screen and (min-width: 1920px) and (max-width: 2559px) {
     :root {
         --scale-factor: 1;
@@ -1851,7 +1485,6 @@ html {
     }
 }
 
-/* HD+ Displays (1600px - 1919px) */
 @media screen and (min-width: 1600px) and (max-width: 1919px) {
     :root {
         --scale-factor: 0.9;
@@ -1862,7 +1495,6 @@ html {
     }
 }
 
-/* HD Ready (1440px - 1599px) */
 @media screen and (min-width: 1440px) and (max-width: 1599px) {
     :root {
         --scale-factor: 0.85;
@@ -1873,7 +1505,6 @@ html {
     }
 }
 
-/* Standard HD (1366px - 1439px) */
 @media screen and (min-width: 1366px) and (max-width: 1439px) {
     :root {
         --scale-factor: 0.8;
@@ -1884,7 +1515,6 @@ html {
     }
 }
 
-/* Tablets & Small Laptops (1024px - 1365px) */
 @media screen and (min-width: 1024px) and (max-width: 1365px) {
     :root {
         --scale-factor: 0.64;
@@ -1893,111 +1523,58 @@ html {
         --button-scale: 0.68;
         --gap-scale: 0.64;
     }
-    /* Menu Screen - Tambah margin atas bawah */
     .menu-screen {
         padding: 20px 0;
         align-items: center;
         justify-content: center;
     }
 
-    /* Menu Container */
     .menu-container {
-        padding: 35px 45px;
-        max-width: 85vw;
+        padding: 32px 42px;
+        max-width: 88vw;
         margin: 0 auto;
     }
 
-    .menu-container.compact {
-        padding: 35px 45px;
-    }
-
-    /* Menu Title */
     .menu-title {
         font-size: 2em;
         margin-bottom: 12px;
     }
 
-    .compact .menu-title {
-        font-size: 2em;
-        margin-bottom: 12px;
-    }
-
-    /* Menu Subtitle */
     .menu-subtitle {
         font-size: 1em;
-        margin-bottom: 22px;
+        margin-bottom: 20px;
     }
 
-    .compact .menu-subtitle {
-        font-size: 1em;
-        margin-bottom: 22px;
-    }
-
-    /* Menu Buttons */
     .menu-buttons {
-        gap: 16px;
-        min-width: 450px;
+        gap: 14px;
     }
 
     .menu-btn {
-        padding: 18px 35px;
-        font-size: 1.3em;
-    }
-
-    /* Level Buttons */
-    .level-btn {
-        padding: 20px 25px;
-        gap: 6px;
-    }
-
-    .level-icon {
-        font-size: 1.4em;
-    }
-
-    .level-name {
+        padding: 16px 28px;
         font-size: 1.2em;
     }
 
-    .level-desc {
-        font-size: 0.75em;
-    }
-
-    /* Game Type Buttons */
     .game-type-btn {
-        min-width: 420px;
-        padding: 10px !important;
-        gap: 16px;
+        padding: 12px 14px !important;
+        gap: 12px;
     }
 
     .game-type-btn .menu-icon {
-        width: 110px;
-        height: 110px;
+        width: 84px;
+        height: 84px;
     }
 
     .game-type-btn span {
-        font-size: 1.2em;
+        font-size: 1.1em;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title {
-        font-size: 1em !important;
-    }
-
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
-        line-height: 1;
-        margin-top: 0;
-        padding-top: clamp(4px, 0.8vh, 12px);
-    }
-
-    /* Back Button - jarak responsive */
     .back-btn {
-        margin-top: clamp(12px, 2vh, 25px);  /* PERBAIKAN: Kurangi margin agar selalu terlihat */
+        margin-top: clamp(12px, 2vh, 25px);
         padding: 11px 32px;
         font-size: 0.9em;
-        flex-shrink: 0;  /* Mencegah tombol terpotong */
+        flex-shrink: 0;
     }
 
-    /* Copyright Footer */
     .copyright-footer {
         bottom: 15px;
     }
@@ -2007,7 +1584,6 @@ html {
     }
 }
 
-/* Tablet Landscape (768px - 1023px) */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
     :root {
         --scale-factor: 0.6;
@@ -2016,7 +1592,6 @@ html {
         --button-scale: 0.64;
         --gap-scale: 0.6;
     }
-    /* Menu Screen - Tambah margin atas bawah */
     .menu-screen {
         padding: 15px 0;
         align-items: center;
@@ -2024,13 +1599,9 @@ html {
     }
 
     .menu-container {
-        padding: 28px 38px;
-        max-width: 88vw;
+        padding: 26px 34px;
+        max-width: 90vw;
         margin: 0 auto;
-    }
-
-    .menu-container.compact {
-        padding: 30px 40px;
     }
 
     .menu-title {
@@ -2038,82 +1609,41 @@ html {
         margin-bottom: 10px;
     }
 
-    .compact .menu-title {
-        font-size: 1.7em;
-        margin-bottom: 10px;
-    }
-
     .menu-subtitle {
         font-size: 0.95em;
-        margin-bottom: 18px;
-    }
-
-    .compact .menu-subtitle {
-        font-size: 0.95em;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
     }
 
     .menu-buttons {
-        gap: 14px;
-        min-width: 380px;
+        gap: 12px;
     }
 
     .menu-btn {
-        padding: 15px 30px;
-        font-size: 1.2em;
-    }
-
-    .level-btn {
-        padding: 18px 22px;
-        gap: 5px;
-    }
-
-    .level-icon {
-        font-size: 1.3em;
-    }
-
-    .level-name {
+        padding: 14px 24px;
         font-size: 1.15em;
     }
 
-    .level-desc {
-        font-size: 0.72em;
-    }
-
     .game-type-btn {
-        min-width: 380px;
-        padding: 9px !important;
-        gap: 14px;
+        padding: 10px 12px !important;
+        gap: 10px;
     }
 
     .game-type-btn .menu-icon {
-        width: 100px;
-        height: 100px;
+        width: 74px;
+        height: 74px;
     }
 
     .game-type-btn span {
-        font-size: 1.1em;
-    }
-
-    .game-type-btn.tarik-tambang .game-type-title {
-        font-size: 1em !important;
-    }
-
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
-        line-height: 1;
-        margin-top: 0;
-        padding-top: clamp(4px, 0.8vh, 12px);
+        font-size: 1em;
     }
 
     .back-btn {
-        margin-top: clamp(12px, 2vh, 24px);  /* PERBAIKAN: Kurangi margin agar selalu terlihat */
+        margin-top: clamp(12px, 2vh, 24px);
         padding: 10px 28px;
         font-size: 0.85em;
-        flex-shrink: 0;  /* Mencegah tombol terpotong */
+        flex-shrink: 0;
     }
 
-    /* Copyright Footer */
     .copyright-footer {
         bottom: 12px;
     }
@@ -2134,8 +1664,8 @@ html {
 .balap-karung-field {
     position: relative;
     width: 100%;
-    max-width: clamp(600px, 70vw, 900px);  /* Responsive max-width */
-    height: clamp(250px, 35vh, 350px);     /* Responsive height */
+    max-width: clamp(600px, 70vw, 900px);
+    height: clamp(250px, 35vh, 350px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2145,8 +1675,8 @@ html {
 .race-track {
     position: relative;
     width: 100%;
-    max-width: clamp(600px, 70vw, 900px);  /* Match parent */
-    height: clamp(180px, 25vh, 250px);     /* Responsive height */
+    max-width: clamp(600px, 70vw, 900px);
+    height: clamp(180px, 25vh, 250px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2158,7 +1688,7 @@ html {
     left: 0;
     width: 100%;
     height: auto;
-    max-height: clamp(100px, 14vh, 140px);  /* Responsive height */
+    max-height: clamp(100px, 14vh, 140px);
     object-fit: contain;
     z-index: 1;
 }
@@ -2166,15 +1696,14 @@ html {
 .racer-container {
     position: absolute;
     left: 0;
-    width: clamp(90px, 10vw, 120px);        /* Responsive width */
-    height: clamp(110px, 15vh, 150px);      /* Responsive height */
+    width: clamp(90px, 10vw, 120px);
+    height: clamp(110px, 15vh, 150px);
     display: flex;
     align-items: flex-end;
     justify-content: center;
     z-index: 2;
-    /* PERBAIKAN: Sinkronkan transition horizontal dengan durasi animasi hop (500ms) */
     transition: left 0.5s ease-out;
-    will-change: left, transform;  /* Optimasi performa */
+    will-change: left, transform;
 }
 
 .racer-image {
@@ -2195,58 +1724,40 @@ html {
     display: none;
 }
 
-/* Initial positions - BERBEDA untuk kedua player (3D Perspective) */
 .left-racer {
-    bottom: clamp(35px, 4.5vh, 50px);  /* Player kiri di jalur bawah (dekat) - RESPONSIVE */
-    left: 3.5%;      /* Start position 4% - dimundurkan */
-    z-index: 3;    /* DEPAN - lebih dekat ke kamera */
-    transform: scale(1);  /* Normal size - closer to camera */
+    bottom: clamp(35px, 4.5vh, 50px);
+    left: 3.5%;
+    z-index: 3;
+    transform: scale(1);
 }
 
 .right-racer {
-    bottom: clamp(65px, 8.5vh, 90px);  /* Player kanan di jalur atas (jauh) - RESPONSIVE */
-    left: 6.5%;    /* Start position 6.5% - mundur sedikit saja dari 7% */
-    z-index: 2;    /* BELAKANG - lebih jauh dari kamera */
-    transform: scale(0.9);  /* Slightly smaller - farther from camera */
+    bottom: clamp(65px, 8.5vh, 90px);
+    left: 6.5%;
+    z-index: 2;
+    transform: scale(0.9);
 }
 
-/* Animasi Parabola untuk Hop - Different for each lane */
-/* PERBAIKAN: Animasi smooth tanpa jeda, sinkron dengan perpindahan horizontal */
 @keyframes hopParabolaFront {
-    0% {
-        transform: translateY(0) scale(1);
-    }
-    50% {
-        transform: translateY(-60px) scale(1);  /* Naik ke puncak parabola */
-    }
-    100% {
-        transform: translateY(0) scale(1);  /* Turun kembali - langsung jadi stand */
-    }
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-60px) scale(1); }
+    100% { transform: translateY(0) scale(1); }
 }
 
 @keyframes hopParabolaBack {
-    0% {
-        transform: translateY(0) scale(0.9);
-    }
-    50% {
-        transform: translateY(-50px) scale(0.9);  /* Naik lebih sedikit (perspective) */
-    }
-    100% {
-        transform: translateY(0) scale(0.9);  /* Turun kembali - langsung jadi stand */
-    }
+    0% { transform: translateY(0) scale(0.9); }
+    50% { transform: translateY(-50px) scale(0.9); }
+    100% { transform: translateY(0) scale(0.9); }
 }
 
 .left-racer.hopping {
     animation: hopParabolaFront 0.5s ease-in-out;
-    /* Perpindahan horizontal (left) berjalan bersamaan dengan animasi vertikal */
 }
 
 .right-racer.hopping {
     animation: hopParabolaBack 0.5s ease-in-out;
-    /* Perpindahan horizontal (left) berjalan bersamaan dengan animasi vertikal */
 }
 
-/* Animasi Shake untuk Jawaban Salah */
 @keyframes shakeRacerFront {
     0%, 100% { transform: translateX(0) scale(1); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-4px) scale(1); }
@@ -2268,33 +1779,9 @@ html {
 }
 
 /* ============================================ */
-/* PERBAIKAN BUG: RESOLUSI SPESIFIK            */
-/* ============================================ */
-
-/* Khusus untuk resolusi sekitar 1158x673 dan rasionya (aspect ratio ~1.72:1) */
-/* Ini memastikan tombol Kembali terlihat dan animasi hop smooth */
-@media screen and (min-width: 1000px) and (max-width: 1300px) and (min-height: 600px) and (max-height: 750px) {
-    /* Pastikan tombol Kembali selalu terlihat */
-    .menu-container .back-btn {
-        margin-top: clamp(10px, 1.5vh, 18px);
-        flex-shrink: 0;
-    }
-    
-    /* Level menus - pastikan tidak overflow */
-    #levelMenuAddition .menu-container,
-    #levelMenuSubtraction .menu-container,
-    #levelMenuMultiplication .menu-container,
-    #levelMenuDivision .menu-container {
-        padding: clamp(15px, 2.5vh, 30px) clamp(25px, 3vw, 50px);
-        gap: clamp(12px, 2vh, 25px);
-    }
-}
-
-/* ============================================ */
 /* RESPONSIVE DESIGN - MOBILE LANDSCAPE        */
 /* ============================================ */
 
-/* Countdown responsive */
 @media screen and (max-width: 768px) {
     .countdown-number {
         font-size: 10em;
@@ -2331,7 +1818,6 @@ html {
     }
 }
 
-/* Mobile Portrait (max-width: 767px) */
 @media screen and (max-width: 767px) and (orientation: portrait) {
     .game-container {
         flex-direction: column;
@@ -2347,7 +1833,7 @@ html {
     
     .center-section {
         min-width: 100%;
-        order: -1; /* Move to top */
+        order: -1;
     }
     
     .game-field {
@@ -2358,18 +1844,8 @@ html {
         height: 50px;
         font-size: 1.1rem;
     }
-    
-    .keypad {
-        gap: 8px;
-        padding: 10px;
-    }
-    
-    .keypad-row {
-        gap: 8px;
-    }
 }
 
-/* Panjat Pinang responsive adjustments */
 @media screen and (max-width: 1366px) {
     .panjat-pinang-center {
         padding: clamp(20px, 3vh, 40px) 0;
@@ -2390,7 +1866,6 @@ html {
     }
 }
 
-/* Ultra HD / 4K Displays */
 @media screen and (min-width: 3840px) {
     .panjat-pinang-center {
         padding: 80px 0;
@@ -2410,22 +1885,18 @@ html {
     }
 }
 
-/* Mobile Landscape: Optimize for small height screens */
 @media screen and (max-height: 600px) and (orientation: landscape) {
-    /* Reduce game container padding and gaps */
     .game-container {
         padding: 8px 15px;
         gap: 15px;
     }
 
-    /* Make player sections more compact */
     .player-section {
         width: 260px;
         padding: 10px;
         gap: 8px;
     }
 
-    /* Reduce question box size */
     .question-box {
         padding: 10px 8px;
         font-size: 1.1em;
@@ -2433,30 +1904,17 @@ html {
         letter-spacing: 1px;
     }
 
-    /* Reduce answer box size */
     .answer-box {
         height: 45px;
         font-size: 1.3em;
         letter-spacing: 2px;
     }
 
-    /* Make keypad more compact */
-    .keypad {
-        padding: 8px;
-        gap: 6px;
-    }
-
-    .keypad-row {
-        gap: 6px;
-    }
-
-    /* Smaller buttons */
     button {
         height: 45px;
         font-size: 1.1em;
     }
 
-    /* Reduce center section */
     .center-section {
         min-width: 250px;
         gap: 6px;
@@ -2472,25 +1930,22 @@ html {
         margin: 0;
     }
 
-    /* Reduce game field */
     .game-field {
         height: 160px;
-        padding: 0 10px;  /* Less padding on mobile */
+        padding: 0 10px;
     }
 
     .tug-of-war-scene {
-        max-width: 300px;  /* Smaller on mobile landscape */
+        max-width: 300px;
         height: 150px;
     }
 
-    /* Score indicator */
     .score-indicator {
         font-size: 0.9em;
         padding: 6px;
         margin-top: 6px;
     }
 
-    /* Panjat Pinang adjustments - MUCH SMALLER */
     .panjat-pinang-center {
         padding: 15px 0;
     }
@@ -2524,7 +1979,6 @@ html {
         height: 85px;
     }
 
-    /* Balap Karung adjustments */
     .balap-karung-field {
         max-width: 500px;
         height: 200px;
@@ -2556,110 +2010,57 @@ html {
         bottom: 65px;
     }
 
-    @keyframes hopParabola {
-        0% {
-            transform: translateY(0);
-        }
-        50% {
-            transform: translateY(-40px);
-        }
-        100% {
-            transform: translateY(0);
-        }
-    }
-
-    /* Reduce menu sizes */
     .menu-container {
-        padding: 20px 25px;
-        max-width: 90vw;
-    }
-
-    .menu-container.compact {
-        padding: 20px 25px;
+        padding: 18px 22px;
+        max-width: 92vw;
     }
 
     .menu-title {
-        font-size: 1.4em;
-        margin-bottom: 10px;
-    }
-
-    .compact .menu-title {
-        font-size: 1.4em;
-        margin-bottom: 10px;
+        font-size: 1.35em;
+        margin-bottom: 8px;
     }
 
     .menu-subtitle {
-        font-size: 0.9em;
-        margin-bottom: 15px;
-    }
-
-    .compact .menu-subtitle {
-        font-size: 0.9em;
-        margin-bottom: 15px;
+        font-size: 0.85em;
+        margin-bottom: 12px;
     }
 
     .menu-buttons {
-        gap: 12px;
-        min-width: auto;
+        gap: 10px;
         width: 100%;
     }
 
+    .game-modes-grid {
+        gap: 10px;
+    }
+
     .menu-btn {
-        padding: 12px 20px;
-        font-size: 1em;
-    }
-
-    .level-btn {
-        padding: 14px 18px;
-        gap: 5px;
-    }
-
-    .level-icon {
-        font-size: 1.4em;
-    }
-
-    .level-name {
-        font-size: 1.2em;
-    }
-
-    .level-desc {
-        font-size: 0.75em;
+        padding: 10px 16px;
+        font-size: 0.95em;
     }
 
     .game-type-btn {
-        min-width: auto;
-        padding: 8px !important;
-        gap: 15px;
+        padding: 7px 10px !important;
+        gap: 10px;
+        min-height: 54px;
     }
 
     .game-type-btn .menu-icon {
-        width: 70px;
-        height: 70px;
+        width: 52px;
+        height: 52px;
     }
 
     .game-type-btn span {
-        font-size: 1em;
-    }
-
-    .game-type-btn.tarik-tambang .game-type-title {
-        font-size: 1em !important;
-    }
-
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
-        line-height: 1;
-        margin-top: 0;
-        padding-top: clamp(4px, 0.8vh, 12px);
+        font-size: 0.92em;
     }
 
     .back-btn {
-        margin-top: clamp(10px, 2vh, 20px);  /* PERBAIKAN: Kurangi margin agar selalu terlihat */
+        margin-top: clamp(10px, 2vh, 20px);
         padding: 10px 25px;
         font-size: 0.9em;
-        flex-shrink: 0;  /* Mencegah tombol terpotong */
+        flex-shrink: 0;
     }
 
-    /* Fullscreen and home buttons */
     .fullscreen-btn,
     .home-btn {
         width: 44px;
@@ -2681,7 +2082,6 @@ html {
         height: 20px;
     }
 
-    /* Copyright footer */
     .copyright-footer {
         bottom: 10px;
     }
@@ -2690,7 +2090,6 @@ html {
         font-size: 0.75em;
     }
 
-    /* Modal adjustments */
     .modal-content {
         padding: 30px 40px;
         min-width: 350px;
@@ -2713,217 +2112,6 @@ html {
     }
 }
 
-/* Extra small landscape devices (height < 500px) */
-@media screen and (max-height: 500px) and (orientation: landscape) {
-    .game-container {
-        padding: 5px 10px;
-        gap: 10px;
-    }
-
-    .player-section {
-        width: 220px;
-        padding: 8px;
-        gap: 6px;
-    }
-
-    .question-box {
-        padding: 8px 6px;
-        font-size: 1em;
-        min-height: 42px;
-        letter-spacing: 0.5px;
-    }
-
-    .answer-box {
-        height: 38px;
-        font-size: 1.15em;
-        letter-spacing: 1.5px;
-    }
-
-    .keypad {
-        padding: 6px;
-        gap: 5px;
-    }
-
-    .keypad-row {
-        gap: 5px;
-    }
-
-    button {
-        height: 40px;
-        font-size: 1.05em;
-    }
-
-    .center-section {
-        min-width: 200px;
-        gap: 4px;
-    }
-
-    .center-section h1 {
-        font-size: 0.95em;
-        margin: 0;
-    }
-
-    .instruction {
-        font-size: 0.7em;
-        margin: 0;
-    }
-
-    .game-field {
-        height: 130px;
-    }
-
-    .tug-of-war-scene {
-        max-width: 350px;
-        height: 120px;
-    }
-
-    .score-indicator {
-        font-size: 0.85em;
-        padding: 5px;
-        margin-top: 4px;
-    }
-
-    .panjat-pinang-field {
-        max-width: 250px;
-        height: 280px;
-        gap: 30px;
-    }
-
-    .pole-container {
-        width: 85px;
-        height: 270px;
-    }
-
-    .pole-image {
-        height: 270px;
-    }
-
-    .climber-container {
-        width: 60px;
-        height: 75px;
-    }
-
-    /* Balap Karung adjustments for < 500px */
-    .balap-karung-field {
-        max-width: 450px;
-        height: 180px;
-    }
-
-    .race-track {
-        max-width: 450px;
-        height: 140px;
-    }
-
-    .track-image {
-        max-height: 90px;
-    }
-
-    .racer-container {
-        width: 80px;
-        height: 100px;
-    }
-
-    .racer-image {
-        max-height: 100px;
-    }
-
-    .left-racer {
-        bottom: 30px;
-    }
-
-    .right-racer {
-        bottom: 55px;
-    }
-
-    @keyframes hopParabola {
-        0% {
-            transform: translateY(0);
-        }
-        50% {
-            transform: translateY(-35px);
-        }
-        100% {
-            transform: translateY(0);
-        }
-    }
-
-    /* Menu adjustments for < 500px */
-    .menu-container {
-        padding: 18px 22px;
-        max-width: 92vw;
-    }
-
-    .menu-container.compact {
-        padding: 18px 22px;
-    }
-
-    .menu-title {
-        font-size: 1.3em;
-        margin-bottom: 8px;
-    }
-
-    .compact .menu-title {
-        font-size: 1.3em;
-        margin-bottom: 8px;
-    }
-
-    .menu-subtitle {
-        font-size: 0.85em;
-        margin-bottom: 12px;
-    }
-
-    .compact .menu-subtitle {
-        font-size: 0.85em;
-        margin-bottom: 12px;
-    }
-
-    .menu-buttons {
-        gap: 10px;
-    }
-
-    .menu-btn {
-        padding: 10px 18px;
-        font-size: 0.95em;
-    }
-
-    .level-btn {
-        padding: 12px 16px;
-        gap: 4px;
-    }
-
-    .game-type-btn {
-        padding: 7px !important;
-        gap: 12px;
-    }
-
-    .game-type-btn .menu-icon {
-        width: 65px;
-        height: 65px;
-    }
-
-    .game-type-btn span {
-        font-size: 0.95em;
-    }
-
-    .game-type-btn.tarik-tambang .game-type-title {
-        font-size: 1em !important;
-    }
-
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
-        line-height: 1;
-        margin-top: 0;
-        padding-top: clamp(4px, 0.8vh, 12px);
-    }
-
-    .back-btn {
-        margin-top: clamp(12px, 2vh, 25px);
-        padding: 9px 22px;
-        font-size: 0.85em;
-    }
-}
-
-/* Very small landscape devices (height < 400px) - Galaxy S8+, Pixel, etc */
 @media screen and (max-height: 400px) and (orientation: landscape) {
     .game-container {
         padding: 3px 8px;
@@ -2947,15 +2135,6 @@ html {
         height: 35px;
         font-size: 1.05em;
         letter-spacing: 1px;
-    }
-
-    .keypad {
-        padding: 5px;
-        gap: 4px;
-    }
-
-    .keypad-row {
-        gap: 4px;
     }
 
     button {
@@ -3013,7 +2192,6 @@ html {
         height: 65px;
     }
 
-    /* Balap Karung adjustments for < 400px */
     .balap-karung-field {
         max-width: 380px;
         height: 150px;
@@ -3045,19 +2223,6 @@ html {
         bottom: 45px;
     }
 
-    @keyframes hopParabola {
-        0% {
-            transform: translateY(0);
-        }
-        50% {
-            transform: translateY(-30px);
-        }
-        100% {
-            transform: translateY(0);
-        }
-    }
-
-    /* Fullscreen and home buttons */
     .fullscreen-btn,
     .home-btn {
         width: 38px;
@@ -3079,96 +2244,57 @@ html {
         height: 18px;
     }
 
-    /* Menu adjustments for < 400px */
     .menu-container {
-        padding: 15px 20px;
+        padding: 14px 18px;
         max-width: 94vw;
-    }
-
-    .menu-container.compact {
-        padding: 15px 20px;
     }
 
     .menu-title {
         font-size: 1.15em;
-        margin-bottom: 8px;
-    }
-
-    .compact .menu-title {
-        font-size: 1.15em;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .menu-subtitle {
         font-size: 0.8em;
-        margin-bottom: 10px;
-    }
-
-    .compact .menu-subtitle {
-        font-size: 0.8em;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
 
     .menu-buttons {
         gap: 8px;
     }
 
+    .game-modes-grid {
+        gap: 8px;
+    }
+
     .menu-btn {
-        padding: 9px 16px;
-        font-size: 0.9em;
-    }
-
-    .level-btn {
-        padding: 10px 14px;
-        gap: 4px;
-    }
-
-    .level-icon {
-        font-size: 1.25em;
-    }
-
-    .level-name {
-        font-size: 1.1em;
-    }
-
-    .level-desc {
-        font-size: 0.7em;
+        padding: 8px 14px;
+        font-size: 0.88em;
     }
 
     .game-type-btn {
-        padding: 6px !important;
-        gap: 10px;
+        padding: 5px 8px !important;
+        gap: 8px;
+        min-height: 44px;
     }
 
     .game-type-btn .menu-icon {
-        width: 55px;
-        height: 55px;
+        width: 42px;
+        height: 42px;
     }
 
     .game-type-btn span {
-        font-size: 0.85em;
-        letter-spacing: 1px;
-    }
-
-    .game-type-btn.tarik-tambang .game-type-title {
-        font-size: 1em !important;
-    }
-
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
-        letter-spacing: 0.3px;
-        line-height: 1;
-        margin-top: -2px;
+        font-size: 0.82em;
+        letter-spacing: 0.5px;
     }
 
     .back-btn {
-        margin-top: clamp(8px, 1.5vh, 18px);  /* PERBAIKAN: Kurangi margin agar selalu terlihat */
+        margin-top: clamp(8px, 1.5vh, 18px);
         padding: 8px 20px;
         font-size: 0.8em;
-        flex-shrink: 0;  /* Mencegah tombol terpotong */
+        flex-shrink: 0;
     }
 
-    /* Copyright footer */
     .copyright-footer {
         bottom: 5px;
     }
@@ -3177,7 +2303,6 @@ html {
         font-size: 0.65em;
     }
 
-    /* Modal adjustments */
     .modal-content {
         padding: 25px 35px;
         min-width: 280px;
@@ -3202,12 +2327,13 @@ html {
 }
 
 /* ============================================ */
-/* FOLDER MANAGER, JSON IO & MULTIPLE CHOICE    */
+/* PENGATURAN, FOLDER MANAGER, JSON IO & MC     */
 /* ============================================ */
 
 .custom-soal-btn {
     background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-    margin-top: clamp(4px, 0.8vh, 10px);
+    margin-top: clamp(2px, 0.5vh, 6px);
+    width: 100%;
 }
 
 .custom-soal-btn:hover {
@@ -3243,6 +2369,13 @@ html {
     font-size: clamp(0.78rem, 1.2vw, 0.95rem);
     margin-bottom: 0;
     text-align: left;
+}
+
+.header-settings-right {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .active-status-pill {
@@ -3391,22 +2524,6 @@ html {
     flex-shrink: 0;
 }
 
-.folder-item-actions {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 6px;
-}
-
-.active-tag {
-    font-size: 0.76rem;
-    font-weight: 700;
-    color: #059669;
-    background: #d1fae5;
-    padding: 3px 9px;
-    border-radius: 8px;
-}
-
 .folder-use-btn {
     flex: none;
     height: auto;
@@ -3421,11 +2538,6 @@ html {
 
 .folder-use-btn:hover {
     background: #bfdbfe;
-}
-
-.folder-mini-btns {
-    display: flex;
-    gap: 4px;
 }
 
 .folder-icon-btn {
@@ -3579,21 +2691,6 @@ html {
 .export-json-btn {
     background: #fef3c7;
     color: #92400e;
-}
-
-.json-hint {
-    font-size: 0.7rem;
-    color: #475569;
-    margin: 0;
-    line-height: 1.3;
-    word-break: break-word;
-}
-
-.json-hint code {
-    background: #e2e8f0;
-    padding: 1px 4px;
-    border-radius: 4px;
-    font-family: monospace;
 }
 
 /* Question List Column */
@@ -3858,7 +2955,6 @@ html {
     }
 }
 
-
 /* ============================================ */
 /* MULTI-FILE SUB-ITEMS & MODE QUESTION BADGES  */
 /* ============================================ */
@@ -3871,12 +2967,12 @@ html {
 
 .game-type-btn.panjat-pinang .game-type-subtitle,
 .game-type-btn.balap-karung .game-type-subtitle {
-    font-size: 0.42em !important;
+    font-size: 0.48em !important;
     font-weight: 500 !important;
     font-style: italic !important;
-    line-height: 1;
+    line-height: 1.1;
     margin-top: 0;
-    padding-top: clamp(4px, 0.8vh, 10px);
+    padding-top: clamp(4px, 0.7vh, 10px);
     opacity: 0.92;
 }
 
@@ -4020,9 +3116,8 @@ html {
     color: #166534;
 }
 
-
 /* ============================================ */
-/* TARGET JAWABAN BENAR SETTING                 */
+/* TARGET JAWABAN BENAR DI DALAM PENGATURAN     */
 /* ============================================ */
 
 .target-correct-setting {
@@ -4030,19 +3125,16 @@ html {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
-    background: rgba(255, 255, 255, 0.78);
-    border: 1px solid rgba(26, 35, 126, 0.2);
-    border-radius: 14px;
-    padding: 8px 16px;
-    margin: 0 auto clamp(12px, 2vh, 22px) auto;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1.5px solid rgba(59, 130, 246, 0.35);
+    border-radius: 999px;
+    padding: 6px 14px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    max-width: 500px;
-    width: 100%;
 }
 
 .target-correct-setting label {
-    font-size: clamp(0.8rem, 1.35vw, 0.98rem);
+    font-size: clamp(0.78rem, 1.15vw, 0.92rem);
     font-weight: 700;
     color: #1a237e;
     white-space: nowrap;
@@ -4055,13 +3147,13 @@ html {
 }
 
 .target-correct-input {
-    width: 72px;
-    padding: 6px 10px;
-    border-radius: 10px;
+    width: 64px;
+    padding: 4px 8px;
+    border-radius: 8px;
     border: 2px solid #3b82f6;
     background: #ffffff;
     color: #0f172a;
-    font-size: clamp(0.88rem, 1.4vw, 1.05rem);
+    font-size: clamp(0.84rem, 1.2vw, 0.98rem);
     font-weight: 700;
     text-align: center;
     outline: none;
@@ -4076,7 +3168,8 @@ html {
 }
 
 .target-correct-unit {
-    font-size: clamp(0.78rem, 1.25vw, 0.92rem);
+    font-size: clamp(0.76rem, 1.1vw, 0.88rem);
     font-weight: 600;
     color: #334155;
+    white-space: nowrap;
 }

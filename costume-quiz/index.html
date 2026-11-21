@@ -47,42 +47,37 @@
 
     <!-- Menu Game Mode Selection (Tarik Tambang / Panjat Pinang / Balap Karung) -->
     <div id="gameTypeMenu" class="menu-screen">
-        <div class="menu-container">
+        <div class="menu-container main-menu-container">
             <h1 class="menu-title">Permainan Kuis Edukasi</h1>
             <p class="menu-subtitle">
-                Aktif: <strong id="activeFolderBadge">-</strong> (<span id="questionCountBadge">0 Soal</span>)
+                Aktif: <strong id="activeFolderBadge">-</strong> (<span id="questionCountBadge">0 Soal</span>) • Target: <strong class="target-correct-label">5</strong> Benar
             </p>
-            <div class="target-correct-setting">
-                <label for="inputTargetCorrect">🎯 Target Jawaban Benar untuk Menang:</label>
-                <div class="target-correct-control">
-                    <input type="number" id="inputTargetCorrect" class="target-correct-input" min="1" max="100" value="5" onchange="onTargetCorrectChange()" oninput="onTargetCorrectChange()">
-                    <span class="target-correct-unit">Soal Benar</span>
-                </div>
-            </div>
             <div class="menu-buttons">
-                <button class="menu-btn game-type-btn tarik-tambang" onclick="selectGameType('tarik-tambang')">
-                    <img src="https://game.afifedu.com/icon_tarik.png" alt="Tarik Tambang" class="menu-icon">
-                    <div class="game-type-text">
-                        <span class="game-type-title">Tarik Tambang</span>
-                        <span class="game-type-subtitle mode-question-count">0 Soal Tersedia</span>
-                    </div>
-                </button>
-                <button class="menu-btn game-type-btn panjat-pinang" onclick="selectGameType('panjat-pinang')">
-                    <img src="https://game.afifedu.com/icon_panjat.png" alt="Panjat Pinang" class="menu-icon">
-                    <div class="game-type-text">
-                        <span class="game-type-title">Panjat Pinang</span>
-                        <span class="game-type-subtitle mode-question-count">0 Soal Tersedia</span>
-                    </div>
-                </button>
-                <button class="menu-btn game-type-btn balap-karung" onclick="selectGameType('balap-karung')">
-                    <img src="https://game.afifedu.com/icon_balap_karung.png" alt="Balap Karung" class="menu-icon">
-                    <div class="game-type-text">
-                        <span class="game-type-title">Balap Karung</span>
-                        <span class="game-type-subtitle mode-question-count">0 Soal Tersedia</span>
-                    </div>
-                </button>
+                <div class="game-modes-grid">
+                    <button class="menu-btn game-type-btn tarik-tambang" onclick="selectGameType('tarik-tambang')">
+                        <img src="https://game.afifedu.com/icon_tarik.png" alt="Tarik Tambang" class="menu-icon">
+                        <div class="game-type-text">
+                            <span class="game-type-title">Tarik Tambang</span>
+                            <span class="game-type-subtitle mode-question-count">0 Soal Tersedia</span>
+                        </div>
+                    </button>
+                    <button class="menu-btn game-type-btn panjat-pinang" onclick="selectGameType('panjat-pinang')">
+                        <img src="https://game.afifedu.com/icon_panjat.png" alt="Panjat Pinang" class="menu-icon">
+                        <div class="game-type-text">
+                            <span class="game-type-title">Panjat Pinang</span>
+                            <span class="game-type-subtitle mode-question-count">0 Soal Tersedia</span>
+                        </div>
+                    </button>
+                    <button class="menu-btn game-type-btn balap-karung" onclick="selectGameType('balap-karung')">
+                        <img src="https://game.afifedu.com/icon_balap_karung.png" alt="Balap Karung" class="menu-icon">
+                        <div class="game-type-text">
+                            <span class="game-type-title">Balap Karung</span>
+                            <span class="game-type-subtitle mode-question-count">0 Soal Tersedia</span>
+                        </div>
+                    </button>
+                </div>
                 <button class="menu-btn custom-soal-btn" onclick="showCustomQuestionMenu()">
-                    📁 Kelola Folder & File Soal
+                    ⚙️ Pengaturan
                 </button>
             </div>
         </div>
@@ -92,17 +87,26 @@
         </div>
     </div>
 
-    <!-- Menu Kostum Soal Berbasis Folder Mata Pelajaran & File Paket Soal -->
+    <!-- Menu Pengaturan: Target Jawaban Benar, Folder Mata Pelajaran & File Paket Soal -->
     <div id="customQuestionMenu" class="menu-screen">
         <div class="menu-container custom-soal-container">
             <div class="custom-header-bar">
                 <div>
-                    <h1 class="menu-title">Bank Soal Per Mata Pelajaran & Paket File!</h1>
-                    <p class="menu-subtitle">Buat folder mapel (misal: Informatika), lalu kelola banyak file soal di dalamnya (misal: Kelas 7, Kelas 8, Kelas 9)!</p>
+                    <h1 class="menu-title">⚙️ Pengaturan Permainan & Bank Soal</h1>
+                    <p class="menu-subtitle">Atur target jawaban benar (maksimal sesuai jumlah soal aktif), folder mapel, dan file paket soal!</p>
                 </div>
-                <div class="active-status-pill">
-                    <span>Dipakai Main:</span>
-                    <strong id="headerActiveFolderName">-</strong>
+                <div class="header-settings-right">
+                    <div class="target-correct-setting in-settings">
+                        <label for="inputTargetCorrect">🎯 Target Menang:</label>
+                        <div class="target-correct-control">
+                            <input type="number" id="inputTargetCorrect" class="target-correct-input" min="1" max="100" value="5" onchange="onTargetCorrectChange()" oninput="onTargetCorrectChange()">
+                            <span class="target-correct-unit">/ <strong id="maxTargetQuestionsBadge">0</strong> Soal</span>
+                        </div>
+                    </div>
+                    <div class="active-status-pill">
+                        <span>Dipakai Main:</span>
+                        <strong id="headerActiveFolderName">-</strong>
+                    </div>
                 </div>
             </div>
             
