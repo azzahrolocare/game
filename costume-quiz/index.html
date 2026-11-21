@@ -74,8 +74,8 @@
             </div>
         </div>
         <div class="copyright-footer">
-            <p>© AfifEdu 2025 | <span id="version-indicator">v2.1.0 - Folder & JSON Quiz</span></p>
-            <p style="margin-top: 5px; font-size: 0.9em; opacity: 0.8;">Created By Herwin Hamid</p>
+            <p>© Az-Zahro Arcade 2026 | <span id="version-indicator">v2.1.0</span></p>
+            <p style="margin-top: 5px; font-size: 0.9em; opacity: 0.8;">Created By Az-Zahro IT</p>
         </div>
     </div>
 
@@ -85,7 +85,7 @@
             <div class="custom-header-bar">
                 <div>
                     <h1 class="menu-title">Bank Soal Per Mata Pelajaran</h1>
-                    <p class="menu-subtitle">Pilih folder mata pelajaran, aktifkan untuk dimainkan, atau import file JSON</p>
+                    <p class="menu-subtitle">Pilih folder mata pelajaran, aktifkan untuk dimainkan, atau import file soal!</p>
                 </div>
                 <div class="active-status-pill">
                     <span>Dipakai Main:</span>
@@ -115,7 +115,7 @@
                 <!-- Kolom 2: Form Tambah Soal + Import JSON ke Folder Terpilih -->
                 <div class="soal-form-card">
                     <div class="card-section-header">
-                        <h3>✍️ Input & Import JSON</h3>
+                        <h3>✍️ Input & Import File</h3>
                     </div>
 
                     <!-- Pilih Folder Tujuan Penyimpanan -->
@@ -147,14 +147,11 @@
 
                     <!-- Area Import & Export File JSON pada Folder Terpilih -->
                     <div class="json-io-box">
-                        <div class="json-io-title">📂 Import / Export File JSON (ke folder terpilih di atas)</div>
+                        <div class="json-io-title">📂 Import File Soal (ke folder terpilih di atas)</div>
                         <div class="json-io-actions">
                             <input type="file" id="jsonFileInput" accept=".json,application/json" style="display: none;" onchange="handleJsonFileUpload(event)">
-                            <button type="button" class="json-btn upload-json-btn" onclick="triggerJsonUpload()">📤 Import File .JSON</button>
-                            <button type="button" class="json-btn download-template-btn" onclick="downloadJsonTemplate()">📥 Contoh .JSON</button>
-                            <button type="button" class="json-btn export-json-btn" onclick="exportSelectedFolderJson()">💾 Export Folder</button>
+                            <button type="button" class="json-btn upload-json-btn" onclick="triggerJsonUpload()">📤 Import File Soal</button>
                         </div>
-                        <p class="json-hint">Format JSON: array berisi <code>{"question":"...","options":{"A":"...","B":"...","C":"...","D":"..."},"answer":"A"}</code></p>
                     </div>
                 </div>
 
