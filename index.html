@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Game Edukasi - Azzahro Arcade</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        arcade: ['Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        arcade: {
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
+                            cyan: '#06b6d4',
+                            amber: '#f59e0b',
+                            lime: '#10b981',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2.5s infinite',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-10px) rotate(2deg)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.03)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f0fdf4;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(14, 165, 233, 0.12) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(245, 158, 11, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+        .arcade-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            border: 3px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .arcade-card:hover {
+            border-color: #0ea5e9;
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 35px -10px rgba(14, 165, 233, 0.25);
+        }
+        .game-btn {
+            position: relative;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 0 0 rgba(0, 0, 0, 0.15);
+        }
+        .game-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.15);
+        }
+        .filter-pill.active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px -3px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Fullscreen support */
+        :fullscreen {
+            background-color: #f0fdf4;
+            overflow-y: auto;
+        }
+
+        :-webkit-full-screen {
+            background-color: #f0fdf4;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between font-sans selection:bg-pink-500 selection:text-white" ondblclick="toggleFullscreen()">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b-2 border-slate-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2">
+            <a href="http://azzahro.web.id/game/" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-pink-500 flex items-center justify-center shadow-md group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fa-solid fa-gamepad text-2xl text-white animate-bounce-slow"></i>
+                </div>
+                <div>
+                    <h1 class="font-arcade font-bold text-xl sm:text-2xl tracking-wide bg-gradient-to-r from-cyan-600 via-indigo-600 to-pink-600 bg-clip-text text-transparent">
+                        Azzahro <span class="text-pink-500">Arcade</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 font-semibold hidden sm:block">Portal Game Edukasi Interaktif</p>
+                </div>
+            </a>
+
+            <!-- Subject Badges -->
+            <div class="hidden lg:flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                    <i class="fa-solid fa-calculator text-amber-500"></i> Numerasi
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <i class="fa-solid fa-book-open-reader text-emerald-500"></i> Literasi
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-50 text-cyan-700 border border-cyan-200">
+                    <i class="fa-solid fa-laptop-code text-cyan-500"></i> Informatika
+                </span>
+            </div>
+
+            <!-- Fullscreen Trigger -->
+            <button
+                id="fullscreenBtn"
+                type="button"
+                onclick="toggleFullscreen()"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold bg-purple-50 text-purple-700 border-2 border-purple-200 shadow-inner hover:bg-purple-100 transition-all"
+                title="Aktifkan layar penuh"
+                aria-label="Aktifkan layar penuh"
+            >
+                <i id="fullscreenIcon" class="fa-solid fa-expand"></i>
+                <span id="fullscreenText">Fullscreen</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16 flex-1 w-full">
+        <div class="text-center max-w-3xl mx-auto mb-10">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-100 border-2 border-amber-300 text-amber-800 text-xs sm:text-sm font-bold mb-6 shadow-sm animate-float">
+                <i class="fa-solid fa-star text-amber-500"></i>
+                <span>Zona Petualangan Numerasi, Literasi & Informatika!</span>
+                <i class="fa-solid fa-star text-amber-500"></i>
+            </div>
+            <h2 class="font-arcade text-3xl sm:text-5xl font-extrabold tracking-wide text-slate-900 mb-4 leading-tight">
+                Main Game Sambil Belajar <span class="bg-gradient-to-r from-amber-500 via-emerald-500 to-cyan-600 bg-clip-text text-transparent">Makin Seru!</span>
+            </h2>
+            <p class="text-slate-600 text-base sm:text-lg font-medium leading-relaxed">
+                Pilih misi game edukasi di bawah ini mulai dari perlombaan tradisional numerasi, menyusun bilangan, berhitung, mencocokkan benda literasi, hingga eksplorasi informatika!
+            </p>
+        </div>
+
+        <!-- Search & Category Filter Bar -->
+        <div class="mb-12 max-w-2xl mx-auto space-y-4">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-cyan-500 text-lg"></i>
+                <input 
+                    type="text" 
+                    id="searchInput"
+                    onkeyup="applyFilters()"
+                    placeholder="Cari game (LombaRia, bilangan, berhitung, pasangan benda, informatika)..." 
+                    class="w-full bg-white border-2 border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-cyan-500/20 focus:border-cyan-500 transition-all shadow-md"
+                >
+            </div>
+
+            <!-- Category Filter Buttons -->
+            <div class="flex flex-wrap items-center justify-center gap-2.5">
+                <button type="button" onclick="selectCategory('all', this)" class="filter-pill active inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold bg-slate-900 text-white border-2 border-slate-900 transition-all">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <span>Semua Game</span>
+                </button>
+                <button type="button" onclick="selectCategory('numerasi', this)" class="filter-pill inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold bg-amber-50 text-amber-800 border-2 border-amber-200 hover:bg-amber-100 transition-all">
+                    <i class="fa-solid fa-calculator text-amber-500"></i>
+                    <span>Numerasi</span>
+                </button>
+                <button type="button" onclick="selectCategory('literasi', this)" class="filter-pill inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold bg-emerald-50 text-emerald-800 border-2 border-emerald-200 hover:bg-emerald-100 transition-all">
+                    <i class="fa-solid fa-book-open-reader text-emerald-500"></i>
+                    <span>Literasi</span>
+                </button>
+                <button type="button" onclick="selectCategory('informatika', this)" class="filter-pill inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold bg-cyan-50 text-cyan-800 border-2 border-cyan-200 hover:bg-cyan-100 transition-all">
+                    <i class="fa-solid fa-laptop-code text-cyan-500"></i>
+                    <span>Informatika</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Game List Cards (Bright Arcade Style) -->
+        <div id="gameContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <!-- NUMERASI 1: /Numerasi/LombaRia -->
+            <div data-category="numerasi" class="arcade-card rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-28 h-28 bg-amber-100 rounded-full group-hover:scale-125 transition-transform duration-500"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-white text-3xl shadow-lg shadow-amber-500/30 group-hover:rotate-6 transition-transform">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <i class="fa-solid fa-calculator"></i> Numerasi
+                        </span>
+                    </div>
+
+                    <h3 class="font-arcade text-2xl font-bold text-slate-900 mb-1 group-hover:text-amber-600 transition-colors">
+                        LombaRia
+                    </h3>
+                    <p class="text-xs text-slate-500 font-mono mb-4 flex items-center gap-1.5 font-semibold">
+                        <i class="fa-solid fa-folder-open text-amber-500"></i>
+                        /Numerasi/LombaRia
+                    </p>
+
+                    <p class="text-slate-600 text-sm font-medium leading-relaxed mb-4">
+                        Ikuti keseruan 3 lomba seru sambil mengasah kemampuan numerasi kamu:
+                    </p>
+
+                    <!-- 3 Lomba Badges with Icons -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-orange-50 text-orange-700 border border-orange-200">
+                            <i class="fa-solid fa-people-pulling text-orange-500"></i> Tarik Tambang
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-red-50 text-red-700 border border-red-200">
+                            <i class="fa-solid fa-tree text-red-500"></i> Panjat Pinang
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-yellow-50 text-yellow-800 border border-yellow-200">
+                            <i class="fa-solid fa-person-running text-yellow-600"></i> Lompat Karung
+                        </span>
+                    </div>
+                </div>
+
+                <div class="relative z-10">
+                    <a 
+                        href="/Numerasi/LombaRia" 
+                        class="game-btn w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white font-bold py-3.5 px-6 rounded-2xl text-sm"
+                    >
+                        <span>MAIN SEKARANG</span>
+                        <i class="fa-solid fa-play text-xs bg-white/20 p-1.5 rounded-full"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- NUMERASI 2: /Numerasi/ayo_buat_bilangan -->
+            <div data-category="numerasi" class="arcade-card rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-28 h-28 bg-yellow-100 rounded-full group-hover:scale-125 transition-transform duration-500"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-yellow-400 to-amber-600 flex items-center justify-center text-white text-3xl shadow-lg shadow-yellow-500/30 group-hover:rotate-6 transition-transform">
+                            <i class="fa-solid fa-arrow-up-9-1"></i>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <i class="fa-solid fa-calculator"></i> Numerasi
+                        </span>
+                    </div>
+
+                    <h3 class="font-arcade text-2xl font-bold text-slate-900 mb-1 group-hover:text-amber-600 transition-colors">
+                        Ayo Buat Bilangan
+                    </h3>
+                    <p class="text-xs text-slate-500 font-mono mb-4 flex items-center gap-1.5 font-semibold">
+                        <i class="fa-solid fa-folder-open text-amber-500"></i>
+                        /Numerasi/ayo_buat_bilangan
+                    </p>
+
+                    <p class="text-slate-600 text-sm font-medium leading-relaxed mb-6">
+                        Susun angka-angka dan pahami nilai tempat untuk membentuk bilangan yang tepat sesuai tantangan misi!
+                    </p>
+                </div>
+
+                <div class="relative z-10">
+                    <a 
+                        href="/Numerasi/ayo_buat_bilangan" 
+                        class="game-btn w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-white font-bold py-3.5 px-6 rounded-2xl text-sm"
+                    >
+                        <span>MAIN SEKARANG</span>
+                        <i class="fa-solid fa-play text-xs bg-white/20 p-1.5 rounded-full"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- NUMERASI 3: /Numerasi/pintar_berhitung -->
+            <div data-category="numerasi" class="arcade-card rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-28 h-28 bg-orange-100 rounded-full group-hover:scale-125 transition-transform duration-500"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-rose-500 flex items-center justify-center text-white text-3xl shadow-lg shadow-orange-500/30 group-hover:rotate-6 transition-transform">
+                            <i class="fa-solid fa-plus-minus"></i>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                            <i class="fa-solid fa-calculator"></i> Numerasi
+                        </span>
+                    </div>
+
+                    <h3 class="font-arcade text-2xl font-bold text-slate-900 mb-1 group-hover:text-orange-600 transition-colors">
+                        Pintar Berhitung
+                    </h3>
+                    <p class="text-xs text-slate-500 font-mono mb-4 flex items-center gap-1.5 font-semibold">
+                        <i class="fa-solid fa-folder-open text-orange-500"></i>
+                        /Numerasi/pintar_berhitung
+                    </p>
+
+                    <p class="text-slate-600 text-sm font-medium leading-relaxed mb-6">
+                        Latih kecepatan dan ketepatan operasi hitung dasar agar makin jago menyelesaikan soal matematika sehari-hari.
+                    </p>
+                </div>
+
+                <div class="relative z-10">
+                    <a 
+                        href="/Numerasi/pintar_berhitung" 
+                        class="game-btn w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-400 hover:to-rose-400 text-white font-bold py-3.5 px-6 rounded-2xl text-sm"
+                    >
+                        <span>MAIN SEKARANG</span>
+                        <i class="fa-solid fa-play text-xs bg-white/20 p-1.5 rounded-full"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- LITERASI 1: /Literasi/game_pasangan_benda -->
+            <div data-category="literasi" class="arcade-card rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-28 h-28 bg-emerald-100 rounded-full group-hover:scale-125 transition-transform duration-500"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-3xl shadow-lg shadow-emerald-500/30 group-hover:rotate-6 transition-transform">
+                            <i class="fa-solid fa-puzzle-piece"></i>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            <i class="fa-solid fa-book-open-reader"></i> Literasi
+                        </span>
+                    </div>
+
+                    <h3 class="font-arcade text-2xl font-bold text-slate-900 mb-1 group-hover:text-emerald-600 transition-colors">
+                        Game Pasangan Benda
+                    </h3>
+                    <p class="text-xs text-slate-500 font-mono mb-4 flex items-center gap-1.5 font-semibold">
+                        <i class="fa-solid fa-folder-open text-emerald-500"></i>
+                        /Literasi/game_pasangan_benda
+                    </p>
+
+                    <p class="text-slate-600 text-sm font-medium leading-relaxed mb-6">
+                        Baca petunjuk, kenali kosakata, dan pasangkan setiap benda dengan pasangan atau fungsinya secara tepat!
+                    </p>
+                </div>
+
+                <div class="relative z-10">
+                    <a 
+                        href="/Literasi/game_pasangan_benda" 
+                        class="game-btn w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold py-3.5 px-6 rounded-2xl text-sm"
+                    >
+                        <span>MAIN SEKARANG</span>
+                        <i class="fa-solid fa-play text-xs bg-white/20 p-1.5 rounded-full"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- INFORMATIKA 1: /Informatika -->
+            <div data-category="informatika" class="arcade-card rounded-3xl p-6 flex flex-col justify-between group relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-28 h-28 bg-cyan-100 rounded-full group-hover:scale-125 transition-transform duration-500"></div>
+                
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 via-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl shadow-lg shadow-cyan-500/30 group-hover:rotate-6 transition-transform">
+                            <i class="fa-solid fa-microchip"></i>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-100 text-cyan-800 border border-cyan-200">
+                            <i class="fa-solid fa-laptop-code"></i> Informatika
+                        </span>
+                    </div>
+
+                    <h3 class="font-arcade text-2xl font-bold text-slate-900 mb-1 group-hover:text-cyan-600 transition-colors">
+                        Zona Informatika
+                    </h3>
+                    <p class="text-xs text-slate-500 font-mono mb-4 flex items-center gap-1.5 font-semibold">
+                        <i class="fa-solid fa-folder-open text-cyan-500"></i>
+                        /Informatika
+                    </p>
+
+                    <p class="text-slate-600 text-sm font-medium leading-relaxed mb-6">
+                        Jelajahi berbagai game dan tantangan seru seputar logika komputasi, perangkat digital, dan pemrograman dasar.
+                    </p>
+                </div>
+
+                <div class="relative z-10">
+                    <a 
+                        href="/Informatika" 
+                        class="game-btn w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white font-bold py-3.5 px-6 rounded-2xl text-sm"
+                    >
+                        <span>MAIN SEKARANG</span>
+                        <i class="fa-solid fa-play text-xs bg-white/20 p-1.5 rounded-full"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Empty state when searching -->
+        <div id="noResults" class="hidden text-center py-16">
+            <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400 text-2xl border-2 border-slate-200">
+                <i class="fa-solid fa-ghost animate-bounce"></i>
+            </div>
+            <h4 class="font-arcade text-lg font-bold text-slate-700 mb-1">Game Tidak Ditemukan!</h4>
+            <p class="text-sm text-slate-500">Coba cari judul game, kategori, atau jalur folder lainnya.</p>
+        </div>
+
+        <!-- Feature Highlights -->
+        <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 border-t-2 border-slate-200 pt-12">
+            <div class="flex items-start gap-4 p-5 rounded-2xl bg-white border-2 border-slate-100 shadow-sm">
+                <div class="p-3 bg-amber-100 text-amber-600 rounded-xl">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-1">Multimapel Interaktif</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">Menghubungkan Numerasi, Literasi, dan Informatika dalam satu portal game seru.</p>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-4 p-5 rounded-2xl bg-white border-2 border-slate-100 shadow-sm">
+                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                    <i class="fa-solid fa-bolt text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-1">Akses Instan</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">Bisa langsung dimainkan lewat browser tanpa perlu instalasi aplikasi tambahan.</p>
+                </div>
+            </div>
+
+            <div class="flex items-start gap-4 p-5 rounded-2xl bg-white border-2 border-slate-100 shadow-sm">
+                <div class="p-3 bg-cyan-100 text-cyan-600 rounded-xl">
+                    <i class="fa-solid fa-mobile-screen-button text-xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-1">Responsif & Ramah Sentuh</h4>
+                    <p class="text-xs text-slate-500 leading-relaxed font-medium">Nyaman dimainkan di HP, Tablet, maupun Laptop dengan tampilan yang jelas.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t-2 border-slate-200 bg-white/90 py-8 text-center text-xs text-slate-500 mt-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-3">
+            <p class="font-bold text-slate-700 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-code text-cyan-500"></i> Dikembangkan oleh Rahmattullah
+            </p>
+            <p class="text-slate-500">&copy; 2026 Azzahro Web. Pembelajaran Interaktif berbasis Game.</p>
+            <p class="flex items-center gap-2 font-mono text-slate-400 text-xs">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Server Aktif: http://azzahro.web.id/game/
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        let activeCategory = 'all';
+
+        // Pemicu Fullscreen
+        function toggleFullscreen() {
+            const doc = document;
+            if (!doc.fullscreenElement && !doc.webkitFullscreenElement) {
+                const element = document.documentElement;
+                const requestFullscreen =
+                    element.requestFullscreen ||
+                    element.webkitRequestFullscreen ||
+                    element.msRequestFullscreen;
+
+                if (requestFullscreen) {
+                    const result = requestFullscreen.call(element);
+                    if (result && typeof result.catch === 'function') {
+                        result.catch(() => {});
+                    }
+                }
+            } else {
+                const exitFullscreen =
+                    doc.exitFullscreen ||
+                    doc.webkitExitFullscreen ||
+                    doc.msExitFullscreen;
+
+                if (exitFullscreen) {
+                    const result = exitFullscreen.call(doc);
+                    if (result && typeof result.catch === 'function') {
+                        result.catch(() => {});
+                    }
+                }
+            }
+        }
+
+        function updateFullscreenButton() {
+            const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+            const btn = document.getElementById('fullscreenBtn');
+            const icon = document.getElementById('fullscreenIcon');
+            const text = document.getElementById('fullscreenText');
+
+            if (!btn || !icon || !text) return;
+
+            if (isFullscreen) {
+                icon.className = 'fa-solid fa-compress';
+                text.textContent = 'Keluar Fullscreen';
+                btn.title = 'Keluar dari layar penuh';
+                btn.setAttribute('aria-label', 'Keluar dari layar penuh');
+            } else {
+                icon.className = 'fa-solid fa-expand';
+                text.textContent = 'Fullscreen';
+                btn.title = 'Aktifkan layar penuh';
+                btn.setAttribute('aria-label', 'Aktifkan layar penuh');
+            }
+        }
+
+        document.addEventListener('fullscreenchange', updateFullscreenButton);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenButton);
+
+        function selectCategory(category, btnElement) {
+            activeCategory = category;
+
+            const pills = document.querySelectorAll('.filter-pill');
+            pills.forEach((pill) => {
+                pill.classList.remove('active', 'bg-slate-900', 'text-white', 'border-slate-900');
+                if (pill.textContent.includes('Semua Game')) {
+                    pill.classList.add('bg-white', 'text-slate-700', 'border-slate-200');
+                }
+            });
+
+            if (btnElement) {
+                btnElement.classList.add('active');
+                if (category === 'all') {
+                    btnElement.classList.remove('bg-white', 'text-slate-700', 'border-slate-200');
+                    btnElement.classList.add('bg-slate-900', 'text-white', 'border-slate-900');
+                }
+            }
+
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.getElementsByClassName('arcade-card');
+            let visibleCount = 0;
+
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                const cardCategory = card.getAttribute('data-category');
+                const cardText = card.innerText.toLowerCase();
+
+                const matchesCategory = activeCategory === 'all' || cardCategory === activeCategory;
+                const matchesSearch = cardText.includes(input);
+
+                if (matchesCategory && matchesSearch) {
+                    card.style.display = "flex";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            }
+
+            const noResults = document.getElementById('noResults');
+            if (visibleCount === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
