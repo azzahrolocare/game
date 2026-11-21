@@ -1,46 +1,182 @@
 // ============================================
-// IMAGE PRELOADING & CACHING
+// SOUND ENGINE (WEB AUDIO API)
+// ============================================
+
+const SoundEngine = (() => {
+    let ctx = null;
+    let isMuted = false;
+    let bgmTimer = null;
+    let bgmStep = 0;
+    let currentMood = 'menu';
+
+    const notes = {
+        C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+        C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, R: 0
+    };
+
+    const menuMelody = [
+        'C5', 'E5', 'G5', 'E5', 'F5', 'A5', 'G5', 'R',
+        'E5', 'G5', 'C5', 'D5', 'E5', 'D5', 'C5', 'R',
+        'D5', 'F5', 'A5', 'F5', 'E5', 'G5', 'C5', 'R',
+        'D5', 'B4', 'C5', 'E5', 'C5', 'R', 'R', 'R'
+    ];
+
+    const gameMelody = [
+        'G4', 'C5', 'E5', 'C5', 'G5', 'G5', 'E5', 'C5',
+        'A4', 'D5', 'F5', 'D5', 'A5', 'A5', 'G5', 'E5',
+        'G4', 'C5', 'E5', 'G5', 'A5', 'G5', 'E5', 'C5',
+        'D5', 'E5', 'D5', 'B4', 'C5', 'E5', 'C5', 'R'
+    ];
+
+    function init() {
+        if (!ctx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            ctx = new AudioCtx();
+        }
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
+    }
+
+    function playTone(freq, duration, type = 'sine', volume = 0.15, slideTo = null) {
+        if (isMuted || !freq) return;
+        init();
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+        gain.gain.setValueAtTime(volume, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration);
+    }
+
+    const sfx = {
+        click() { playTone(620, 0.07, 'triangle', 0.14, 820); },
+        nav() {
+            playTone(440, 0.08, 'sine', 0.15);
+            setTimeout(() => playTone(660, 0.12, 'sine', 0.15), 55);
+        },
+        correct() {
+            playTone(523.25, 0.09, 'triangle', 0.22);
+            setTimeout(() => playTone(659.25, 0.09, 'triangle', 0.22), 65);
+            setTimeout(() => playTone(783.99, 0.18, 'triangle', 0.25, 987.77), 130);
+        },
+        wrong() {
+            playTone(220, 0.14, 'sawtooth', 0.12, 160);
+            setTimeout(() => playTone(185, 0.18, 'sawtooth', 0.12, 140), 110);
+        },
+        countdownTick(isGo = false) {
+            if (isGo) playTone(880, 0.35, 'triangle', 0.28, 1046.5);
+            else playTone(440, 0.15, 'sine', 0.22);
+        },
+        win() {
+            [
+                { f: 523.25, t: 0, d: 0.14 },
+                { f: 659.25, t: 120, d: 0.14 },
+                { f: 783.99, t: 240, d: 0.14 },
+                { f: 1046.50, t: 380, d: 0.35 },
+                { f: 783.99, t: 620, d: 0.14 },
+                { f: 1046.50, t: 780, d: 0.55 }
+            ].forEach(n => setTimeout(() => playTone(n.f, n.d, 'triangle', 0.25), n.t));
+        }
+    };
+
+    function startBGM(mood = 'menu') {
+        currentMood = mood;
+        if (bgmTimer) clearInterval(bgmTimer);
+        const tempoMs = mood === 'game' ? 210 : 280;
+        bgmTimer = setInterval(() => {
+            if (isMuted || !ctx || ctx.state !== 'running') return;
+            const seq = currentMood === 'game' ? gameMelody : menuMelody;
+            const noteName = seq[bgmStep % seq.length];
+            const freq = notes[noteName];
+            if (freq > 0) {
+                playTone(freq, (tempoMs / 1000) * 0.85, 'sine', 0.055);
+                if (bgmStep % 4 === 0) playTone(freq / 2, (tempoMs / 1000) * 1.4, 'triangle', 0.045);
+            }
+            bgmStep++;
+        }, tempoMs);
+    }
+
+    function toggleMute() {
+        init();
+        isMuted = !isMuted;
+        const btn = document.getElementById('audioToggleBtn');
+        if (btn) {
+            document.getElementById('iconSoundOn').style.display = isMuted ? 'none' : 'block';
+            document.getElementById('iconSoundOff').style.display = isMuted ? 'block' : 'none';
+            btn.classList.toggle('muted', isMuted);
+        }
+        if (!isMuted) sfx.click();
+    }
+
+    return { init, sfx, startBGM, toggleMute };
+})();
+
+// ============================================
+// IMAGE PRELOADING & FALLBACK
 // ============================================
 
 const imagesToPreload = [
-    'character.png',
-    'icon_home.png',
-    'icon_tarik.png',
-    'icon_panjat.png',
-    'icon_balap_karung.png',
-    'panjat_pinang/tiang.png',
-    'panjat_pinang/standleft.png',
-    'panjat_pinang/standright.png',
-    'panjat_pinang/climbleft.png',
-    'panjat_pinang/climbright.png',
-    'balap_karung/track.png',
-    'balap_karung/blue_stand.png',
-    'balap_karung/blue_hop.png',
-    'balap_karung/red_stand.png',
-    'balap_karung/red_hop.png'
+    'https://game.afifedu.com/icon_home.png',
+    'https://game.afifedu.com/icon_tarik.png',
+    'https://game.afifedu.com/icon_panjat.png',
+    'https://game.afifedu.com/icon_balap_karung.png',
+    'https://game.afifedu.com/panjat_pinang/tiang.png',
+    'https://game.afifedu.com/panjat_pinang/standleft.png',
+    'https://game.afifedu.com/panjat_pinang/standright.png',
+    'https://game.afifedu.com/panjat_pinang/climbleft.png',
+    'https://game.afifedu.com/panjat_pinang/climbright.png',
+    'https://game.afifedu.com/balap_karung/track.png',
+    'https://game.afifedu.com/balap_karung/blue_stand.png',
+    'https://game.afifedu.com/balap_karung/blue_hop.png',
+    'https://game.afifedu.com/balap_karung/red_stand.png',
+    'https://game.afifedu.com/balap_karung/red_hop.png'
 ];
 
 const preloadedImages = {};
-let imagesLoaded = 0;
-const totalImages = imagesToPreload.length;
 
 function preloadImages() {
     imagesToPreload.forEach(src => {
         const img = new Image();
-        img.onload = () => {
-            preloadedImages[src] = img;
-            imagesLoaded++;
-        };
-        img.onerror = () => {
-            imagesLoaded++;
-        };
+        img.onload = () => { preloadedImages[src] = img; };
         img.src = src;
     });
 }
 
-window.addEventListener('load', () => {
-    preloadImages();
-});
+function handleRacerImgError(imgEl, color, pose) {
+    if (imgEl.dataset.fallbackApplied) return;
+    imgEl.dataset.fallbackApplied = 'true';
+    imgEl.onerror = null;
+
+    const shirtColor = color === 'red' ? '#e74c3c' : '#3498db';
+    const sackColor = color === 'red' ? '#d35400' : '#c08b5c';
+    const yOffset = pose === 'hop' ? -12 : 0;
+    const legBend = pose === 'hop' ? 'M38,95 Q50,82 62,95' : 'M38,105 L62,105';
+
+    const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+        <g transform="translate(0, ${yOffset})">
+            <circle cx="50" cy="24" r="14" fill="#fbd3b0" stroke="#333" stroke-width="2.5"/>
+            <rect x="35" y="15" width="30" height="6" rx="2" fill="#e74c3c"/>
+            <rect x="35" y="21" width="30" height="5" rx="2" fill="#ffffff"/>
+            <circle cx="45" cy="26" r="2" fill="#222"/>
+            <circle cx="55" cy="26" r="2" fill="#222"/>
+            <path d="M45,31 Q50,35 55,31" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/>
+            <rect x="36" y="38" width="28" height="24" rx="6" fill="${shirtColor}" stroke="#333" stroke-width="2.5"/>
+            <circle cx="34" cy="58" r="5" fill="#fbd3b0" stroke="#333" stroke-width="2"/>
+            <circle cx="66" cy="58" r="5" fill="#fbd3b0" stroke="#333" stroke-width="2"/>
+            <path d="M32,58 L68,58 L72,105 Q50,112 28,105 Z" fill="${sackColor}" stroke="#5d4037" stroke-width="2.5"/>
+            <path d="${legBend}" fill="none" stroke="#5d4037" stroke-width="2" stroke-dasharray="4,3"/>
+        </g>
+    </svg>`;
+    imgEl.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+}
 
 // ============================================
 // CUSTOM QUESTION BANK (MULTI-MAPEL)
@@ -260,10 +396,7 @@ function checkChoiceAnswer(player, selectedIdx, clickedBtn) {
 
     if (isCorrect) {
         if (clickedBtn) clickedBtn.classList.add('opt-correct');
-        if (typeof SoundEngine !== 'undefined' && SoundEngine.sfx) {
-            SoundEngine.sfx.correct();
-        }
-
+        SoundEngine.sfx.correct();
         pState.score++;
 
         if (gameState.currentGameType === 'tarik-tambang') {
@@ -323,9 +456,7 @@ function checkChoiceAnswer(player, selectedIdx, clickedBtn) {
         return true;
     } else {
         if (clickedBtn) clickedBtn.classList.add('opt-wrong');
-        if (typeof SoundEngine !== 'undefined' && SoundEngine.sfx) {
-            SoundEngine.sfx.wrong();
-        }
+        SoundEngine.sfx.wrong();
 
         if (gameState.currentGameType === 'panjat-pinang' && pState.climbPosition > 0) {
             pState.climbPosition--;
@@ -355,31 +486,24 @@ function checkChoiceAnswer(player, selectedIdx, clickedBtn) {
 // ============================================
 
 function updateRopePosition() {
-    const scene = document.querySelector('.tug-of-war-scene');
-    const gameContainer = document.querySelector('#gameScreenTarikTambang');
-    if (!scene || !gameContainer) return;
+    // Hanya menggeser .tug-movable-group (tali + penarik), sedangkan .tug-center-marker tetap diam di tengah
+    const movableGroup = document.getElementById('tugMovableGroup');
+    const arena = document.querySelector('.tug-of-war-arena');
+    if (!movableGroup || !arena) return;
 
-    const leftSection = gameContainer.querySelector('.left-player');
-    const rightSection = gameContainer.querySelector('.right-player');
-    const centerSection = gameContainer.querySelector('.center-section');
-
-    const leftBoundary = leftSection ? leftSection.offsetWidth : 340;
-    const rightBoundary = rightSection ? rightSection.offsetWidth : 340;
-    const centerWidth = centerSection ? centerSection.offsetWidth : 500;
-
-    const maxLeftMove = Math.min(centerWidth * 0.35, leftBoundary * 0.25);
-    const maxRightMove = Math.min(centerWidth * 0.35, rightBoundary * 0.25);
+    const arenaWidth = arena.clientWidth || 420;
+    const maxShift = Math.max(arenaWidth * 0.24, 55);
 
     let offset = 0;
     if (gameState.ropePosition < 50) {
         const leftProgress = (50 - gameState.ropePosition) / 50;
-        offset = -leftProgress * maxLeftMove;
+        offset = -leftProgress * maxShift;
     } else if (gameState.ropePosition > 50) {
         const rightProgress = (gameState.ropePosition - 50) / 50;
-        offset = rightProgress * maxRightMove;
+        offset = rightProgress * maxShift;
     }
 
-    scene.style.transform = `translateX(${Math.round(offset)}px)`;
+    movableGroup.style.transform = `translateX(${Math.round(offset)}px)`;
 }
 
 function updateScoreDisplay(player) {
@@ -396,36 +520,37 @@ function updateScoreDisplay(player) {
     }
 }
 
+function syncClimberVisual(climberContainer, climbPosition) {
+    if (!climberContainer) return;
+    const standImage = climberContainer.querySelector('.stand');
+    const climbImage = climberContainer.querySelector('.climb');
+
+    const poleEl = climberContainer.closest('.pole-container');
+    const poleImg = poleEl ? poleEl.querySelector('.pole-image') : null;
+    const poleHeight = poleImg && poleImg.clientHeight ? poleImg.clientHeight : 250;
+
+    const maxClimbPx = Math.max(poleHeight * 0.62, 110);
+    const climbPixels = Math.round(Math.min(Math.max(climbPosition, 0) / WIN_STEPS_PANJAT, 1) * maxClimbPx);
+
+    // Hindari karakter ganda: tampilkan stand saat posisi 0, atau climb saat memanjat
+    if (climbPosition <= 0) {
+        if (standImage) standImage.style.display = 'block';
+        if (climbImage) climbImage.style.display = 'none';
+        climberContainer.style.transform = 'translateX(-50%) translateY(0px)';
+    } else {
+        if (standImage) standImage.style.display = 'none';
+        if (climbImage) climbImage.style.display = 'block';
+        climberContainer.style.transform = `translateX(-50%) translateY(-${climbPixels}px)`;
+    }
+}
+
 function updateClimberPosition(player) {
     const climberClass = player === 'left' ? '.left-climber' : '.right-climber';
     const climberContainer = document.querySelector(`#gameScreenPanjatPinang ${climberClass}`);
     if (!climberContainer) return;
 
-    const standImage = climberContainer.querySelector('.stand');
-    const climbImage = climberContainer.querySelector('.climb');
     const climbPosition = player === 'left' ? gameState.leftPlayer.climbPosition : gameState.rightPlayer.climbPosition;
-
-    const poleEl = climberContainer.closest('.pole-container');
-    const poleImg = poleEl ? poleEl.querySelector('.pole-image') : null;
-    const climbSpan = poleImg && poleImg.clientHeight ? Math.max(poleImg.clientHeight - 75, 110) : 180;
-    const climbPixels = Math.round(Math.min(climbPosition / WIN_STEPS_PANJAT, 1) * climbSpan);
-
-    if (climbPosition === 0) {
-        if (climbImage) climbImage.style.display = 'none';
-        if (standImage) standImage.style.display = 'block';
-        climberContainer.style.setProperty('transform', 'translateX(-50%) translateY(0px)', 'important');
-    } else {
-        if (standImage) standImage.style.display = 'none';
-        if (climbImage) climbImage.style.display = 'block';
-        climberContainer.style.setProperty('transform', `translateX(-50%) translateY(-${climbPixels}px)`, 'important');
-
-        setTimeout(() => {
-            if (climbPosition > 0 && climbPosition < WIN_STEPS_PANJAT && standImage && climbImage) {
-                climbImage.style.display = 'none';
-                standImage.style.display = 'block';
-            }
-        }, 320);
-    }
+    syncClimberVisual(climberContainer, climbPosition);
 }
 
 function updateRacerPosition(player) {
@@ -495,10 +620,8 @@ function createConfetti() {
 
 function showWinnerModal(winner, message) {
     createConfetti();
-    if (typeof SoundEngine !== 'undefined' && SoundEngine.sfx) {
-        SoundEngine.sfx.win();
-        SoundEngine.startBGM('menu');
-    }
+    SoundEngine.sfx.win();
+    SoundEngine.startBGM('menu');
 
     const modal = document.getElementById('winnerModal');
     const winnerText = document.getElementById('winnerText');
@@ -571,10 +694,8 @@ function showCountdown() {
         if (numberEl) numberEl.textContent = current.number;
         if (textEl) textEl.textContent = current.text;
 
-        if (typeof SoundEngine !== 'undefined' && SoundEngine.sfx) {
-            SoundEngine.sfx.countdownTick(Boolean(current.isStart));
-            if (current.isStart) SoundEngine.startBGM('game');
-        }
+        SoundEngine.sfx.countdownTick(Boolean(current.isStart));
+        if (current.isStart) SoundEngine.startBGM('game');
 
         if (index < countdownSequence.length - 1) {
             setTimeout(() => updateCountdown(index + 1), 850);
@@ -602,11 +723,7 @@ function resetGame() {
         updateRopePosition();
     } else if (gameState.currentGameType === 'panjat-pinang') {
         document.querySelectorAll('.climber-container').forEach(container => {
-            container.style.setProperty('transform', 'translateX(-50%) translateY(0px)', 'important');
-            const standImage = container.querySelector('.stand');
-            const climbImage = container.querySelector('.climb');
-            if (standImage) standImage.style.display = 'block';
-            if (climbImage) climbImage.style.display = 'none';
+            syncClimberVisual(container, 0);
         });
         updateScoreDisplay('left');
         updateScoreDisplay('right');
@@ -674,14 +791,11 @@ function showGameTypeMenu() {
 function startGameMode(gameType) {
     if (!questionBank || questionBank.length === 0) {
         alert('Bank soal masih kosong! Silakan tambahkan minimal 1 soal terlebih dahulu.');
-        if (typeof openQuizEditor === 'function') openQuizEditor();
+        openQuizEditor();
         return;
     }
 
-    if (typeof SoundEngine !== 'undefined' && SoundEngine.sfx) {
-        SoundEngine.sfx.nav();
-    }
-
+    SoundEngine.sfx.nav();
     gameState.currentGameType = gameType;
     showCountdown();
 }
@@ -706,10 +820,8 @@ function startGame() {
 }
 
 function backToGameTypeMenu() {
-    if (typeof SoundEngine !== 'undefined' && SoundEngine.sfx) {
-        SoundEngine.sfx.nav();
-        SoundEngine.startBGM('menu');
-    }
+    SoundEngine.sfx.nav();
+    SoundEngine.startBGM('menu');
     showGameTypeMenu();
 }
 
@@ -718,14 +830,14 @@ function backToGameTypeMenu() {
 // ============================================
 
 function openQuizEditor() {
-    if (typeof SoundEngine !== 'undefined' && SoundEngine.sfx) SoundEngine.sfx.nav();
+    SoundEngine.sfx.nav();
     const modal = document.getElementById('quizEditorModal');
     if (modal) modal.classList.add('active');
     renderQuestionList();
 }
 
 function closeQuizEditor() {
-    if (typeof SoundEngine !== 'undefined' && SoundEngine.sfx) SoundEngine.sfx.click();
+    SoundEngine.sfx.click();
     const modal = document.getElementById('quizEditorModal');
     if (modal) modal.classList.remove('active');
 }
@@ -920,88 +1032,20 @@ function resetToDefaultQuestions() {
 }
 
 // ============================================
-// VIEWPORT, DEVICE & FULLSCREEN HANDLING
+// VIEWPORT & FULLSCREEN HANDLING
 // ============================================
-
-let lastTouchEnd = 0;
-document.addEventListener('touchend', (event) => {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-    }
-    lastTouchEnd = now;
-}, { passive: false });
-
-document.addEventListener('touchmove', (event) => {
-    if (event.touches.length > 1) {
-        event.preventDefault();
-    }
-}, { passive: false });
-
-function getDeviceInfo() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const dpr = window.devicePixelRatio || 1;
-    const screenWidth = screen.width;
-    const screenHeight = screen.height;
-
-    const isInteractivePanel = (screenWidth >= 3840 || screenHeight >= 2160) ||
-                              (width >= 3840 || height >= 2160);
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-                    (width <= 768 && 'ontouchstart' in window);
-    const isTablet = (width >= 768 && width <= 1024) && 'ontouchstart' in window;
-
-    return {
-        width,
-        height,
-        dpr,
-        screenWidth,
-        screenHeight,
-        isInteractivePanel,
-        isMobile,
-        isTablet,
-        aspectRatio: width / height
-    };
-}
-
-function optimizeLayout() {
-    const deviceInfo = getDeviceInfo();
-    if (deviceInfo.isInteractivePanel) {
-        document.documentElement.style.setProperty('--custom-scale', '1.5');
-        document.documentElement.style.setProperty('--custom-font-scale', '1.6');
-    } else if (deviceInfo.isMobile) {
-        document.documentElement.style.setProperty('--custom-scale', '0.8');
-        document.documentElement.style.setProperty('--custom-font-scale', '0.9');
-    } else if (deviceInfo.isTablet) {
-        document.documentElement.style.setProperty('--custom-scale', '0.9');
-        document.documentElement.style.setProperty('--custom-font-scale', '1');
-    }
-}
 
 function forceFitToScreen() {
     document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
-
-    const vh = window.innerHeight;
-    const vw = window.innerWidth;
-    document.documentElement.style.setProperty('--vh', `${vh * 0.01}px`);
-    document.documentElement.style.setProperty('--vw', `${vw * 0.01}px`);
-
-    document.body.style.overscrollBehavior = 'none';
-    document.body.style.overscrollBehaviorY = 'none';
-    document.body.style.touchAction = 'none';
-
-    optimizeLayout();
+    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+    document.documentElement.style.setProperty('--vw', `${window.innerWidth * 0.01}px`);
 
     if (gameState.currentGameType === 'tarik-tambang' &&
         document.getElementById('gameScreenTarikTambang')?.style.display === 'flex') {
         updateRopePosition();
     }
 }
-
-window.addEventListener('load', () => {
-    forceFitToScreen();
-});
 
 let resizeTimeout;
 window.addEventListener('resize', () => {
@@ -1010,71 +1054,57 @@ window.addEventListener('resize', () => {
         forceFitToScreen();
         if (gameState.currentGameType === 'balap-karung' &&
             document.getElementById('gameScreenBalapKarung')?.style.display === 'flex') {
-            recalculateRacerPositions();
+            const raceTrack = document.querySelector('#gameScreenBalapKarung .race-track');
+            if (raceTrack) {
+                const trackWidth = raceTrack.offsetWidth;
+                const leftRacer = document.querySelector('#gameScreenBalapKarung .left-racer');
+                const rightRacer = document.querySelector('#gameScreenBalapKarung .right-racer');
+                if (leftRacer) {
+                    const startLeft = trackWidth * 0.035;
+                    const hopLeft = ((trackWidth * 0.82) - startLeft) / WIN_HOPS_BALAP;
+                    leftRacer.style.left = `${startLeft + (gameState.leftPlayer.racePosition * hopLeft)}px`;
+                }
+                if (rightRacer) {
+                    const startRight = trackWidth * 0.065;
+                    const hopRight = ((trackWidth * 0.78) - startRight) / WIN_HOPS_BALAP;
+                    rightRacer.style.left = `${startRight + (gameState.rightPlayer.racePosition * hopRight)}px`;
+                }
+            }
         }
-        if (gameState.currentGameType === 'tarik-tambang' &&
-            document.getElementById('gameScreenTarikTambang')?.style.display === 'flex') {
-            updateRopePosition();
+        if (gameState.currentGameType === 'panjat-pinang' &&
+            document.getElementById('gameScreenPanjatPinang')?.style.display === 'flex') {
+            updateClimberPosition('left');
+            updateClimberPosition('right');
         }
     }, 100);
 });
 
-function recalculateRacerPositions() {
-    const raceTrack = document.querySelector('#gameScreenBalapKarung .race-track');
-    if (!raceTrack) return;
-    const trackWidth = raceTrack.offsetWidth;
-
-    const leftRacer = document.querySelector('#gameScreenBalapKarung .left-racer');
-    if (leftRacer) {
-        const startLeft = trackWidth * 0.035;
-        const finishLeft = trackWidth * 0.82;
-        const hopLeft = (finishLeft - startLeft) / WIN_HOPS_BALAP;
-        leftRacer.style.left = `${startLeft + (gameState.leftPlayer.racePosition * hopLeft)}px`;
-        leftRacer.style.transform = 'scale(1)';
-    }
-
-    const rightRacer = document.querySelector('#gameScreenBalapKarung .right-racer');
-    if (rightRacer) {
-        const startRight = trackWidth * 0.065;
-        const finishRight = trackWidth * 0.78;
-        const hopRight = (finishRight - startRight) / WIN_HOPS_BALAP;
-        rightRacer.style.left = `${startRight + (gameState.rightPlayer.racePosition * hopRight)}px`;
-        rightRacer.style.transform = 'scale(0.9)';
-    }
-}
-
 function toggleFullscreen() {
-    if (!document.fullscreenElement &&
-        !document.mozFullScreenElement &&
-        !document.webkitFullscreenElement &&
-        !document.msFullscreenElement) {
-        const elem = document.documentElement;
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen({ navigationUI: 'hide' }).then(forceFitToScreen).catch(() => {});
-        } else if (elem.mozRequestFullScreen) {
-            elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-        }
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().then(forceFitToScreen).catch(() => {});
     } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen().then(forceFitToScreen).catch(() => {});
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        }
+        document.exitFullscreen().then(forceFitToScreen).catch(() => {});
     }
 }
 
-document.addEventListener('fullscreenchange', () => setTimeout(forceFitToScreen, 100));
+document.addEventListener('fullscreenchange', () => {
+    document.body.classList.toggle('fullscreen', Boolean(document.fullscreenElement));
+    setTimeout(forceFitToScreen, 100);
+});
 
 document.addEventListener('DOMContentLoaded', () => {
+    preloadImages();
+    forceFitToScreen();
     loadQuestionBank();
     updateQuizUIInfo();
     showGameTypeMenu();
+
+    const unlockAudio = () => {
+        SoundEngine.init();
+        SoundEngine.startBGM('menu');
+        document.removeEventListener('pointerdown', unlockAudio);
+        document.removeEventListener('keydown', unlockAudio);
+    };
+    document.addEventListener('pointerdown', unlockAudio);
+    document.addEventListener('keydown', unlockAudio);
 });
