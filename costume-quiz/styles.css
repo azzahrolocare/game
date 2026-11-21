@@ -547,13 +547,16 @@ body.fullscreen .fullscreen-btn .collapse { display: block; }
 }
 
 /* ============================================
-   BALAP KARUNG
+   BALAP KARUNG - POSISI MENAPAK DI ATAS LINTASAN
    ============================================ */
 .balap-karung-field {
     position: relative;
     width: 100%;
     height: 100%;
     min-height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .race-track {
@@ -572,34 +575,36 @@ body.fullscreen .fullscreen-btn .collapse { display: block; }
     max-height: 100%;
     object-fit: contain;
     display: block;
+    z-index: 1;
 }
 
 .racer-container {
     position: absolute;
+    left: 0;
+    bottom: 0;
     z-index: 10;
-    transition: left 0.35s ease;
+    transform-origin: bottom center;
+    transition: left 0.35s cubic-bezier(0.22, 1, 0.36, 1), top 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     pointer-events: none;
 }
 
 .racer-container.left-racer {
-    bottom: clamp(12%, 18%, 26%);
-    transform: scale(1);
+    z-index: 12;
 }
 
 .racer-container.right-racer {
-    bottom: clamp(28%, 35%, 42%);
-    transform: scale(0.9);
+    z-index: 11;
 }
 
 .racer-image {
-    width: clamp(46px, 6.5vw, 78px);
+    width: clamp(46px, 6.2vw, 76px);
     height: auto;
     display: block;
+    transition: transform 0.2s ease-out;
 }
 
 .racer-container.hopping .racer-image.hop {
-    transform: translateY(-16px);
-    transition: transform 0.2s ease-out;
+    transform: translateY(-14px);
 }
 
 .racer-container.shaking {
