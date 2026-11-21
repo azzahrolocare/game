@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Matematika Seru - Game Anak Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/menuScreen.css">
+    <link rel="stylesheet" href="css/levelScreen.css">
+    <link rel="stylesheet" href="css/gameScreen.css">
+    <link rel="stylesheet" href="css/resultScreen.css">
+    <link rel="stylesheet" href="css/modalScreen.css">
+    <link rel="stylesheet" href="hitung_buah.css">
+</head>
+<body>
+    <!-- GAME CONTAINER -->
+    <div class="game-container">
+        <!-- =================== MENU UTAMA SCREEN =================== -->
+        <div class="screen active" id="menuScreen">
+            <div class="menu-header">
+                <h1>PINTAR BERHITUNG</h1>
+	        <h2>Bimbingan Belajar Brilian</h2>
+            </div>
+            
+            <!-- OPERATION SELECTION -->
+            <div class="operation-selection">
+                <div class="operations-grid" id="menuOperationsGrid">
+                    <div class="operation-card" data-operation="hitung_buah">
+                        <div class="operation-icon">🍎</div>
+                        <div class="operation-name">Menghitung Buah</div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="hitung_hewan">
+                        <div class="operation-icon">🐘</div>
+                        <div class="operation-name">Menghitung Hewan</div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="hitung_benda">
+                        <div class="operation-icon">🚗</div>
+                        <div class="operation-name">Menghitung Benda</div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="penjumlahan_2">
+                        <div class="operation-icon">➕</div>
+                        <div class="operation-name">Penjumlahan <span class="number">2</span> Angka</div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="pengurangan_2">
+                        <div class="operation-icon">➖</div>
+                        <div class="operation-name">Pengurangan <span class="number">2</span> Angka</div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="perkalian_2">
+                        <div class="operation-icon">✖️</div>
+                        <div class="operation-name">Perkalian <span class="number">2</span> Angka</div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="pembagian_2">
+                        <div class="operation-icon">➗</div>
+                        <div class="operation-name">Pembagian <span class="number">2</span> Angka</div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="penjumlahan_3">
+                        <div class="operation-icon">➕➕</div>
+                        <div class="operation-name">Penjumlahan <span class="number">3</span> Angka</div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="pengurangan_3">
+                        <div class="operation-icon">➖➖</div>
+                        <div class="operation-name">Pengurangan <span class="number">3</span> Angka</div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="campuran_plus_minus">
+                        <div class="operation-icon">±</div>
+                        <div class="operation-name">Campuran <span class="number">+</span> & <span class="number">-</span></div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="campuran_kali_bagi">
+                        <div class="operation-icon">×÷</div>
+                        <div class="operation-name">Campuran <span class="number">×</span> & <span class="number">÷</span></div>
+                    </div>
+                    
+                    <div class="operation-card" data-operation="campuran_semua">
+                        <div class="operation-icon">⁂</div>
+                        <div class="operation-name">Campuran <span class="number">Semua</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-footer">
+                <a href="https://www.bimbelbrilian.com" target="_blank" class="developer-link">
+                    www.bimbelbrilian.com
+                </a>
+            </div>
+        </div>
+
+        <!-- =================== LEVEL SELECTION SCREEN =================== -->
+        <div class="screen" id="levelScreen">
+            <div class="level-header">
+                <div class="level-header-top">
+                </div>
+                <h2 id="selectedOperationTitle">Penjumlahan</h2>
+            </div>
+            
+            <!-- LEVEL SELECTION -->
+            <div class="levels-container">
+                <div class="levels-grid" id="levelsGrid">
+                    <!-- Levels akan di-generate oleh JavaScript -->
+                </div>
+            </div>
+
+            <div class="level-footer">
+                <button class="back-button" id="backToMenuButton">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </button>
+            </div>
+        </div>
+
+        <!-- =================== GAME SCREEN =================== -->
+        <div class="screen" id="gameScreen">
+            <!-- HEADER -->
+            <div class="game-header">
+                <h2 id="gameHeader">Penjumlahan Level 1</h2>
+                <h3 id="gameHeaderBimbel">* Bimbingan Belajar Brilian *</h3>
+            </div>
+
+            <!-- INFO BAR -->
+            <div class="game-info">
+                <div class="info-item score">
+                    <div class="info-label">
+                        <i class="fas fa-star"></i> SCORE
+                    </div>
+                    <div class="info-value" id="scoreDisplay">0 pts</div>
+                </div>
+                <div class="info-item timer">
+                    <div class="info-label">
+                        <i class="fas fa-clock"></i> TIMER
+                    </div>
+                    <div class="info-value" id="timerDisplay">10:00</div>
+                </div>
+                <div class="info-item progress">
+                    <div class="info-label">
+                        <i class="fas fa-chart-line"></i> PROGRESS
+                    </div>
+                    <div class="info-value" id="progressDisplay">1/10</div>
+                </div>
+            </div>
+
+            <!-- QUESTION AREA -->
+            <div class="question-area">
+                <div class="question-box">
+                    <div class="question" id="questionDisplay">
+                        <!-- Question will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPTIONS AREA -->
+            <div class="options-area">
+                <div class="options-grid" id="optionsGrid">
+                    <!-- Options will be generated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="game-footer">
+                <div class="footer-btn sound-btn" id="soundButton">
+                    <i class="fas fa-volume-up"></i>
+                    <span>Sound ON</span>
+                </div>
+
+        	<div class="footer-btn level-select-btn" id="backToLevelButton">
+        		<i class="fas fa-layer-group"></i>
+       			 <span>Pilih Level</span>
+    		</div>
+             
+                <div class="footer-btn menu-btn" id="menuButton">
+                    <i class="fas fa-home"></i>
+                    <span>Menu Utama</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULT POPUP -->
+    <div class="result-popup-overlay" id="resultPopup">
+        <div class="result-popup">
+            <div class="result-header">
+                <div class="result-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <h2 class="result-title" id="resultTitle">HASIL PENGERJAAN</h2>
+                <p class="result-subtitle" id="resultSubtitle">Berikut hasil yang kamu peroleh:</p>
+                <p class="result-bimbel" id="resultBimbel">* Bimbingan Belajar Brilian *:</p>
+            </div>
+            
+            <div class="result-content">
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <div class="stat-value" id="finalScore">0</div>
+                        <div class="stat-label">Total Score</div>
+                    </div>
+                    <div class="result-stat highlight">
+                        <div class="stat-value" id="correctAnswers">0</div>
+                        <div class="stat-label">Jawaban Benar</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="stat-value" id="timeLeft">0:00</div>
+                        <div class="stat-label">Waktu Tersisa</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="stat-value" id="levelPlayed">1</div>
+                        <div class="stat-label">Level</div>
+                    </div>
+                </div>
+                
+                <div class="result-message" id="resultMessage">
+                    Kerja bagus! Kamu hebat!
+                </div>
+                
+                <div class="result-buttons">
+                    <button class="result-btn play-again" id="playAgainButton">
+                        <i class="fas fa-redo"></i> Main Lagi
+                    </button>
+                    <button class="result-btn new-level" id="newLevelButton">
+                        <i class="fas fa-layer-group"></i> Level Baru
+                    </button>
+                    <button class="result-btn go-menu" id="goMenuButton">
+                        <i class="fas fa-home"></i> Menu Utama
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL MENU UTAMA-->
+    <div class="custom-modal" id="customModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Kembali ke Menu Utama?</h3>
+            </div>
+            <div class="modal-body">
+                <p class="modal-message">Progress permainan saat ini akan hilang. Apakah Anda yakin ingin kembali ke menu utama?</p>
+                <div class="modal-buttons">
+                    <button class="modal-btn confirm" id="modalConfirm">Ya, Kembali</button>
+                    <button class="modal-btn cancel" id="modalCancel">Lanjutkan Main</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- MODAL PILIH LEVEL -->
+<div class="custom-modal" id="levelModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Kembali ke Pemilihan Level?</h3>
+        </div>
+        <div class="modal-body">
+            <p class="modal-message">Progress permainan saat ini akan hilang. Apakah Anda yakin ingin kembali ke pemilihan level?</p>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" id="levelModalConfirm">Ya, Pilih Level</button>
+                <button class="modal-btn cancel" id="levelModalCancel">Lanjutkan Main</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- JavaScript Files -->
+    <script src="js/hitung_buah.js"></script>
+    <script src="js/hitung_hewan.js"></script>
+    <script src="js/hitung_benda.js"></script>
+    <script src="js/penjumlahan_2.js"></script>
+    <script src="js/penjumlahan_3.js"></script>
+    <script src="js/pengurangan_2.js"></script>
+    <script src="js/pengurangan_3.js"></script>
+    <script src="js/campuran_plus_minus.js"></script>
+    <script src="js/perkalian_2.js"></script>
+    <script src="js/pembagian_2.js"></script>
+    <script src="js/campuran_kali_bagi.js"></script>
+    <script src="js/campuran_semua.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
