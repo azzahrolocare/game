@@ -209,10 +209,16 @@ function updateActiveFolderBadgeUI() {
 
     const folderName = activeFolder ? activeFolder.name : 'Belum dipilih';
     const qCount = activeFolder ? activeFolder.questions.length : 0;
+    const countLabel = `${qCount} Soal`;
 
     if (badgeName) badgeName.textContent = folderName;
-    if (badgeCount) badgeCount.textContent = `${qCount} Soal`;
-    if (headerActiveName) headerActiveName.textContent = `${folderName} (${qCount} soal)`;
+    if (badgeCount) badgeCount.textContent = countLabel;
+    if (headerActiveName) headerActiveName.textContent = `${folderName} (${countLabel})`;
+
+    // Perbarui indikator banyaknya soal di setiap mode permainan & menu mode
+    document.querySelectorAll('.mode-question-count').forEach(el => {
+        el.textContent = countLabel;
+    });
 }
 
 function escapeHtml(str) {
@@ -488,8 +494,10 @@ function moveQuestionToAnotherFolder(questionIndex) {
         return;
     }
 
-    const choicesText = otherFolders.map((f, i) => `${i + 1}. ${f.name}`).join('\n');
-    const input = prompt(`Pindahkan soal ke folder nomor berapa?\n${choicesText}`);
+    const choicesText = otherFolders.map((f, i) => `${i + 1}. ${f.name}`).join('
+');
+    const input = prompt(`Pindahkan soal ke folder nomor berapa?
+${choicesText}`);
     if (input === null) return;
 
     const chosenIdx = parseInt(input.trim(), 10) - 1;
@@ -1211,6 +1219,7 @@ function generateNewQuestion(player) {
 
 // Fungsi untuk reset game
 function resetGame() {
+    updateActiveFolderBadgeUI();
     gameState.ropePosition = 50;
     gameState.leftPlayer.answer = '';
     gameState.rightPlayer.answer = '';

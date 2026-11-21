@@ -950,13 +950,13 @@ button {
 .score-indicator {
     width: 100%;
     text-align: center;
-    font-size: 1.3em;
+    font-size: clamp(0.85rem, 1.3vw, 1.15rem);
     font-weight: bold;
     color: #2c3e50;
-    margin-top: 15px;
-    padding: 14px;
-    background: rgba(255, 255, 255, 0.4);
-    border-radius: 18px;
+    margin-top: clamp(4px, 0.8vh, 12px);
+    padding: clamp(8px, 1.2vh, 12px);
+    background: rgba(255, 255, 255, 0.45);
+    border-radius: 16px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(8px);
@@ -965,7 +965,11 @@ button {
 
 .score-value {
     color: #2196f3;
-    font-size: 1.15em;
+    font-size: 1.05em;
+    font-weight: 700;
+}
+
+.mode-question-count {
     font-weight: 700;
 }
 
@@ -1700,18 +1704,22 @@ html {
 }
 
 /* Samakan ukuran font untuk semua game type */
-.game-type-btn.tarik-tambang .game-type-title {
+.game-type-btn.tarik-tambang .game-type-title,
+.game-type-btn.panjat-pinang .game-type-title,
+.game-type-btn.balap-karung .game-type-title {
     font-size: 1em !important;
     font-weight: 600 !important;
 }
 
-.game-type-btn.tarik-tambang .game-type-subtitle {
-    font-size: 0.4em !important;
-    font-weight: 400 !important;
-    font-style: italic !important;
-    line-height: 1;
-    margin-top: 0;
-    padding-top: clamp(4px, 0.8vh, 12px);
+.game-type-btn.tarik-tambang .game-type-subtitle,
+.game-type-btn.panjat-pinang .game-type-subtitle,
+.game-type-btn.balap-karung .game-type-subtitle {
+    font-size: 0.45em !important;
+    font-weight: 500 !important;
+    font-style: normal !important;
+    line-height: 1.1;
+    margin-top: 2px;
+    padding-top: clamp(2px, 0.4vh, 6px);
 }
 
 /* Game type text container with title and subtitle */
@@ -1737,10 +1745,10 @@ html {
     font-size: 0.65em !important;
     letter-spacing: 0.5px;
     white-space: nowrap;
-    opacity: 0.8;
-    font-weight: 400;
-    font-style: italic;
-    padding-top: clamp(4px, 0.8vh, 12px);
+    opacity: 0.9;
+    font-weight: 500;
+    font-style: normal;
+    padding-top: clamp(2px, 0.4vh, 6px);
 }
 
 .game-type-btn.tarik-tambang {
@@ -1978,15 +1986,19 @@ html {
         font-size: 1.2em;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title,
+    .game-type-btn.panjat-pinang .game-type-title,
+    .game-type-btn.balap-karung .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
-        line-height: 1;
-        margin-top: 0;
-        padding-top: clamp(4px, 0.8vh, 12px);
+    .game-type-btn.tarik-tambang .game-type-subtitle,
+    .game-type-btn.panjat-pinang .game-type-subtitle,
+    .game-type-btn.balap-karung .game-type-subtitle {
+        font-size: 0.45em !important;
+        line-height: 1.1;
+        margin-top: 2px;
+        padding-top: clamp(2px, 0.4vh, 6px);
     }
 
     /* Back Button - jarak responsive */
@@ -2095,15 +2107,19 @@ html {
         font-size: 1.1em;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title,
+    .game-type-btn.panjat-pinang .game-type-title,
+    .game-type-btn.balap-karung .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
-        line-height: 1;
-        margin-top: 0;
-        padding-top: clamp(4px, 0.8vh, 12px);
+    .game-type-btn.tarik-tambang .game-type-subtitle,
+    .game-type-btn.panjat-pinang .game-type-subtitle,
+    .game-type-btn.balap-karung .game-type-subtitle {
+        font-size: 0.45em !important;
+        line-height: 1.1;
+        margin-top: 2px;
+        padding-top: clamp(2px, 0.4vh, 6px);
     }
 
     .back-btn {
@@ -2485,7 +2501,7 @@ html {
 
     /* Score indicator */
     .score-indicator {
-        font-size: 0.9em;
+        font-size: 0.85em;
         padding: 6px;
         margin-top: 6px;
     }
@@ -2641,15 +2657,19 @@ html {
         font-size: 1em;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title,
+    .game-type-btn.panjat-pinang .game-type-title,
+    .game-type-btn.balap-karung .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
-        line-height: 1;
-        margin-top: 0;
-        padding-top: clamp(4px, 0.8vh, 12px);
+    .game-type-btn.tarik-tambang .game-type-subtitle,
+    .game-type-btn.panjat-pinang .game-type-subtitle,
+    .game-type-btn.balap-karung .game-type-subtitle {
+        font-size: 0.45em !important;
+        line-height: 1.1;
+        margin-top: 2px;
+        padding-top: clamp(2px, 0.4vh, 6px);
     }
 
     .back-btn {
@@ -2778,7 +2798,7 @@ html {
     }
 
     .score-indicator {
-        font-size: 0.85em;
+        font-size: 0.8em;
         padding: 5px;
         margin-top: 4px;
     }
@@ -2905,15 +2925,19 @@ html {
         font-size: 0.95em;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title,
+    .game-type-btn.panjat-pinang .game-type-title,
+    .game-type-btn.balap-karung .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
-        line-height: 1;
-        margin-top: 0;
-        padding-top: clamp(4px, 0.8vh, 12px);
+    .game-type-btn.tarik-tambang .game-type-subtitle,
+    .game-type-btn.panjat-pinang .game-type-subtitle,
+    .game-type-btn.balap-karung .game-type-subtitle {
+        font-size: 0.45em !important;
+        line-height: 1.1;
+        margin-top: 2px;
+        padding-top: clamp(2px, 0.4vh, 6px);
     }
 
     .back-btn {
@@ -2988,7 +3012,7 @@ html {
     }
 
     .score-indicator {
-        font-size: 0.8em;
+        font-size: 0.75em;
         padding: 4px;
         margin-top: 3px;
     }
@@ -3150,15 +3174,19 @@ html {
         letter-spacing: 1px;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title,
+    .game-type-btn.panjat-pinang .game-type-title,
+    .game-type-btn.balap-karung .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle {
-        font-size: 0.4em !important;
+    .game-type-btn.tarik-tambang .game-type-subtitle,
+    .game-type-btn.panjat-pinang .game-type-subtitle,
+    .game-type-btn.balap-karung .game-type-subtitle {
+        font-size: 0.45em !important;
         letter-spacing: 0.3px;
-        line-height: 1;
-        margin-top: -2px;
+        line-height: 1.1;
+        margin-top: 1px;
     }
 
     .back-btn {
