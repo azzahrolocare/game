@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#a8d8ff">
+    <meta name="format-detection" content="telephone=no">
+    <title>Permainan Matematika</title>
+    <link rel="icon" type="image/x-icon" href="https://game.afifedu.com/favicon.ico">
+    <link rel="stylesheet" href="https://game.afifedu.com/styles.css">
+    
+    <!-- Preload critical images (URL ganda sudah diperbaiki) -->
+    <link rel="preload" as="image" href="https://game.afifedu.com/character.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/icon_home.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/icon_tarik.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/icon_panjat.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/icon_balap_karung.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/tiang.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/standleft.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/standright.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/climbleft.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/panjat_pinang/climbright.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/track.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/blue_stand.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/blue_hop.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/red_stand.png">
+    <link rel="preload" as="image" href="https://game.afifedu.com/balap_karung/red_hop.png">
+
+    <style>
+        /* Tombol Kontrol Audio */
+        .audio-btn {
+            position: fixed;
+            top: 15px;
+            right: 68px;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #4a90e2;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s, background 0.2s;
+            padding: 0;
+        }
+        .audio-btn:hover {
+            transform: scale(1.08);
+            background: #ffffff;
+        }
+        .audio-btn:active {
+            transform: scale(0.95);
+        }
+        .audio-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+        .audio-btn.muted {
+            border-color: #e74c3c;
+            color: #e74c3c;
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <!-- Audio Toggle Button -->
+    <button id="audioToggleBtn" class="audio-btn" onclick="SoundEngine.toggleMute()" title="Suara & Musik">
+        <svg id="iconSoundOn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+        <svg id="iconSoundOff" style="display:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+    </button>
+
+    <!-- Fullscreen Button -->
+    <button id="fullscreenBtn" class="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+        <svg class="fullscreen-icon expand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+        <svg class="fullscreen-icon collapse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>
+        </svg>
+    </button>
+
+    <!-- Home Button -->
+    <button id="homeBtn" class="home-btn" onclick="backToGameTypeMenu()" title="Menu Utama">
+        <img src="https://game.afifedu.com/icon_home.png" alt="Home" class="home-icon">
+    </button>
+
+    <!-- Menu Game Mode Selection (Tarik Tambang / Panjat Pinang / Balap Karung) -->
+    <div id="gameTypeMenu" class="menu-screen">
+        <div class="menu-container">
+            <h1 class="menu-title">Permainan Matematika</h1>
+            <p class="menu-subtitle">Pilih Tema Permainan</p>
+            <div class="menu-buttons">
+                <button class="menu-btn game-type-btn tarik-tambang" onclick="selectGameType('tarik-tambang')">
+                    <img src="https://game.afifedu.com/icon_tarik.png" alt="Tarik Tambang" class="menu-icon">
+                    <div class="game-type-text">
+                        <span class="game-type-title">Tarik Tambang</span>
+                        <span class="game-type-subtitle">Inspired by Pak Guru Saloom</span>
+                    </div>
+                </button>
+                <button class="menu-btn game-type-btn panjat-pinang" onclick="selectGameType('panjat-pinang')">
+                    <img src="https://game.afifedu.com/icon_panjat.png" alt="Panjat Pinang" class="menu-icon">
+                    <span>Panjat Pinang</span>
+                </button>
+                <button class="menu-btn game-type-btn balap-karung" onclick="selectGameType('balap-karung')">
+                    <img src="https://game.afifedu.com/icon_balap_karung.png" alt="Balap Karung" class="menu-icon">
+                    <span>Balap Karung</span>
+                </button>
+            </div>
+        </div>
+        <div class="copyright-footer">
+            <p>© AfifEdu 2025 | <span id="version-indicator">v2.1.0</span></p>
+            <p style="margin-top: 5px; font-size: 0.9em; opacity: 0.8;">Created By Herwin Hamid</p>
+        </div>
+    </div>
+
+    <!-- Menu Math Mode Selection for Tarik Tambang -->
+    <div id="mathModeMenuTarikTambang" class="menu-screen">
+        <div class="menu-container">
+            <h1 class="menu-title">Tarik Tambang Matematika</h1>
+            <p class="menu-subtitle">Pilih Jenis Operasi</p>
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="selectMathMode('addition')">➕ Penjumlahan</button>
+                <button class="menu-btn" onclick="selectMathMode('subtraction')">➖ Pengurangan</button>
+                <button class="menu-btn" onclick="selectMathMode('multiplication')">✖️ Perkalian</button>
+                <button class="menu-btn" onclick="selectMathMode('division')">➗ Pembagian</button>
+            </div>
+            <button class="back-btn" onclick="backToGameTypeMenu()">← Kembali</button>
+        </div>
+    </div>
+
+    <!-- Menu Math Mode Selection for Panjat Pinang -->
+    <div id="mathModeMenuPanjatPinang" class="menu-screen">
+        <div class="menu-container">
+            <h1 class="menu-title">Panjat Pinang Matematika</h1>
+            <p class="menu-subtitle">Pilih Jenis Operasi</p>
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="selectMathMode('addition')">➕ Penjumlahan</button>
+                <button class="menu-btn" onclick="selectMathMode('subtraction')">➖ Pengurangan</button>
+                <button class="menu-btn" onclick="selectMathMode('multiplication')">✖️ Perkalian</button>
+                <button class="menu-btn" onclick="selectMathMode('division')">➗ Pembagian</button>
+            </div>
+            <button class="back-btn" onclick="backToGameTypeMenu()">← Kembali</button>
+        </div>
+    </div>
+
+    <!-- Menu Math Mode Selection for Balap Karung -->
+    <div id="mathModeMenuBalapKarung" class="menu-screen">
+        <div class="menu-container">
+            <h1 class="menu-title">Balap Karung Matematika</h1>
+            <p class="menu-subtitle">Pilih Jenis Operasi</p>
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="selectMathMode('addition')">➕ Penjumlahan</button>
+                <button class="menu-btn" onclick="selectMathMode('subtraction')">➖ Pengurangan</button>
+                <button class="menu-btn" onclick="selectMathMode('multiplication')">✖️ Perkalian</button>
+                <button class="menu-btn" onclick="selectMathMode('division')">➗ Pembagian</button>
+            </div>
+            <button class="back-btn" onclick="backToGameTypeMenu()">← Kembali</button>
+        </div>
+    </div>
+
+    <!-- Menu Level Selection - Addition -->
+    <div id="levelMenuAddition" class="menu-screen">
+        <div class="menu-container compact">
+            <h1 class="menu-title">Pilih Level Kesulitan</h1>
+            <p class="menu-subtitle">Mode: Penjumlahan</p>
+            <div class="menu-buttons">
+                <button class="menu-btn level-btn beginner" onclick="selectLevel('beginner')">
+                    <span class="level-icon">⭐</span>
+                    <span class="level-name">Beginner</span>
+                    <span class="level-desc">1 Digit + 1 Digit</span>
+                </button>
+                <button class="menu-btn level-btn amateur" onclick="selectLevel('amateur')">
+                    <span class="level-icon">⭐⭐</span>
+                    <span class="level-name">Amateur</span>
+                    <span class="level-desc">1 Digit + 2 Digit (Mixed)</span>
+                </button>
+                <button class="menu-btn level-btn pro" onclick="selectLevel('pro')">
+                    <span class="level-icon">⭐⭐⭐</span>
+                    <span class="level-name">Pro</span>
+                    <span class="level-desc">2 Digit + 2 Digit</span>
+                </button>
+            </div>
+            <button class="back-btn" onclick="backToMainMenu()">← Kembali</button>
+        </div>
+    </div>
+
+    <!-- Menu Level Selection - Subtraction -->
+    <div id="levelMenuSubtraction" class="menu-screen">
+        <div class="menu-container compact">
+            <h1 class="menu-title">Pilih Level Kesulitan</h1>
+            <p class="menu-subtitle">Mode: Pengurangan</p>
+            <div class="menu-buttons">
+                <button class="menu-btn level-btn beginner" onclick="selectLevel('beginner')">
+                    <span class="level-icon">⭐</span>
+                    <span class="level-name">Beginner</span>
+                    <span class="level-desc">1 Digit - 1 Digit</span>
+                </button>
+                <button class="menu-btn level-btn amateur" onclick="selectLevel('amateur')">
+                    <span class="level-icon">⭐⭐</span>
+                    <span class="level-name">Amateur</span>
+                    <span class="level-desc">2 Digit - 1 Digit (Mixed)</span>
+                </button>
+                <button class="menu-btn level-btn pro" onclick="selectLevel('pro')">
+                    <span class="level-icon">⭐⭐⭐</span>
+                    <span class="level-name">Pro</span>
+                    <span class="level-desc">2 Digit - 2 Digit</span>
+                </button>
+            </div>
+            <button class="back-btn" onclick="backToMainMenu()">← Kembali</button>
+        </div>
+    </div>
+
+    <!-- Menu Level Selection - Multiplication -->
+    <div id="levelMenuMultiplication" class="menu-screen">
+        <div class="menu-container compact">
+            <h1 class="menu-title">Pilih Level Kesulitan</h1>
+            <p class="menu-subtitle">Mode: Perkalian</p>
+            <div class="menu-buttons">
+                <button class="menu-btn level-btn beginner" onclick="selectLevel('beginner')">
+                    <span class="level-icon">⭐</span>
+                    <span class="level-name">Beginner</span>
+                    <span class="level-desc">1 Digit × 1 Digit</span>
+                </button>
+                <button class="menu-btn level-btn amateur" onclick="selectLevel('amateur')">
+                    <span class="level-icon">⭐⭐</span>
+                    <span class="level-name">Amateur</span>
+                    <span class="level-desc">1 Digit × 2 Digit</span>
+                </button>
+                <button class="menu-btn level-btn pro" onclick="selectLevel('pro')">
+                    <span class="level-icon">⭐⭐⭐</span>
+                    <span class="level-name">Pro</span>
+                    <span class="level-desc">2 Digit × 2 Digit</span>
+                </button>
+            </div>
+            <button class="back-btn" onclick="backToMainMenu()">← Kembali</button>
+        </div>
+    </div>
+
+    <!-- Menu Level Selection - Division -->
+    <div id="levelMenuDivision" class="menu-screen">
+        <div class="menu-container compact">
+            <h1 class="menu-title">Pilih Level Kesulitan</h1>
+            <p class="menu-subtitle">Mode: Pembagian</p>
+            <div class="menu-buttons">
+                <button class="menu-btn level-btn beginner" onclick="selectLevel('beginner')">
+                    <span class="level-icon">⭐</span>
+                    <span class="level-name">Beginner</span>
+                    <span class="level-desc">Bulat (1-20 ÷ 1-5)</span>
+                </button>
+                <button class="menu-btn level-btn amateur" onclick="selectLevel('amateur')">
+                    <span class="level-icon">⭐⭐</span>
+                    <span class="level-name">Amateur</span>
+                    <span class="level-desc">Bulat (10-99 ÷ 1-9)</span>
+                </button>
+                <button class="menu-btn level-btn pro" onclick="selectLevel('pro')">
+                    <span class="level-icon">⭐⭐⭐</span>
+                    <span class="level-name">Pro</span>
+                    <span class="level-desc">Bulat / Desimal (10-99 ÷ 2-10)</span>
+                </button>
+            </div>
+            <button class="back-btn" onclick="backToMainMenu()">← Kembali</button>
+        </div>
+    </div>
+
+    <!-- Game Screen - Tarik Tambang -->
+    <div id="gameScreenTarikTambang" class="game-container">
+        <div class="player-section left-player">
+            <div class="question-box">1 + 8 = ?</div>
+            <div class="answer-box"></div>
+            <div class="keypad">
+                <div class="keypad-row">
+                    <button class="number-btn">1</button>
+                    <button class="number-btn">2</button>
+                    <button class="number-btn">3</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">4</button>
+                    <button class="number-btn">5</button>
+                    <button class="number-btn">6</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">7</button>
+                    <button class="number-btn">8</button>
+                    <button class="number-btn">9</button>
+                </div>
+                <div class="keypad-row keypad-row-4">
+                    <button class="minus-btn">−</button>
+                    <button class="decimal-btn">.</button>
+                    <button class="number-btn">0</button>
+                    <button class="clear-btn">C</button>
+                    <button class="go-btn">Go</button>
+                </div>
+                <div class="keypad-row keypad-row-5">
+                    <button class="go-btn-alt">Go</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="center-section">
+            <h1>Tarik Tambang Matematika</h1>
+            <div class="game-field">
+                <div class="tug-of-war-scene"></div>
+                <div class="center-line"></div>
+            </div>
+            <p class="instruction">Jawab soal untuk menarik tali!</p>
+        </div>
+
+        <div class="player-section right-player">
+            <div class="question-box">9 + 4 = ?</div>
+            <div class="answer-box"></div>
+            <div class="keypad">
+                <div class="keypad-row">
+                    <button class="number-btn">1</button>
+                    <button class="number-btn">2</button>
+                    <button class="number-btn">3</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">4</button>
+                    <button class="number-btn">5</button>
+                    <button class="number-btn">6</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">7</button>
+                    <button class="number-btn">8</button>
+                    <button class="number-btn">9</button>
+                </div>
+                <div class="keypad-row keypad-row-4">
+                    <button class="minus-btn">−</button>
+                    <button class="decimal-btn">.</button>
+                    <button class="number-btn">0</button>
+                    <button class="clear-btn">C</button>
+                    <button class="go-btn">Go</button>
+                </div>
+                <div class="keypad-row keypad-row-5">
+                    <button class="go-btn-alt">Go</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen - Panjat Pinang -->
+    <div id="gameScreenPanjatPinang" class="game-container panjat-pinang-game">
+        <div class="player-section left-player">
+            <div class="question-box">1 + 8 = ?</div>
+            <div class="answer-box"></div>
+            <div class="keypad">
+                <div class="keypad-row">
+                    <button class="number-btn">1</button>
+                    <button class="number-btn">2</button>
+                    <button class="number-btn">3</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">4</button>
+                    <button class="number-btn">5</button>
+                    <button class="number-btn">6</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">7</button>
+                    <button class="number-btn">8</button>
+                    <button class="number-btn">9</button>
+                </div>
+                <div class="keypad-row keypad-row-4">
+                    <button class="minus-btn">−</button>
+                    <button class="decimal-btn">.</button>
+                    <button class="number-btn">0</button>
+                    <button class="clear-btn">C</button>
+                    <button class="go-btn">Go</button>
+                </div>
+                <div class="keypad-row keypad-row-5">
+                    <button class="go-btn-alt">Go</button>
+                </div>
+            </div>
+            <div class="score-indicator">Benar: <span class="score-value">0/7</span></div>
+        </div>
+
+        <div class="center-section panjat-pinang-center">
+            <h1>Panjat Pinang Matematika</h1>
+            <div class="game-field panjat-pinang-field">
+                <!-- Tiang Kiri -->
+                <div class="pole-container left-pole">
+                    <img src="https://game.afifedu.com/panjat_pinang/tiang.png" alt="Tiang Pinang" class="pole-image">
+                    <div class="climber-container left-climber">
+                        <img src="https://game.afifedu.com/panjat_pinang/standleft.png" alt="Pemain Kiri" class="climber-image stand">
+                        <img src="https://game.afifedu.com/panjat_pinang/climbleft.png" alt="Pemain Kiri Memanjat" class="climber-image climb" style="display: none;">
+                    </div>
+                </div>
+                
+                <!-- Tiang Kanan -->
+                <div class="pole-container right-pole">
+                    <img src="https://game.afifedu.com/panjat_pinang/tiang.png" alt="Tiang Pinang" class="pole-image">
+                    <div class="climber-container right-climber">
+                        <img src="https://game.afifedu.com/panjat_pinang/standright.png" alt="Pemain Kanan" class="climber-image stand">
+                        <img src="https://game.afifedu.com/panjat_pinang/climbright.png" alt="Pemain Kanan Memanjat" class="climber-image climb" style="display: none;">
+                    </div>
+                </div>
+            </div>
+            <p class="instruction">Jawab soal untuk memanjat tiang! (7 jawaban benar untuk menang)</p>
+        </div>
+
+        <div class="player-section right-player">
+            <div class="question-box">9 + 4 = ?</div>
+            <div class="answer-box"></div>
+            <div class="keypad">
+                <div class="keypad-row">
+                    <button class="number-btn">1</button>
+                    <button class="number-btn">2</button>
+                    <button class="number-btn">3</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">4</button>
+                    <button class="number-btn">5</button>
+                    <button class="number-btn">6</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">7</button>
+                    <button class="number-btn">8</button>
+                    <button class="number-btn">9</button>
+                </div>
+                <div class="keypad-row keypad-row-4">
+                    <button class="minus-btn">−</button>
+                    <button class="decimal-btn">.</button>
+                    <button class="number-btn">0</button>
+                    <button class="clear-btn">C</button>
+                    <button class="go-btn">Go</button>
+                </div>
+                <div class="keypad-row keypad-row-5">
+                    <button class="go-btn-alt">Go</button>
+                </div>
+            </div>
+            <div class="score-indicator">Benar: <span class="score-value">0/7</span></div>
+        </div>
+    </div>
+
+    <!-- Game Screen - Balap Karung -->
+    <div id="gameScreenBalapKarung" class="game-container balap-karung-game">
+        <div class="player-section left-player">
+            <div class="question-box">1 + 8 = ?</div>
+            <div class="answer-box"></div>
+            <div class="keypad">
+                <div class="keypad-row">
+                    <button class="number-btn">1</button>
+                    <button class="number-btn">2</button>
+                    <button class="number-btn">3</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">4</button>
+                    <button class="number-btn">5</button>
+                    <button class="number-btn">6</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">7</button>
+                    <button class="number-btn">8</button>
+                    <button class="number-btn">9</button>
+                </div>
+                <div class="keypad-row keypad-row-4">
+                    <button class="minus-btn">−</button>
+                    <button class="decimal-btn">.</button>
+                    <button class="number-btn">0</button>
+                    <button class="clear-btn">C</button>
+                    <button class="go-btn">Go</button>
+                </div>
+                <div class="keypad-row keypad-row-5">
+                    <button class="go-btn-alt">Go</button>
+                </div>
+            </div>
+            <div class="score-indicator">Posisi: <span class="score-value">0/10</span></div>
+        </div>
+
+        <div class="center-section balap-karung-center">
+            <h1>Balap Karung Matematika</h1>
+            <div class="game-field balap-karung-field">
+                <!-- Track -->
+                <div class="race-track">
+                    <img src="https://game.afifedu.com/balap_karung/track.png" alt="Track" class="track-image">
+                    
+                    <!-- Racer Kiri (class sudah diperbaiki) -->
+                    <div class="racer-container left-racer">
+                        <img src="https://game.afifedu.com/balap_karung/blue_stand.png" alt="Pemain Kiri" class="racer-image stand" onerror="handleRacerImgError(this, 'blue', 'stand')">
+                        <img src="https://game.afifedu.com/balap_karung/blue_hop.png" alt="Pemain Kiri Hop" class="racer-image hop" style="display: none;" onerror="handleRacerImgError(this, 'blue', 'hop')">
+                    </div>
+                    
+                    <!-- Racer Kanan (dilengkapi fallback SVG agar red_hop.png tidak pernah error) -->
+                    <div class="racer-container right-racer">
+                        <img src="https://game.afifedu.com/balap_karung/red_stand.png" alt="Pemain Kanan" class="racer-image stand" onerror="handleRacerImgError(this, 'red', 'stand')">
+                        <img src="https://game.afifedu.com/balap_karung/red_hop.png" alt="Pemain Kanan Hop" class="racer-image hop" style="display: none;" onerror="handleRacerImgError(this, 'red', 'hop')">
+                    </div>
+                </div>
+            </div>
+            <p class="instruction">Jawab soal untuk melompat maju! (10 lompatan untuk menang)</p>
+        </div>
+
+        <div class="player-section right-player">
+            <div class="question-box">9 + 4 = ?</div>
+            <div class="answer-box"></div>
+            <div class="keypad">
+                <div class="keypad-row">
+                    <button class="number-btn">1</button>
+                    <button class="number-btn">2</button>
+                    <button class="number-btn">3</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">4</button>
+                    <button class="number-btn">5</button>
+                    <button class="number-btn">6</button>
+                </div>
+                <div class="keypad-row">
+                    <button class="number-btn">7</button>
+                    <button class="number-btn">8</button>
+                    <button class="number-btn">9</button>
+                </div>
+                <div class="keypad-row keypad-row-4">
+                    <button class="minus-btn">−</button>
+                    <button class="decimal-btn">.</button>
+                    <button class="number-btn">0</button>
+                    <button class="clear-btn">C</button>
+                    <button class="go-btn">Go</button>
+                </div>
+                <div class="keypad-row keypad-row-5">
+                    <button class="go-btn-alt">Go</button>
+                </div>
+            </div>
+            <div class="score-indicator">Posisi: <span class="score-value">0/10</span></div>
+        </div>
+    </div>
+
+    <!-- Modal Pemenang -->
+    <div id="winnerModal" class="modal">
+        <div class="modal-content">
+            <h2 id="winnerText">🎉 Pemain Menang! 🎉</h2>
+            <p id="winnerMessage">Selamat! Anda berhasil menarik tali ke garis akhir!</p>
+            <button class="play-again-btn" onclick="closeModal()">Main Lagi</button>
+        </div>
+    </div>
+
+    <!-- Countdown Overlay -->
+    <div id="countdownOverlay" class="countdown-overlay">
+        <div class="countdown-content">
+            <div id="countdownNumber" class="countdown-number">3</div>
+            <div id="countdownText" class="countdown-text">Bersiap...</div>
+        </div>
+    </div>
+
+    <!-- Fallback Image Handler (Mengatasi Failed to load: balap_karung/red_hop.png) -->
+    <script>
+        function handleRacerImgError(imgEl, color, pose) {
+            if (imgEl.dataset.fallbackApplied) return;
+            imgEl.dataset.fallbackApplied = 'true';
+            imgEl.onerror = null;
+
+            const shirtColor = color === 'red' ? '#e74c3c' : '#3498db';
+            const sackColor = color === 'red' ? '#d35400' : '#c08b5c';
+            const yOffset = pose === 'hop' ? -12 : 0;
+            const legBend = pose === 'hop' ? 'M38,95 Q50,82 62,95' : 'M38,105 L62,105';
+
+            const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
+                <g transform="translate(0, ${yOffset})">
+                    <!-- Kepala -->
+                    <circle cx="50" cy="24" r="14" fill="#fbd3b0" stroke="#333" stroke-width="2.5"/>
+                    <!-- Ikat Kepala Merah Putih -->
+                    <rect x="35" y="15" width="30" height="6" rx="2" fill="#e74c3c"/>
+                    <rect x="35" y="21" width="30" height="5" rx="2" fill="#ffffff"/>
+                    <!-- Mata -->
+                    <circle cx="45" cy="26" r="2" fill="#222"/>
+                    <circle cx="55" cy="26" r="2" fill="#222"/>
+                    <!-- Senyum -->
+                    <path d="M45,31 Q50,35 55,31" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/>
+                    <!-- Badan / Baju -->
+                    <rect x="36" y="38" width="28" height="24" rx="6" fill="${shirtColor}" stroke="#333" stroke-width="2.5"/>
+                    <!-- Tangan memegang karung -->
+                    <circle cx="34" cy="58" r="5" fill="#fbd3b0" stroke="#333" stroke-width="2"/>
+                    <circle cx="66" cy="58" r="5" fill="#fbd3b0" stroke="#333" stroke-width="2"/>
+                    <!-- Karung Goni -->
+                    <path d="M32,58 L68,58 L72,105 Q50,112 28,105 Z" fill="${sackColor}" stroke="#5d4037" stroke-width="2.5"/>
+                    <path d="${legBend}" fill="none" stroke="#5d4037" stroke-width="2" stroke-dasharray="4,3"/>
+                </g>
+            </svg>`;
+
+            imgEl.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.trim());
+        }
+
+        // Pre-verify asset balap_karung agar tidak memunculkan error di console
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.racer-image').forEach(img => {
+                if (img.complete && img.naturalWidth === 0) {
+                    const isRed = img.src.includes('red');
+                    const isHop = img.src.includes('hop');
+                    handleRacerImgError(img, isRed ? 'red' : 'blue', isHop ? 'hop' : 'stand');
+                }
+            });
+        });
+    </script>
+
+    <script src="https://game.afifedu.com/script.js"></script>
+
+    <!-- Web Audio API Synthesizer untuk Musik Latar & Efek Suara (SFX) -->
+    <script>
+        const SoundEngine = (() => {
+            let ctx = null;
+            let isMuted = false;
+            let bgmTimer = null;
+            let bgmStep = 0;
+            let currentMood = 'menu'; // 'menu' atau 'game'
+
+            // Melodi ceria bergaya perlombaan 17-an / edukasi (frekuensi Hz)
+            const notes = {
+                C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, B4: 493.88,
+                C5: 523.25, D5: 587.33, E5: 659.25, F5: 698.46, G5: 783.99, A5: 880.00, R: 0
+            };
+
+            const menuMelody = [
+                'C5','E5','G5','E5', 'F5','A5','G5','R',
+                'E5','G5','C5','D5', 'E5','D5','C5','R',
+                'D5','F5','A5','F5', 'E5','G5','C5','R',
+                'D5','B4','C5','E5', 'C5','R','R','R'
+            ];
+
+            const gameMelody = [
+                'G4','C5','E5','C5', 'G5','G5','E5','C5',
+                'A4','D5','F5','D5', 'A5','A5','G5','E5',
+                'G4','C5','E5','G5', 'A5','G5','E5','C5',
+                'D5','E5','D5','B4', 'C5','E5','C5','R'
+            ];
+
+            function init() {
+                if (!ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    ctx = new AudioCtx();
+                }
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+            }
+
+            function playTone(freq, duration, type = 'sine', volume = 0.15, slideTo = null) {
+                if (isMuted || !freq) return;
+                init();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, now);
+                if (slideTo) {
+                    osc.frequency.exponentialRampToValueAtTime(slideTo, now + duration);
+                }
+
+                gain.gain.setValueAtTime(volume, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + duration);
+            }
+
+            // Efek Suara (SFX)
+            const sfx = {
+                click() {
+                    playTone(620, 0.07, 'triangle', 0.14, 820);
+                },
+                clear() {
+                    playTone(420, 0.1, 'sine', 0.14, 240);
+                },
+                nav() {
+                    playTone(440, 0.08, 'sine', 0.15);
+                    setTimeout(() => playTone(660, 0.12, 'sine', 0.15), 55);
+                },
+                correct() {
+                    // Suara melompat / menarik tali ceria
+                    playTone(523.25, 0.09, 'triangle', 0.22);
+                    setTimeout(() => playTone(659.25, 0.09, 'triangle', 0.22), 65);
+                    setTimeout(() => playTone(783.99, 0.18, 'triangle', 0.25, 987.77), 130);
+                },
+                wrong() {
+                    // Suara salah lembut
+                    playTone(220, 0.14, 'sawtooth', 0.12, 160);
+                    setTimeout(() => playTone(185, 0.18, 'sawtooth', 0.12, 140), 110);
+                },
+                countdownTick(isGo = false) {
+                    if (isGo) {
+                        playTone(880, 0.35, 'triangle', 0.28, 1046.5);
+                    } else {
+                        playTone(440, 0.15, 'sine', 0.22);
+                    }
+                },
+                win() {
+                    const fanfare = [
+                        { f: 523.25, t: 0, d: 0.14 },
+                        { f: 659.25, t: 120, d: 0.14 },
+                        { f: 783.99, t: 240, d: 0.14 },
+                        { f: 1046.50, t: 380, d: 0.35 },
+                        { f: 783.99, t: 620, d: 0.14 },
+                        { f: 1046.50, t: 780, d: 0.55 }
+                    ];
+                    fanfare.forEach(n => {
+                        setTimeout(() => playTone(n.f, n.d, 'triangle', 0.25), n.t);
+                    });
+                }
+            };
+
+            function startBGM(mood = 'menu') {
+                currentMood = mood;
+                if (bgmTimer) clearInterval(bgmTimer);
+                const tempoMs = mood === 'game' ? 210 : 280;
+
+                bgmTimer = setInterval(() => {
+                    if (isMuted || !ctx || ctx.state !== 'running') return;
+                    const seq = currentMood === 'game' ? gameMelody : menuMelody;
+                    const noteName = seq[bgmStep % seq.length];
+                    const freq = notes[noteName];
+
+                    if (freq > 0) {
+                        // Nada utama lembut
+                        playTone(freq, (tempoMs / 1000) * 0.85, 'sine', 0.055);
+                        // Bass ringan setiap ketukan ke-4
+                        if (bgmStep % 4 === 0) {
+                            playTone(freq / 2, (tempoMs / 1000) * 1.4, 'triangle', 0.045);
+                        }
+                    }
+                    bgmStep++;
+                }, tempoMs);
+            }
+
+            function toggleMute() {
+                init();
+                isMuted = !isMuted;
+                const btn = document.getElementById('audioToggleBtn');
+                const iconOn = document.getElementById('iconSoundOn');
+                const iconOff = document.getElementById('iconSoundOff');
+
+                if (isMuted) {
+                    btn.classList.add('muted');
+                    iconOn.style.display = 'none';
+                    iconOff.style.display = 'block';
+                } else {
+                    btn.classList.remove('muted');
+                    iconOn.style.display = 'block';
+                    iconOff.style.display = 'none';
+                    sfx.click();
+                }
+            }
+
+            return { init, sfx, startBGM, toggleMute };
+        })();
+
+        // Menghubungkan SFX & BGM otomatis ke interaksi permainan
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mulai audio pada sentuhan/klik pertama pengguna (aturan browser)
+            const unlockAudio = () => {
+                SoundEngine.init();
+                SoundEngine.startBGM('menu');
+                document.removeEventListener('pointerdown', unlockAudio);
+                document.removeEventListener('keydown', unlockAudio);
+            };
+            document.addEventListener('pointerdown', unlockAudio);
+            document.addEventListener('keydown', unlockAudio);
+
+            // SFX untuk tombol keypad & menu
+            document.body.addEventListener('pointerdown', (e) => {
+                const btn = e.target.closest('button');
+                if (!btn || btn.id === 'audioToggleBtn') return;
+
+                if (btn.classList.contains('number-btn') || btn.classList.contains('minus-btn') || btn.classList.contains('decimal-btn')) {
+                    SoundEngine.sfx.click();
+                } else if (btn.classList.contains('clear-btn')) {
+                    SoundEngine.sfx.clear();
+                } else if (btn.classList.contains('menu-btn') || btn.classList.contains('back-btn') || btn.classList.contains('home-btn') || btn.classList.contains('play-again-btn')) {
+                    SoundEngine.sfx.nav();
+                    if (btn.classList.contains('home-btn') || btn.classList.contains('back-btn')) {
+                        SoundEngine.startBGM('menu');
+                    }
+                }
+            });
+
+            // Deteksi perubahan skor (jawaban benar) & status permainan via MutationObserver
+            document.querySelectorAll('.score-value').forEach(el => {
+                let lastVal = el.textContent;
+                new MutationObserver(() => {
+                    if (el.textContent !== lastVal) {
+                        const currentNum = parseInt(el.textContent) || 0;
+                        const prevNum = parseInt(lastVal) || 0;
+                        if (currentNum > prevNum) {
+                            SoundEngine.sfx.correct();
+                        }
+                        lastVal = el.textContent;
+                    }
+                }).observe(el, { childList: true, characterData: true, subtree: true });
+            });
+
+            // Deteksi jawaban benar/salah di Tarik Tambang & semua mode melalui perubahan question-box / animasi
+            document.querySelectorAll('.question-box').forEach(qBox => {
+                let lastQ = qBox.textContent;
+                new MutationObserver(() => {
+                    if (qBox.textContent !== lastQ && lastQ !== '') {
+                        // Soal berganti saat game aktif = jawaban benar!
+                        const activeGame = document.querySelector('.game-container[style*="flex"], .game-container.active');
+                        if (activeGame && !activeGame.classList.contains('balap-karung-game') && !activeGame.classList.contains('panjat-pinang-game')) {
+                            SoundEngine.sfx.correct();
+                        }
+                        lastQ = qBox.textContent;
+                    }
+                }).observe(qBox, { childList: true, characterData: true, subtree: true });
+            });
+
+            // Deteksi animasi getar / salah pada answer-box
+            document.querySelectorAll('.answer-box').forEach(aBox => {
+                new MutationObserver(() => {
+                    if (aBox.classList.contains('wrong') || aBox.classList.contains('error') || aBox.classList.contains('shake')) {
+                        SoundEngine.sfx.wrong();
+                    }
+                }).observe(aBox, { attributes: true, attributeFilter: ['class'] });
+            });
+
+            // Deteksi Countdown (3, 2, 1, Mulai)
+            const countdownNum = document.getElementById('countdownNumber');
+            const countdownOverlay = document.getElementById('countdownOverlay');
+            if (countdownNum && countdownOverlay) {
+                let lastCount = '';
+                new MutationObserver(() => {
+                    const isVisible = countdownOverlay.style.display !== 'none' && countdownOverlay.offsetParent !== null;
+                    if (isVisible && countdownNum.textContent !== lastCount) {
+                        lastCount = countdownNum.textContent;
+                        const isGo = isNaN(parseInt(lastCount));
+                        SoundEngine.sfx.countdownTick(isGo);
+                        if (isGo) SoundEngine.startBGM('game');
+                    }
+                }).observe(countdownNum, { childList: true, characterData: true, subtree: true });
+            }
+
+            // Deteksi Modal Pemenang muncul
+            const winnerModal = document.getElementById('winnerModal');
+            if (winnerModal) {
+                new MutationObserver(() => {
+                    const isShown = winnerModal.style.display === 'flex' || winnerModal.style.display === 'block' || winnerModal.classList.contains('show') || winnerModal.classList.contains('active');
+                    if (isShown) {
+                        SoundEngine.sfx.win();
+                        SoundEngine.startBGM('menu');
+                    }
+                }).observe(winnerModal, { attributes: true, attributeFilter: ['style', 'class'] });
+            }
+        });
+    </script>
+    
+    <!-- Register Service Worker for Caching & Auto-Update -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('https://game.afifedu.com/service-worker.js')
+                    .then(registration => {
+                        setInterval(() => {
+                            if (document.visibilityState === 'visible') {
+                                registration.update();
+                            }
+                        }, 60000);
+                        
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    setTimeout(() => {
+                                        window.location.reload(true);
+                                    }, 2000);
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('❌ Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
