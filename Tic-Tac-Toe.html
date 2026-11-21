@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic-Tac-Toe 2 Pemain</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #1e293b;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      text-align: center;
+      width: 320px;
+    }
+    input {
+      width: 80%;
+      padding: 12px;
+      font-size: 18px;
+      text-align: center;
+      text-transform: uppercase;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: white;
+      margin-bottom: 12px;
+    }
+    button {
+      padding: 10px 18px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 4px;
+      transition: 0.2s;
+    }
+    .btn-primary { background: #3b82f6; color: white; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-secondary { background: #10b981; color: white; }
+    .btn-secondary:hover { background: #059669; }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .cell {
+      height: 85px;
+      background: #334155;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+    }
+    .cell:hover { background: #475569; }
+    .cell.X { color: #38bdf8; }
+    .cell.O { color: #f43f5e; }
+    .status { font-size: 16px; margin-bottom: 10px; min-height: 24px; color: #cbd5e1; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2 style="margin-top:0;">Duel Tic-Tac-Toe</h2>
+
+  <!-- Tampilan Lobby -->
+  <div id="lobby">
+    <input type="text" id="roomInput" placeholder="KODE ROOM (MISAL: A12)" maxlength="6">
+    <div>
+      <button class="btn-primary" onclick="initGame('create')">Buat Room</button>
+      <button class="btn-secondary" onclick="initGame('join')">Gabung Room</button>
+    </div>
+    <p id="lobbyMsg" style="color:#f87171; font-size:14px;"></p>
+  </div>
+
+  <!-- Tampilan Arena Game -->
+  <div id="arena" class="hidden">
+    <div style="font-size:13px; color:#94a3b8; margin-bottom:6px;">
+      Room: <b id="displayRoom" style="color:white;"></b> | Kamu: <b id="displayRole" style="color:#fbbf24;"></b>
+    </div>
+    <div class="status" id="statusText">Menghubungkan...</div>
+    <div class="board" id="board"></div>
+    <button id="resetBtn" class="btn-primary hidden" onclick="resetGame()">Main Lagi</button>
+  </div>
+</div>
+
+<script>
+  // GANTI URL DI BAWAH INI DENGAN URL WEB APP APPS SCRIPT ANDA
+  const API_URL = "https://script.google.com/macros/s/AKfycbzcI6XPrU2LT341TTeMqG9fA5k_LKpKqJF-GlKKnJ-R84KG71mvqp7oTBEsY_G8LowC2Q/exec";
+
+  let currentRoom = "";
+  let myRole = "";
+  let gameState = null;
+  let pollInterval = null;
+  let isSending = false;
+
+  async function apiCall(payload) {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  }
+
+  async function initGame(action) {
+    const room = document.getElementById("roomInput").value.trim().toUpperCase();
+    const msg = document.getElementById("lobbyMsg");
+    if (!room) {
+      msg.innerText = "Masukkan kode room terlebih dahulu!";
+      return;
+    }
+    msg.innerText = "Memproses...";
+
+    try {
+      const res = await apiCall({ action: action, room: room });
+      if (res.status === "ok") {
+        currentRoom = room;
+        myRole = res.role;
+        gameState = res.state;
+
+        document.getElementById("lobby").classList.add("hidden");
+        document.getElementById("arena").classList.remove("hidden");
+        document.getElementById("displayRoom").innerText = currentRoom;
+        document.getElementById("displayRole").innerText = myRole;
+
+        renderBoard();
+        // Cek pembaruan papan setiap 1.5 detik
+        pollInterval = setInterval(fetchState, 1500);
+      } else {
+        msg.innerText = res.message;
+      }
+    } catch (e) {
+      msg.innerText = "Gagal terhubung ke server.";
+    }
+  }
+
+  async function fetchState() {
+    if (isSending) return;
+    try {
+      const res = await apiCall({ action: "state", room: currentRoom });
+      if (res.status === "ok") {
+        gameState = res.state;
+        renderBoard();
+      }
+    } catch (e) {
+      console.error("Polling error", e);
+    }
+  }
+
+  async function makeMove(index) {
+    if (!gameState || gameState.winner || gameState.players < 2) return;
+    if (gameState.turn !== myRole || gameState.board[index] !== "" || isSending) return;
+
+    // Optimistic UI: langsung tampilkan simbol di layar sendiri agar terasa responsif
+    isSending = true;
+    gameState.board[index] = myRole;
+    gameState.turn = myRole === "X" ? "O" : "X";
+    renderBoard();
+
+    try {
+      const res = await apiCall({
+        action: "move",
+        room: currentRoom,
+        role: myRole,
+        index: index
+      });
+      if (res.status === "ok" || res.status === "invalid") {
+        gameState = res.state;
+        renderBoard();
+      }
+    } finally {
+      isSending = false;
+    }
+  }
+
+  async function resetGame() {
+    isSending = true;
+    try {
+      const res = await apiCall({ action: "reset", room: currentRoom });
+      if (res.status === "ok") {
+        gameState = res.state;
+        renderBoard();
+      }
+    } finally {
+      isSending = false;
+    }
+  }
+
+  function renderBoard() {
+    const boardEl = document.getElementById("board");
+    const statusEl = document.getElementById("statusText");
+    const resetBtn = document.getElementById("resetBtn");
+
+    boardEl.innerHTML = "";
+    gameState.board.forEach((val, idx) => {
+      const cell = document.createElement("div");
+      cell.className = "cell " + val;
+      cell.innerText = val;
+      cell.onclick = () => makeMove(idx);
+      boardEl.appendChild(cell);
+    });
+
+    if (gameState.players < 2) {
+      statusEl.innerText = "Menunggu Pemain O bergabung...";
+      resetBtn.classList.add("hidden");
+    } else if (gameState.winner) {
+      if (gameState.winner === "DRAW") {
+        statusEl.innerText = "Permainan Seri!";
+      } else if (gameState.winner === myRole) {
+        statusEl.innerText = "🎉 Kamu Menang!";
+      } else {
+        statusEl.innerText = "😢 Kamu Kalah!";
+      }
+      resetBtn.classList.remove("hidden");
+    } else {
+      resetBtn.classList.add("hidden");
+      statusEl.innerText = gameState.turn === myRole ? "Giliran Kamu (" + myRole + ")" : "Menunggu giliran lawan...";
+    }
+  }
+</script>
+</body>
+</html>
