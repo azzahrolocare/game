@@ -59,6 +59,231 @@ window.addEventListener('load', () => {
 });
 
 // ============================================
+// BANK KOSTUM SOAL (SEMUA MATA PELAJARAN)
+// ============================================
+
+const STORAGE_KEY_CUSTOM_QUESTIONS = 'afifedu_custom_questions_v1';
+
+const defaultQuestions = [
+    {
+        question: 'Apa kepanjangan dari CPU pada komputer?',
+        options: { A: 'Central Process Unit', B: 'Central Processing Unit', C: 'Computer Personal Unit', D: 'Control Processing Unit' },
+        answer: 'B'
+    },
+    {
+        question: 'Ibukota negara Jepang adalah...',
+        options: { A: 'Seoul', B: 'Beijing', C: 'Tokyo', D: 'Bangkok' },
+        answer: 'C'
+    },
+    {
+        question: 'Organ tubuh manusia yang berfungsi memompa darah adalah...',
+        options: { A: 'Paru-paru', B: 'Hati', C: 'Ginjal', D: 'Jantung' },
+        answer: 'D'
+    },
+    {
+        question: 'Bahasa Inggris dari kata "Perpustakaan" adalah...',
+        options: { A: 'Library', B: 'Laboratory', C: 'Bookstore', D: 'Canteen' },
+        answer: 'A'
+    },
+    {
+        question: 'Sila ketiga Pancasila dilambangkan dengan gambar...',
+        options: { A: 'Bintang', B: 'Rantai', C: 'Pohon Beringin', D: 'Kepala Banteng' },
+        answer: 'C'
+    },
+    {
+        question: 'Gas yang dibutuhkan tumbuhan untuk fotosintesis adalah...',
+        options: { A: 'Oksigen', B: 'Karbon dioksida', C: 'Nitrogen', D: 'Hidrogen' },
+        answer: 'B'
+    },
+    {
+        question: 'Proklamasi Kemerdekaan Indonesia dibacakan pada tanggal...',
+        options: { A: '17 Agustus 1945', B: '18 Agustus 1945', C: '1 Juni 1945', D: '28 Oktober 1928' },
+        answer: 'A'
+    },
+    {
+        question: 'Perangkat lunak yang digunakan untuk mengolah angka adalah...',
+        options: { A: 'Microsoft Word', B: 'Microsoft PowerPoint', C: 'Microsoft Excel', D: 'CorelDraw' },
+        answer: 'C'
+    }
+];
+
+let customQuestions = [];
+
+function loadCustomQuestions() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY_CUSTOM_QUESTIONS);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+                customQuestions = parsed;
+            } else {
+                customQuestions = [...defaultQuestions];
+                saveCustomQuestions();
+            }
+        } else {
+            customQuestions = [...defaultQuestions];
+            saveCustomQuestions();
+        }
+    } catch (e) {
+        console.error('Gagal memuat soal dari localStorage:', e);
+        customQuestions = [...defaultQuestions];
+    }
+    updateQuestionCountUI();
+}
+
+function saveCustomQuestions() {
+    try {
+        localStorage.setItem(STORAGE_KEY_CUSTOM_QUESTIONS, JSON.stringify(customQuestions));
+    } catch (e) {
+        console.error('Gagal menyimpan soal ke localStorage:', e);
+    }
+    updateQuestionCountUI();
+}
+
+function updateQuestionCountUI() {
+    const badge = document.getElementById('questionCountBadge');
+    const totalEl = document.getElementById('totalCustomQuestions');
+    if (badge) badge.textContent = `${customQuestions.length} Soal Tersedia`;
+    if (totalEl) totalEl.textContent = customQuestions.length;
+}
+
+function renderCustomQuestionList() {
+    const listContainer = document.getElementById('customQuestionList');
+    if (!listContainer) return;
+
+    if (customQuestions.length === 0) {
+        listContainer.innerHTML = '<div class="empty-soal-msg">Belum ada soal. Tambahkan soal baru atau klik "Soal Contoh".</div>';
+        return;
+    }
+
+    listContainer.innerHTML = customQuestions.map((item, idx) => `
+        <div class="soal-item">
+            <div class="soal-item-main">
+                <div class="soal-item-q"><strong>${idx + 1}.</strong> ${escapeHtml(item.question)}</div>
+                <div class="soal-item-opts">
+                    <span class="${item.answer === 'A' ? 'opt-correct' : ''}">A: ${escapeHtml(item.options.A)}</span>
+                    <span class="${item.answer === 'B' ? 'opt-correct' : ''}">B: ${escapeHtml(item.options.B)}</span>
+                    <span class="${item.answer === 'C' ? 'opt-correct' : ''}">C: ${escapeHtml(item.options.C)}</span>
+                    <span class="${item.answer === 'D' ? 'opt-correct' : ''}">D: ${escapeHtml(item.options.D)}</span>
+                </div>
+            </div>
+            <button type="button" class="delete-soal-btn" onclick="deleteCustomQuestion(${idx})" title="Hapus Soal">✕</button>
+        </div>
+    `).join('');
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function addCustomQuestion() {
+    const qInput = document.getElementById('inputQuestionText');
+    const optA = document.getElementById('inputOptionA');
+    const optB = document.getElementById('inputOptionB');
+    const optC = document.getElementById('inputOptionC');
+    const optD = document.getElementById('inputOptionD');
+    const correctSelect = document.getElementById('inputCorrectOption');
+
+    const question = qInput.value.trim();
+    const A = optA.value.trim();
+    const B = optB.value.trim();
+    const C = optC.value.trim();
+    const D = optD.value.trim();
+    const answer = correctSelect.value;
+
+    if (!question || !A || !B || !C || !D) {
+        alert('Harap isi pertanyaan dan semua pilihan jawaban (A, B, C, D)!');
+        return;
+    }
+
+    customQuestions.push({
+        question,
+        options: { A, B, C, D },
+        answer
+    });
+
+    saveCustomQuestions();
+    renderCustomQuestionList();
+
+    qInput.value = '';
+    optA.value = '';
+    optB.value = '';
+    optC.value = '';
+    optD.value = '';
+    correctSelect.value = 'A';
+}
+
+function deleteCustomQuestion(index) {
+    customQuestions.splice(index, 1);
+    saveCustomQuestions();
+    renderCustomQuestionList();
+}
+
+function clearAllCustomQuestions() {
+    if (confirm('Hapus semua daftar soal saat ini?')) {
+        customQuestions = [];
+        saveCustomQuestions();
+        renderCustomQuestionList();
+    }
+}
+
+function resetDefaultQuestions() {
+    if (confirm('Muat ulang soal contoh bawaan? Daftar soal saat ini akan diganti.')) {
+        customQuestions = [...defaultQuestions];
+        saveCustomQuestions();
+        renderCustomQuestionList();
+    }
+}
+
+function toggleBulkImport() {
+    const box = document.getElementById('bulkImportBox');
+    if (!box) return;
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+function processBulkImport() {
+    const textarea = document.getElementById('bulkImportText');
+    if (!textarea) return;
+
+    const lines = textarea.value.split('\n').map(l => l.trim()).filter(l => l !== '');
+    if (lines.length === 0) {
+        alert('Teks import masih kosong!');
+        return;
+    }
+
+    let addedCount = 0;
+    lines.forEach(line => {
+        const parts = line.split('|').map(p => p.trim());
+        if (parts.length >= 6) {
+            const [question, A, B, C, D, rawAns] = parts;
+            const answer = rawAns.toUpperCase();
+            if (question && A && B && C && D && ['A', 'B', 'C', 'D'].includes(answer)) {
+                customQuestions.push({
+                    question,
+                    options: { A, B, C, D },
+                    answer
+                });
+                addedCount++;
+            }
+        }
+    });
+
+    if (addedCount > 0) {
+        saveCustomQuestions();
+        renderCustomQuestionList();
+        textarea.value = '';
+        toggleBulkImport();
+        alert(`Berhasil menambahkan ${addedCount} soal baru!`);
+    } else {
+        alert('Format tidak sesuai. Pastikan format per baris: Pertanyaan | Opsi A | Opsi B | Opsi C | Opsi D | Kunci (A/B/C/D)');
+    }
+}
+
+// ============================================
 // GAME STATE
 // ============================================
 
@@ -69,23 +294,25 @@ const gameState = {
         score: 0,
         climbPosition: 0, // untuk panjat pinang (0-7)
         racePosition: 0,   // untuk balap karung (0-10)
-        lastQuestion: ''   // soal terakhir untuk mencegah duplikat
+        lastQuestionIndex: -1, // index soal terakhir untuk mencegah duplikat
+        currentQuestionObj: null,
+        isLocked: false
     },
     rightPlayer: {
         answer: '',
         score: 0,
         climbPosition: 0, // untuk panjat pinang (0-7)
         racePosition: 0,   // untuk balap karung (0-10)
-        lastQuestion: ''   // soal terakhir untuk mencegah duplikat
+        lastQuestionIndex: -1, // index soal terakhir untuk mencegah duplikat
+        currentQuestionObj: null,
+        isLocked: false
     },
     ropePosition: 50, // posisi tali (50 = tengah, 0 = kiri menang, 100 = kanan menang)
-    currentGameType: 'tarik-tambang', // 'tarik-tambang', 'panjat-pinang', or 'balap-karung'
-    currentMode: 'addition', // 'addition', 'subtraction', 'multiplication', or 'division'
-    currentLevel: 'beginner' // 'beginner', 'amateur', 'pro'
+    currentGameType: 'tarik-tambang' // 'tarik-tambang', 'panjat-pinang', or 'balap-karung'
 };
 
-// Fungsi untuk mengupdate jawaban player
-function updateAnswer(player, value) {
+// Fungsi untuk mengupdate status kotak feedback jawaban player
+function updateAnswer(player, text, statusClass = '') {
     let gameScreen;
     if (gameState.currentGameType === 'tarik-tambang') {
         gameScreen = '#gameScreenTarikTambang';
@@ -96,16 +323,26 @@ function updateAnswer(player, value) {
     }
     
     const answerBox = document.querySelector(`${gameScreen} .${player}-player .answer-box`);
+    if (!answerBox) return;
+
     if (player === 'left') {
-        gameState.leftPlayer.answer = value;
+        gameState.leftPlayer.answer = text;
     } else {
-        gameState.rightPlayer.answer = value;
+        gameState.rightPlayer.answer = text;
     }
-    answerBox.textContent = value;
+
+    answerBox.textContent = text || 'Pilih Jawaban';
+    answerBox.classList.remove('correct', 'wrong');
+    if (statusClass) {
+        answerBox.classList.add(statusClass);
+    }
 }
 
-// Fungsi untuk mengecek jawaban
-function checkAnswer(player) {
+// Fungsi untuk mengecek jawaban pilihan ganda
+function checkAnswer(player, selectedOption) {
+    const playerState = player === 'left' ? gameState.leftPlayer : gameState.rightPlayer;
+    if (playerState.isLocked || !playerState.currentQuestionObj) return false;
+
     let gameScreen;
     if (gameState.currentGameType === 'tarik-tambang') {
         gameScreen = '#gameScreenTarikTambang';
@@ -115,24 +352,17 @@ function checkAnswer(player) {
         gameScreen = '#gameScreenBalapKarung';
     }
     
-    const questionBox = document.querySelector(`${gameScreen} .${player}-player .question-box`);
-    const answerBox = document.querySelector(`${gameScreen} .${player}-player .answer-box`);
-    const question = questionBox.textContent.split('=')[0].trim();
-    
-    // Calculate correct answer without eval
-    const correctAnswer = calculateAnswer(question);
-    const playerAnswer = player === 'left' ? 
-        parseFloat(gameState.leftPlayer.answer) : 
-        parseFloat(gameState.rightPlayer.answer);
+    const section = document.querySelector(`${gameScreen} .${player}-player`);
+    const selectedBtn = section.querySelector(`.option-btn[data-option="${selectedOption}"]`);
+    const correctOption = playerState.currentQuestionObj.answer;
+    const selectedText = playerState.currentQuestionObj.options[selectedOption];
 
-    if (playerAnswer === correctAnswer) {
+    playerState.isLocked = true;
+
+    if (selectedOption === correctOption) {
         // Jawaban benar
-        answerBox.classList.remove('wrong');
-        answerBox.classList.add('correct');
-        
-        setTimeout(() => {
-            answerBox.classList.remove('correct');
-        }, 300);
+        updateAnswer(player, `✅ ${selectedOption}. ${selectedText}`, 'correct');
+        if (selectedBtn) selectedBtn.classList.add('opt-btn-correct');
         
         if (gameState.currentGameType === 'tarik-tambang') {
             // Logic untuk Tarik Tambang
@@ -143,20 +373,22 @@ function checkAnswer(player) {
             }
             updateRopePosition();
             
-            setTimeout(() => {
-                generateNewQuestion(player);
-            }, 300);
-            
             // Cek kemenangan Tarik Tambang
             if (gameState.ropePosition <= 0) {
                 setTimeout(() => {
                     showWinnerModal('Pemain Kiri', 'Selamat! Anda berhasil menarik tali ke garis akhir!');
                 }, 400);
+                return true;
             } else if (gameState.ropePosition >= 100) {
                 setTimeout(() => {
                     showWinnerModal('Pemain Kanan', 'Selamat! Anda berhasil menarik tali ke garis akhir!');
                 }, 400);
+                return true;
             }
+
+            setTimeout(() => {
+                generateNewQuestion(player);
+            }, 350);
         } else if (gameState.currentGameType === 'panjat-pinang') {
             // Logic untuk Panjat Pinang - Jawaban BENAR
             if (player === 'left') {
@@ -167,21 +399,23 @@ function checkAnswer(player) {
             updateClimberPosition(player);
             updateScoreDisplay(player); // Update tampilan score
             
-            setTimeout(() => {
-                generateNewQuestion(player);
-            }, 500);
-            
             // Cek kemenangan Panjat Pinang
             const WINNING_STEPS = 7; // EDIT: Jumlah step untuk menang
             if (gameState.leftPlayer.climbPosition >= WINNING_STEPS) {
                 setTimeout(() => {
                     showWinnerModal('Pemain Kiri', 'Selamat! Anda berhasil mencapai puncak tiang pinang!');
                 }, 600);
+                return true;
             } else if (gameState.rightPlayer.climbPosition >= WINNING_STEPS) {
                 setTimeout(() => {
                     showWinnerModal('Pemain Kanan', 'Selamat! Anda berhasil mencapai puncak tiang pinang!');
                 }, 600);
+                return true;
             }
+
+            setTimeout(() => {
+                generateNewQuestion(player);
+            }, 500);
         } else if (gameState.currentGameType === 'balap-karung') {
             // Logic untuk Balap Karung - Jawaban BENAR
             if (player === 'left') {
@@ -192,30 +426,30 @@ function checkAnswer(player) {
             updateRacerPosition(player);
             updateScoreDisplay(player); // Update tampilan score
             
-            setTimeout(() => {
-                generateNewQuestion(player);
-            }, 500);
-            
             // Cek kemenangan Balap Karung
             const WINNING_HOPS = 10; // 10 lompatan untuk menang
             if (gameState.leftPlayer.racePosition >= WINNING_HOPS) {
                 setTimeout(() => {
                     showWinnerModal('Pemain Kiri', 'Selamat! Anda berhasil mencapai garis finish!');
                 }, 600);
+                return true;
             } else if (gameState.rightPlayer.racePosition >= WINNING_HOPS) {
                 setTimeout(() => {
                     showWinnerModal('Pemain Kanan', 'Selamat! Anda berhasil mencapai garis finish!');
                 }, 600);
+                return true;
             }
+
+            setTimeout(() => {
+                generateNewQuestion(player);
+            }, 500);
         }
         
         return true;
     } else {
         // Jawaban salah - tampilkan animasi error
-        answerBox.classList.add('wrong');
-        setTimeout(() => {
-            answerBox.classList.remove('wrong');
-        }, 500);
+        updateAnswer(player, `❌ Salah (${selectedOption})`, 'wrong');
+        if (selectedBtn) selectedBtn.classList.add('opt-btn-wrong');
         
         // Logic untuk Panjat Pinang - Jawaban SALAH
         if (gameState.currentGameType === 'panjat-pinang') {
@@ -248,48 +482,14 @@ function checkAnswer(player) {
                 racerContainer.classList.remove('shaking');
             }, 500);
         }
+
+        // Ganti ke soal berikutnya setelah jeda singkat agar pemain tidak sekadar menebak sisa opsi
+        setTimeout(() => {
+            generateNewQuestion(player);
+        }, 650);
         
         return false;
     }
-}
-
-// Fungsi untuk menghitung jawaban tanpa eval (lebih aman)
-function calculateAnswer(question) {
-    // Remove spaces and parse the question
-    question = question.trim();
-    
-    // Check for division
-    if (question.includes('÷')) {
-        const parts = question.split('÷').map(p => parseFloat(p.trim()));
-        const result = parts[0] / parts[1];
-        // Round to 1 decimal place untuk konsistensi
-        const rounded = Math.round(result * 10) / 10;
-        // Hilangkan trailing zero: 20.0 → 20, tapi 19.5 tetap 19.5
-        return parseFloat(rounded.toFixed(1));
-    }
-    // Check for multiplication
-    else if (question.includes('×')) {
-        const parts = question.split('×').map(p => parseInt(p.trim()));
-        return parts[0] * parts[1];
-    }
-    // Check for addition
-    else if (question.includes('+')) {
-        const parts = question.split('+').map(p => parseInt(p.trim()));
-        return parts[0] + parts[1];
-    }
-    // Check for subtraction
-    else if (question.includes('-')) {
-        // Handle negative numbers
-        const parts = question.split('-').filter(p => p.trim() !== '');
-        if (question.startsWith('-')) {
-            // First number is negative
-            return -parseInt(parts[0]) - parseInt(parts[1]);
-        }
-        const nums = question.split('-').map(p => parseInt(p.trim()));
-        return nums[0] - nums[1];
-    }
-    
-    return 0;
 }
 
 // Fungsi untuk mengupdate posisi tali dan pemain
@@ -543,127 +743,22 @@ function closeModal() {
     showCountdown();
 }
 
-// Helper function untuk generate angka berdasarkan mode dan level
-function generateQuestionNumbers() {
-    let num1, num2;
-    
-    if (gameState.currentMode === 'addition') {
-        switch(gameState.currentLevel) {
-            case 'beginner':
-                // 1 digit (1-9)
-                num1 = Math.floor(Math.random() * 9) + 1;
-                num2 = Math.floor(Math.random() * 9) + 1;
-                break;
-            case 'amateur':
-                // Mixed: 1 digit + 2 digits OR 2 digits + 1 digit
-                if (Math.random() < 0.5) {
-                    // 1 digit + 2 digits
-                    num1 = Math.floor(Math.random() * 9) + 1;
-                    num2 = Math.floor(Math.random() * 90) + 10;
-                } else {
-                    // 2 digits + 1 digit
-                    num1 = Math.floor(Math.random() * 90) + 10;
-                    num2 = Math.floor(Math.random() * 9) + 1;
-                }
-                break;
-            case 'pro':
-                // 2 digits (10-99)
-                num1 = Math.floor(Math.random() * 90) + 10;
-                num2 = Math.floor(Math.random() * 90) + 10;
-                break;
-        }
-        return { num1, num2, operator: '+' };
-    } else if (gameState.currentMode === 'subtraction') {
-        switch(gameState.currentLevel) {
-            case 'beginner':
-                // 1 digit - 1 digit (1-9)
-                num1 = Math.floor(Math.random() * 9) + 1;
-                num2 = Math.floor(Math.random() * 9) + 1;
-                break;
-            case 'amateur':
-                // Mixed: 2 digit - 1 digit OR 1 digit - 2 digit
-                if (Math.random() < 0.5) {
-                    // 2 digit - 1 digit
-                    num1 = Math.floor(Math.random() * 90) + 10;
-                    num2 = Math.floor(Math.random() * 9) + 1;
-                } else {
-                    // 1 digit - 2 digit
-                    num1 = Math.floor(Math.random() * 9) + 1;
-                    num2 = Math.floor(Math.random() * 90) + 10;
-                }
-                break;
-            case 'pro':
-                // 2 digits - 2 digits (10-99)
-                num1 = Math.floor(Math.random() * 90) + 10;
-                num2 = Math.floor(Math.random() * 90) + 10;
-                break;
-        }
-        return { num1, num2, operator: '-' };
-    } else if (gameState.currentMode === 'multiplication') {
-        switch(gameState.currentLevel) {
-            case 'beginner':
-                // 1 digit × 1 digit (1-9)
-                num1 = Math.floor(Math.random() * 9) + 1;
-                num2 = Math.floor(Math.random() * 9) + 1;
-                break;
-            case 'amateur':
-                // 1 digit × 2 digits (1-9 × 10-99)
-                num1 = Math.floor(Math.random() * 9) + 1;
-                num2 = Math.floor(Math.random() * 90) + 10;
-                break;
-            case 'pro':
-                // 2 digits × 2 digits (10-99 × 10-99)
-                num1 = Math.floor(Math.random() * 90) + 10;
-                num2 = Math.floor(Math.random() * 90) + 10;
-                break;
-        }
-        return { num1, num2, operator: '×' };
-    } else if (gameState.currentMode === 'division') {
-        switch(gameState.currentLevel) {
-            case 'beginner':
-                // Hasil bulat (1-20 ÷ 1-5)
-                num2 = Math.floor(Math.random() * 5) + 1; // pembagi 1-5
-                const result1 = Math.floor(Math.random() * 4) + 1; // hasil 1-4
-                num1 = num2 * result1; // jaminan hasil bulat
-                break;
-            case 'amateur':
-                // Hasil bulat (10-99 ÷ 1-9)
-                num2 = Math.floor(Math.random() * 9) + 1; // pembagi 1-9
-                const result2 = Math.floor(Math.random() * 11) + 1; // hasil 1-11
-                num1 = num2 * result2; // jaminan hasil bulat (max 99)
-                break;
-            case 'pro':
-                // Campuran: 50% bulat, 50% desimal (.5 atau .2/.4/.6/.8)
-                if (Math.random() < 0.5) {
-                    // Hasil BULAT (seperti amateur tapi lebih besar)
-                    num2 = Math.floor(Math.random() * 9) + 2; // pembagi 2-10
-                    const result3 = Math.floor(Math.random() * 15) + 5; // hasil 5-19
-                    num1 = num2 * result3; // jaminan hasil bulat
-                } else {
-                    // Hasil DESIMAL - pilih random antara pembagi 2 (hasil .5) atau pembagi 5 (hasil .2/.4/.6/.8)
-                    if (Math.random() < 0.5) {
-                        // Pembagi 2 → hasil .5
-                        num2 = 2;
-                        const result4 = Math.floor(Math.random() * 40) + 10; // hasil 10-49
-                        num1 = num2 * result4 + 1; // +1 agar hasil .5 (contoh: 2×10+1=21, 21÷2=10.5)
-                    } else {
-                        // Pembagi 5 → hasil .2, .4, .6, .8
-                        num2 = 5;
-                        const result5 = Math.floor(Math.random() * 18) + 2; // hasil 2-19
-                        const remainder = [1, 2, 3, 4][Math.floor(Math.random() * 4)]; // sisa 1,2,3,4 (bukan 0 atau 5)
-                        num1 = num2 * result5 + remainder; // (contoh: 5×4+2=22, 22÷5=4.4)
-                    }
-                }
-                break;
-        }
-        return { num1, num2, operator: '÷' };
+// Fungsi untuk mengambil soal acak dari bank kostum soal
+function getRandomCustomQuestion(excludeIndex) {
+    const pool = customQuestions.length > 0 ? customQuestions : defaultQuestions;
+    if (pool.length === 1) {
+        return { item: pool[0], index: 0 };
     }
-    
-    // Default fallback
-    return { num1: 1, num2: 1, operator: '+' };
+    let randomIndex = Math.floor(Math.random() * pool.length);
+    let retries = 0;
+    while (randomIndex === excludeIndex && retries < 20) {
+        randomIndex = Math.floor(Math.random() * pool.length);
+        retries++;
+    }
+    return { item: pool[randomIndex], index: randomIndex };
 }
 
-// Fungsi untuk generate soal baru
+// Fungsi untuk generate soal baru dari Kostum Soal
 function generateNewQuestion(player) {
     let gameScreen;
     if (gameState.currentGameType === 'tarik-tambang') {
@@ -673,39 +768,32 @@ function generateNewQuestion(player) {
     } else {
         gameScreen = '#gameScreenBalapKarung';
     }
-    const questionBox = document.querySelector(`${gameScreen} .${player}-player .question-box`);
+
+    const section = document.querySelector(`${gameScreen} .${player}-player`);
+    const questionBox = section.querySelector('.question-box');
+    const playerState = player === 'left' ? gameState.leftPlayer : gameState.rightPlayer;
+
+    const { item, index } = getRandomCustomQuestion(playerState.lastQuestionIndex);
     
-    // Get last question untuk player ini
-    const lastQuestion = player === 'left' ? 
-        gameState.leftPlayer.lastQuestion : 
-        gameState.rightPlayer.lastQuestion;
-    
-    // Generate soal baru, pastikan tidak sama dengan soal sebelumnya
-    let questionText = '';
-    let maxRetries = 20; // Max 20 kali retry untuk safety
-    let retryCount = 0;
-    
-    do {
-        const { num1, num2, operator } = generateQuestionNumbers();
-        questionText = `${num1} ${operator} ${num2} = ?`;
-        retryCount++;
-        
-        // Jika sudah 20 kali retry dan masih sama, break (untuk avoid infinite loop)
-        if (retryCount >= maxRetries) {
-            break;
+    playerState.lastQuestionIndex = index;
+    playerState.currentQuestionObj = item;
+    playerState.isLocked = false;
+
+    // Update teks soal
+    questionBox.textContent = item.question;
+
+    // Update pilihan jawaban A, B, C, D
+    ['A', 'B', 'C', 'D'].forEach(opt => {
+        const btn = section.querySelector(`.option-btn[data-option="${opt}"]`);
+        if (btn) {
+            btn.classList.remove('opt-btn-correct', 'opt-btn-wrong');
+            const textSpan = btn.querySelector('.opt-text');
+            if (textSpan) {
+                textSpan.textContent = item.options[opt];
+            }
         }
-    } while (questionText === lastQuestion && lastQuestion !== '');
-    
-    // Update UI dan state
-    questionBox.textContent = questionText;
-    
-    // Simpan soal ini sebagai lastQuestion untuk player ini
-    if (player === 'left') {
-        gameState.leftPlayer.lastQuestion = questionText;
-    } else {
-        gameState.rightPlayer.lastQuestion = questionText;
-    }
-    
+    });
+
     updateAnswer(player, '');
 }
 
@@ -720,8 +808,10 @@ function resetGame() {
     gameState.rightPlayer.climbPosition = 0;
     gameState.leftPlayer.racePosition = 0;
     gameState.rightPlayer.racePosition = 0;
-    gameState.leftPlayer.lastQuestion = '';
-    gameState.rightPlayer.lastQuestion = '';
+    gameState.leftPlayer.lastQuestionIndex = -1;
+    gameState.rightPlayer.lastQuestionIndex = -1;
+    gameState.leftPlayer.isLocked = false;
+    gameState.rightPlayer.isLocked = false;
     
     if (gameState.currentGameType === 'tarik-tambang') {
         updateRopePosition();
@@ -778,139 +868,34 @@ function resetGame() {
     
     generateNewQuestion('left');
     generateNewQuestion('right');
-    
-    let gameScreen;
-    if (gameState.currentGameType === 'tarik-tambang') {
-        gameScreen = '#gameScreenTarikTambang';
-    } else if (gameState.currentGameType === 'panjat-pinang') {
-        gameScreen = '#gameScreenPanjatPinang';
-    } else {
-        gameScreen = '#gameScreenBalapKarung';
-    }
-    document.querySelectorAll(`${gameScreen} .answer-box`).forEach(box => box.textContent = '');
 }
 
-// Setup event listeners for both game screens
+// Setup event listeners for all game screens (Pilihan Ganda A, B, C, D)
 function setupEventListeners(gameScreenId) {
     const gameScreen = document.getElementById(gameScreenId);
     
     gameScreen.querySelectorAll('.player-section').forEach(section => {
         const player = section.classList.contains('left-player') ? 'left' : 'right';
     
-    // Number buttons - Use touchstart for faster response on mobile
-    section.querySelectorAll('.number-btn').forEach(btn => {
-        // Prevent double-tap zoom and delay
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-        }, { passive: false });
-        
-        const handleClick = () => {
-            // Use requestAnimationFrame for smooth UI updates
-            requestAnimationFrame(() => {
-                const currentAnswer = player === 'left' ? 
-                    gameState.leftPlayer.answer : 
-                    gameState.rightPlayer.answer;
+        // Option buttons (A, B, C, D) - Use touchstart for faster response on mobile
+        section.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+            }, { passive: false });
             
-            // Limit answer length based on mode and level
-            let maxLength = 2;
+            const handleClick = () => {
+                requestAnimationFrame(() => {
+                    const selectedOption = btn.getAttribute('data-option');
+                    checkAnswer(player, selectedOption);
+                });
+            };
             
-            if (gameState.currentMode === 'addition') {
-                if (gameState.currentLevel === 'beginner') maxLength = 2;  // max: 9+9=18
-                else if (gameState.currentLevel === 'amateur') maxLength = 3;  // max: 99+9=108 or 9+99=108
-                else if (gameState.currentLevel === 'pro') maxLength = 3;  // max: 99+99=198
-            } else if (gameState.currentMode === 'subtraction') {
-                if (gameState.currentLevel === 'beginner') maxLength = 3; // max -8 atau 8 (minus + 1 digit)
-                else if (gameState.currentLevel === 'amateur') maxLength = 4; // max -99 atau 99 (minus + 2 digit)
-                else if (gameState.currentLevel === 'pro') maxLength = 4; // max -89 atau 89 (minus + 2 digit)
-            } else if (gameState.currentMode === 'multiplication') {
-                if (gameState.currentLevel === 'beginner') maxLength = 2; // max 81
-                else if (gameState.currentLevel === 'amateur') maxLength = 3; // max 891 (9×99)
-                else if (gameState.currentLevel === 'pro') maxLength = 4; // max 9801 (99×99)
-            } else if (gameState.currentMode === 'division') {
-                if (gameState.currentLevel === 'beginner') maxLength = 2; // max 20÷5=4 (hasil bulat)
-                else if (gameState.currentLevel === 'amateur') maxLength = 2; // max 99÷9=11 (hasil bulat)
-                else if (gameState.currentLevel === 'pro') maxLength = 4; // max 99÷2=49.5 (desimal: 2 digit + titik + 1 desimal)
-            }
-            
-                if (currentAnswer.length < maxLength) {
-                    updateAnswer(player, currentAnswer + btn.textContent);
-                }
-            });
-        };
-        
-        // Add both click and touchend for better compatibility
-        btn.addEventListener('click', handleClick);
-        btn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            handleClick();
-        }, { passive: false });
-    });
-    
-    // Helper function for button handlers with touch optimization
-    const addOptimizedListener = (selector, handler) => {
-        const btn = section.querySelector(selector);
-        if (!btn) return;
-        
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-        }, { passive: false });
-        
-        const optimizedHandler = () => {
-            requestAnimationFrame(handler);
-        };
-        
-        btn.addEventListener('click', optimizedHandler);
-        btn.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            optimizedHandler();
-        }, { passive: false });
-    };
-    
-    // Minus button - Toggle functionality
-    addOptimizedListener('.minus-btn', () => {
-        const currentAnswer = player === 'left' ? 
-            gameState.leftPlayer.answer : 
-            gameState.rightPlayer.answer;
-        
-        // Toggle minus at the beginning
-        if (currentAnswer.startsWith('-')) {
-            // Remove minus if it exists
-            updateAnswer(player, currentAnswer.substring(1));
-        } else {
-            // Add minus at the beginning
-            updateAnswer(player, '-' + currentAnswer);
-        }
-    });
-    
-    // Decimal button - Add decimal point (only once)
-    addOptimizedListener('.decimal-btn', () => {
-        const currentAnswer = player === 'left' ? 
-            gameState.leftPlayer.answer : 
-            gameState.rightPlayer.answer;
-        
-        // Only add decimal if:
-        // 1. Not already present
-        // 2. There's at least one digit before it
-        // 3. Not at max length
-        if (!currentAnswer.includes('.') && currentAnswer.length > 0 && currentAnswer.length < 4) {
-            updateAnswer(player, currentAnswer + '.');
-        }
-    });
-    
-    // Clear button
-    addOptimizedListener('.clear-btn', () => {
-        updateAnswer(player, '');
-    });
-    
-    // Go button
-    addOptimizedListener('.go-btn', () => {
-        checkAnswer(player);
-    });
-    
-    // Go button alternative (for subtraction mode)
-    addOptimizedListener('.go-btn-alt', () => {
-        checkAnswer(player);
-    });
+            btn.addEventListener('click', handleClick);
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                handleClick();
+            }, { passive: false });
+        });
     });
 }
 
@@ -922,104 +907,35 @@ setupEventListeners('gameScreenBalapKarung');
 // Fungsi untuk menampilkan menu game type (Tarik Tambang / Panjat Pinang / Balap Karung)
 function showGameTypeMenu() {
     document.getElementById('gameTypeMenu').style.display = 'flex';
-    document.getElementById('mathModeMenuTarikTambang').style.display = 'none';
-    document.getElementById('mathModeMenuPanjatPinang').style.display = 'none';
-    document.getElementById('mathModeMenuBalapKarung').style.display = 'none';
-    document.getElementById('levelMenuAddition').style.display = 'none';
-    document.getElementById('levelMenuSubtraction').style.display = 'none';
-    document.getElementById('levelMenuMultiplication').style.display = 'none';
-    document.getElementById('levelMenuDivision').style.display = 'none';
+    document.getElementById('customQuestionMenu').style.display = 'none';
     document.getElementById('gameScreenTarikTambang').style.display = 'none';
     document.getElementById('gameScreenPanjatPinang').style.display = 'none';
     document.getElementById('gameScreenBalapKarung').style.display = 'none';
     const homeBtn = document.getElementById('homeBtn');
     if (homeBtn) homeBtn.style.display = 'none';
+    updateQuestionCountUI();
 }
 
-// Fungsi untuk memilih game type
+// Fungsi untuk menampilkan menu Kostum Soal
+function showCustomQuestionMenu() {
+    document.getElementById('gameTypeMenu').style.display = 'none';
+    document.getElementById('customQuestionMenu').style.display = 'flex';
+    document.getElementById('gameScreenTarikTambang').style.display = 'none';
+    document.getElementById('gameScreenPanjatPinang').style.display = 'none';
+    document.getElementById('gameScreenBalapKarung').style.display = 'none';
+    const homeBtn = document.getElementById('homeBtn');
+    if (homeBtn) homeBtn.style.display = 'none';
+    renderCustomQuestionList();
+}
+
+// Fungsi untuk memilih game type dan langsung mulai countdown
 function selectGameType(gameType) {
+    if (customQuestions.length === 0) {
+        alert('Daftar soal masih kosong! Silakan tambahkan soal terlebih dahulu di menu Kelola Kostum Soal.');
+        showCustomQuestionMenu();
+        return;
+    }
     gameState.currentGameType = gameType;
-    if (gameType === 'tarik-tambang') {
-        showMathModeMenu('tarik-tambang');
-    } else if (gameType === 'panjat-pinang') {
-        showMathModeMenu('panjat-pinang');
-    } else if (gameType === 'balap-karung') {
-        showMathModeMenu('balap-karung');
-    }
-}
-
-// Fungsi untuk menampilkan menu math mode
-function showMathModeMenu(gameType) {
-    document.getElementById('gameTypeMenu').style.display = 'none';
-    document.getElementById('levelMenuAddition').style.display = 'none';
-    document.getElementById('levelMenuSubtraction').style.display = 'none';
-    document.getElementById('levelMenuMultiplication').style.display = 'none';
-    document.getElementById('levelMenuDivision').style.display = 'none';
-    document.getElementById('gameScreenTarikTambang').style.display = 'none';
-    document.getElementById('gameScreenPanjatPinang').style.display = 'none';
-    document.getElementById('gameScreenBalapKarung').style.display = 'none';
-    const homeBtn = document.getElementById('homeBtn');
-    if (homeBtn) homeBtn.style.display = 'none';
-    
-    if (gameType === 'tarik-tambang') {
-        document.getElementById('mathModeMenuTarikTambang').style.display = 'flex';
-        document.getElementById('mathModeMenuPanjatPinang').style.display = 'none';
-        document.getElementById('mathModeMenuBalapKarung').style.display = 'none';
-    } else if (gameType === 'panjat-pinang') {
-        document.getElementById('mathModeMenuTarikTambang').style.display = 'none';
-        document.getElementById('mathModeMenuPanjatPinang').style.display = 'flex';
-        document.getElementById('mathModeMenuBalapKarung').style.display = 'none';
-    } else if (gameType === 'balap-karung') {
-        document.getElementById('mathModeMenuTarikTambang').style.display = 'none';
-        document.getElementById('mathModeMenuPanjatPinang').style.display = 'none';
-        document.getElementById('mathModeMenuBalapKarung').style.display = 'flex';
-    }
-}
-
-// Fungsi untuk memilih math mode
-function selectMathMode(mode) {
-    gameState.currentMode = mode;
-    if (mode === 'addition') {
-        showLevelMenu('addition');
-    } else if (mode === 'subtraction') {
-        showLevelMenu('subtraction');
-    } else if (mode === 'multiplication') {
-        showLevelMenu('multiplication');
-    } else if (mode === 'division') {
-        showLevelMenu('division');
-    }
-}
-
-// Fungsi untuk menampilkan menu level
-function showLevelMenu(mode) {
-    document.getElementById('gameTypeMenu').style.display = 'none';
-    document.getElementById('mathModeMenuTarikTambang').style.display = 'none';
-    document.getElementById('mathModeMenuPanjatPinang').style.display = 'none';
-    document.getElementById('mathModeMenuBalapKarung').style.display = 'none';
-    document.getElementById('levelMenuAddition').style.display = 'none';
-    document.getElementById('levelMenuSubtraction').style.display = 'none';
-    document.getElementById('levelMenuMultiplication').style.display = 'none';
-    document.getElementById('levelMenuDivision').style.display = 'none';
-    document.getElementById('gameScreenTarikTambang').style.display = 'none';
-    document.getElementById('gameScreenPanjatPinang').style.display = 'none';
-    document.getElementById('gameScreenBalapKarung').style.display = 'none';
-    const homeBtn = document.getElementById('homeBtn');
-    if (homeBtn) homeBtn.style.display = 'none';
-    
-    if (mode === 'addition') {
-        document.getElementById('levelMenuAddition').style.display = 'flex';
-    } else if (mode === 'subtraction') {
-        document.getElementById('levelMenuSubtraction').style.display = 'flex';
-    } else if (mode === 'multiplication') {
-        document.getElementById('levelMenuMultiplication').style.display = 'flex';
-    } else if (mode === 'division') {
-        document.getElementById('levelMenuDivision').style.display = 'flex';
-    }
-}
-
-// Fungsi untuk memilih level dan mulai game
-function selectLevel(level) {
-    gameState.currentLevel = level;
     showCountdown();
 }
 
@@ -1095,13 +1011,7 @@ function showCountdown() {
 // Fungsi untuk memulai game
 function startGame() {
     document.getElementById('gameTypeMenu').style.display = 'none';
-    document.getElementById('mathModeMenuTarikTambang').style.display = 'none';
-    document.getElementById('mathModeMenuPanjatPinang').style.display = 'none';
-    document.getElementById('mathModeMenuBalapKarung').style.display = 'none';
-    document.getElementById('levelMenuAddition').style.display = 'none';
-    document.getElementById('levelMenuSubtraction').style.display = 'none';
-    document.getElementById('levelMenuMultiplication').style.display = 'none';
-    document.getElementById('levelMenuDivision').style.display = 'none';
+    document.getElementById('customQuestionMenu').style.display = 'none';
     const homeBtn = document.getElementById('homeBtn');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     if (homeBtn) homeBtn.style.display = 'flex';
@@ -1122,51 +1032,7 @@ function startGame() {
         document.getElementById('gameScreenBalapKarung').style.display = 'flex';
     }
     
-    // Show/hide minus button based on mode
-    updateKeypadLayout();
-    
     resetGame();
-}
-
-// Fungsi untuk update keypad layout based on mode
-function updateKeypadLayout() {
-    const minusButtons = document.querySelectorAll('.minus-btn');
-    const decimalButtons = document.querySelectorAll('.decimal-btn');
-    const goButtons = document.querySelectorAll('.go-btn');
-    const row5s = document.querySelectorAll('.keypad-row-5');
-    const row4s = document.querySelectorAll('.keypad-row-4');
-    
-    if (gameState.currentMode === 'subtraction') {
-        // Subtraction mode: [−] [0] [C] then [Go] below
-        minusButtons.forEach(btn => btn.classList.add('visible'));
-        decimalButtons.forEach(btn => btn.classList.remove('visible'));
-        goButtons.forEach(btn => btn.classList.add('hidden'));
-        row5s.forEach(row => row.classList.add('visible'));
-        row4s.forEach(row => {
-            row.classList.add('subtraction-mode');
-            row.classList.remove('division-mode');
-        });
-    } else if (gameState.currentMode === 'division') {
-        // Division mode: [.] [0] [C] then [Go] below
-        minusButtons.forEach(btn => btn.classList.remove('visible'));
-        decimalButtons.forEach(btn => btn.classList.add('visible'));
-        goButtons.forEach(btn => btn.classList.add('hidden'));
-        row5s.forEach(row => row.classList.add('visible'));
-        row4s.forEach(row => {
-            row.classList.remove('subtraction-mode');
-            row.classList.add('division-mode');
-        });
-    } else {
-        // Addition/Multiplication mode: [C] [0] [Go]
-        minusButtons.forEach(btn => btn.classList.remove('visible'));
-        decimalButtons.forEach(btn => btn.classList.remove('visible'));
-        goButtons.forEach(btn => btn.classList.remove('hidden'));
-        row5s.forEach(row => row.classList.remove('visible'));
-        row4s.forEach(row => {
-            row.classList.remove('subtraction-mode');
-            row.classList.remove('division-mode');
-        });
-    }
 }
 
 // Fungsi untuk kembali ke menu game type
@@ -1174,12 +1040,8 @@ function backToGameTypeMenu() {
     showGameTypeMenu();
 }
 
-// Fungsi untuk kembali ke menu utama (dari level selection)
-function backToMainMenu() {
-    showMathModeMenu(gameState.currentGameType);
-}
-
-// Initialize - tampilkan menu game type
+// Initialize - muat kostum soal dan tampilkan menu game type
+loadCustomQuestions();
 showGameTypeMenu();
 
 // ============================================
@@ -1387,7 +1249,7 @@ if (window.visualViewport) {
     });
 }
 
-// Prevent default touch behaviors
+// Prevent default touch behaviors (kecuali pada input/textarea di menu kostum soal)
 document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
 document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
 document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });

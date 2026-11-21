@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#a8d8ff">
     <meta name="format-detection" content="telephone=no">
-    <title>Permainan Matematika</title>
+    <title>Permainan Kuis Edukasi</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="styles.css">
     
@@ -45,11 +45,11 @@
         <img src="https://game.afifedu.com/icon_home.png" alt="Home" class="home-icon">
     </button>
 
-    <!-- Menu Game Mode Selection (Tarik Tambang / Panjat Pinang) -->
+    <!-- Menu Game Mode Selection (Tarik Tambang / Panjat Pinang / Balap Karung) -->
     <div id="gameTypeMenu" class="menu-screen">
         <div class="menu-container">
-            <h1 class="menu-title">Permainan Matematika</h1>
-            <p class="menu-subtitle">Pilih Tema Permainan</p>
+            <h1 class="menu-title">Permainan Kuis Edukasi</h1>
+            <p class="menu-subtitle">Pilih Tema Permainan (<span id="questionCountBadge">0 Soal Tersedia</span>)</p>
             <div class="menu-buttons">
                 <button class="menu-btn game-type-btn tarik-tambang" onclick="selectGameType('tarik-tambang')">
                     <img src="https://game.afifedu.com/icon_tarik.png" alt="Tarik Tambang" class="menu-icon">
@@ -66,184 +66,76 @@
                     <img src="https://game.afifedu.com/icon_balap_karung.png" alt="Balap Karung" class="menu-icon">
                     <span>Balap Karung</span>
                 </button>
+                <button class="menu-btn custom-soal-btn" onclick="showCustomQuestionMenu()">
+                    📝 Kelola Kostum Soal
+                </button>
             </div>
         </div>
         <div class="copyright-footer">
-            <p>© AfifEdu 2025 | <span id="version-indicator">v2.0.0</span></p>
+            <p>© AfifEdu 2025 | <span id="version-indicator">v2.0.0 - Custom Quiz</span></p>
             <p style="margin-top: 5px; font-size: 0.9em; opacity: 0.8;">Created By Herwin Hamid</p>
         </div>
     </div>
 
-    <!-- Menu Math Mode Selection for Tarik Tambang -->
-    <div id="mathModeMenuTarikTambang" class="menu-screen">
-        <div class="menu-container">
-            <h1 class="menu-title">Tarik Tambang Matematika</h1>
-            <p class="menu-subtitle">Pilih Jenis Operasi</p>
-            <div class="menu-buttons">
-                <button class="menu-btn" onclick="selectMathMode('addition')">
-                    ➕ Penjumlahan
-                </button>
-                <button class="menu-btn" onclick="selectMathMode('subtraction')">
-                    ➖ Pengurangan
-                </button>
-                <button class="menu-btn" onclick="selectMathMode('multiplication')">
-                    ✖️ Perkalian
-                </button>
-                <button class="menu-btn" onclick="selectMathMode('division')">
-                    ➗ Pembagian
-                </button>
-            </div>
-            <button class="back-btn" onclick="backToGameTypeMenu()">← Kembali</button>
-        </div>
-    </div>
+    <!-- Menu Kostum Soal (Untuk Semua Mata Pelajaran) -->
+    <div id="customQuestionMenu" class="menu-screen">
+        <div class="menu-container custom-soal-container">
+            <h1 class="menu-title">Kostum Soal Pelajaran</h1>
+            <p class="menu-subtitle">Masukkan soal pilihan ganda (A, B, C, D) untuk semua mata pelajaran</p>
+            
+            <div class="custom-soal-content">
+                <!-- Form Tambah Soal -->
+                <div class="soal-form-card">
+                    <h3>Tambah Soal Baru</h3>
+                    <input type="text" id="inputQuestionText" class="soal-input" placeholder="Tulis pertanyaan di sini (contoh: Ibukota Indonesia adalah...)">
+                    <div class="options-input-grid">
+                        <input type="text" id="inputOptionA" class="soal-input" placeholder="Pilihan A">
+                        <input type="text" id="inputOptionB" class="soal-input" placeholder="Pilihan B">
+                        <input type="text" id="inputOptionC" class="soal-input" placeholder="Pilihan C">
+                        <input type="text" id="inputOptionD" class="soal-input" placeholder="Pilihan D">
+                    </div>
+                    <div class="form-bottom-row">
+                        <label for="inputCorrectOption">Kunci Jawaban:</label>
+                        <select id="inputCorrectOption" class="soal-select">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                        <button type="button" class="add-soal-btn" onclick="addCustomQuestion()">+ Tambah Soal</button>
+                    </div>
+                </div>
 
-    <!-- Menu Math Mode Selection for Panjat Pinang -->
-    <div id="mathModeMenuPanjatPinang" class="menu-screen">
-        <div class="menu-container">
-            <h1 class="menu-title">Panjat Pinang Matematika</h1>
-            <p class="menu-subtitle">Pilih Jenis Operasi</p>
-            <div class="menu-buttons">
-                <button class="menu-btn" onclick="selectMathMode('addition')">
-                    ➕ Penjumlahan
-                </button>
-                <button class="menu-btn" onclick="selectMathMode('subtraction')">
-                    ➖ Pengurangan
-                </button>
-                <button class="menu-btn" onclick="selectMathMode('multiplication')">
-                    ✖️ Perkalian
-                </button>
-                <button class="menu-btn" onclick="selectMathMode('division')">
-                    ➗ Pembagian
-                </button>
-            </div>
-            <button class="back-btn" onclick="backToGameTypeMenu()">← Kembali</button>
-        </div>
-    </div>
+                <!-- Import Massal & Daftar Soal -->
+                <div class="soal-list-card">
+                    <div class="soal-list-header">
+                        <h3>Daftar Soal (<span id="totalCustomQuestions">0</span>)</h3>
+                        <div class="soal-actions-group">
+                            <button type="button" class="mini-action-btn import-btn" onclick="toggleBulkImport()">📥 Import Teks</button>
+                            <button type="button" class="mini-action-btn reset-default-btn" onclick="resetDefaultQuestions()">🔄 Soal Contoh</button>
+                            <button type="button" class="mini-action-btn clear-all-btn" onclick="clearAllCustomQuestions()">🗑️ Hapus Semua</button>
+                        </div>
+                    </div>
 
-    <!-- Menu Math Mode Selection for Balap Karung -->
-    <div id="mathModeMenuBalapKarung" class="menu-screen">
-        <div class="menu-container">
-            <h1 class="menu-title">Balap Karung Matematika</h1>
-            <p class="menu-subtitle">Pilih Jenis Operasi</p>
-            <div class="menu-buttons">
-                <button class="menu-btn" onclick="selectMathMode('addition')">
-                    ➕ Penjumlahan
-                </button>
-                <button class="menu-btn" onclick="selectMathMode('subtraction')">
-                    ➖ Pengurangan
-                </button>
-                <button class="menu-btn" onclick="selectMathMode('multiplication')">
-                    ✖️ Perkalian
-                </button>
-                <button class="menu-btn" onclick="selectMathMode('division')">
-                    ➗ Pembagian
-                </button>
-            </div>
-            <button class="back-btn" onclick="backToGameTypeMenu()">← Kembali</button>
-        </div>
-    </div>
+                    <!-- Box Import Massal (Hidden by default) -->
+                    <div id="bulkImportBox" class="bulk-import-box" style="display: none;">
+                        <p class="bulk-hint">Format per baris: <b>Pertanyaan | Opsi A | Opsi B | Opsi C | Opsi D | Kunci (A/B/C/D)</b></p>
+                        <textarea id="bulkImportText" class="bulk-textarea" placeholder="Contoh:
+Planet terdekat dengan matahari adalah? | Venus | Merkurius | Bumi | Mars | B
+2 + 5 x 2 = ? | 14 | 12 | 10 | 7 | B"></textarea>
+                        <div class="bulk-btn-row">
+                            <button type="button" class="add-soal-btn" onclick="processBulkImport()">Simpan Import</button>
+                            <button type="button" class="mini-action-btn" onclick="toggleBulkImport()">Batal</button>
+                        </div>
+                    </div>
 
-    <!-- Menu Level Selection - Addition -->
-    <div id="levelMenuAddition" class="menu-screen">
-        <div class="menu-container compact">
-            <h1 class="menu-title">Pilih Level Kesulitan</h1>
-            <p class="menu-subtitle">Mode: Penjumlahan</p>
-            <div class="menu-buttons">
-                <button class="menu-btn level-btn beginner" onclick="selectLevel('beginner')">
-                    <span class="level-icon">⭐</span>
-                    <span class="level-name">Beginner</span>
-                    <span class="level-desc">1 Digit + 1 Digit</span>
-                </button>
-                <button class="menu-btn level-btn amateur" onclick="selectLevel('amateur')">
-                    <span class="level-icon">⭐⭐</span>
-                    <span class="level-name">Amateur</span>
-                    <span class="level-desc">1 Digit + 2 Digit (Mixed)</span>
-                </button>
-                <button class="menu-btn level-btn pro" onclick="selectLevel('pro')">
-                    <span class="level-icon">⭐⭐⭐</span>
-                    <span class="level-name">Pro</span>
-                    <span class="level-desc">2 Digit + 2 Digit</span>
-                </button>
+                    <div id="customQuestionList" class="custom-question-list">
+                        <!-- List soal akan dirender oleh JS -->
+                    </div>
+                </div>
             </div>
-            <button class="back-btn" onclick="backToMainMenu()">← Kembali</button>
-        </div>
-    </div>
 
-    <!-- Menu Level Selection - Subtraction -->
-    <div id="levelMenuSubtraction" class="menu-screen">
-        <div class="menu-container compact">
-            <h1 class="menu-title">Pilih Level Kesulitan</h1>
-            <p class="menu-subtitle">Mode: Pengurangan</p>
-            <div class="menu-buttons">
-                <button class="menu-btn level-btn beginner" onclick="selectLevel('beginner')">
-                    <span class="level-icon">⭐</span>
-                    <span class="level-name">Beginner</span>
-                    <span class="level-desc">1 Digit - 1 Digit</span>
-                </button>
-                <button class="menu-btn level-btn amateur" onclick="selectLevel('amateur')">
-                    <span class="level-icon">⭐⭐</span>
-                    <span class="level-name">Amateur</span>
-                    <span class="level-desc">2 Digit - 1 Digit (Mixed)</span>
-                </button>
-                <button class="menu-btn level-btn pro" onclick="selectLevel('pro')">
-                    <span class="level-icon">⭐⭐⭐</span>
-                    <span class="level-name">Pro</span>
-                    <span class="level-desc">2 Digit - 2 Digit</span>
-                </button>
-            </div>
-            <button class="back-btn" onclick="backToMainMenu()">← Kembali</button>
-        </div>
-    </div>
-
-    <!-- Menu Level Selection - Multiplication -->
-    <div id="levelMenuMultiplication" class="menu-screen">
-        <div class="menu-container compact">
-            <h1 class="menu-title">Pilih Level Kesulitan</h1>
-            <p class="menu-subtitle">Mode: Perkalian</p>
-            <div class="menu-buttons">
-                <button class="menu-btn level-btn beginner" onclick="selectLevel('beginner')">
-                    <span class="level-icon">⭐</span>
-                    <span class="level-name">Beginner</span>
-                    <span class="level-desc">1 Digit × 1 Digit</span>
-                </button>
-                <button class="menu-btn level-btn amateur" onclick="selectLevel('amateur')">
-                    <span class="level-icon">⭐⭐</span>
-                    <span class="level-name">Amateur</span>
-                    <span class="level-desc">1 Digit × 2 Digit</span>
-                </button>
-                <button class="menu-btn level-btn pro" onclick="selectLevel('pro')">
-                    <span class="level-icon">⭐⭐⭐</span>
-                    <span class="level-name">Pro</span>
-                    <span class="level-desc">2 Digit × 2 Digit</span>
-                </button>
-            </div>
-            <button class="back-btn" onclick="backToMainMenu()">← Kembali</button>
-        </div>
-    </div>
-
-    <!-- Menu Level Selection - Division -->
-    <div id="levelMenuDivision" class="menu-screen">
-        <div class="menu-container compact">
-            <h1 class="menu-title">Pilih Level Kesulitan</h1>
-            <p class="menu-subtitle">Mode: Pembagian</p>
-            <div class="menu-buttons">
-                <button class="menu-btn level-btn beginner" onclick="selectLevel('beginner')">
-                    <span class="level-icon">⭐</span>
-                    <span class="level-name">Beginner</span>
-                    <span class="level-desc">Bulat (1-20 ÷ 1-5)</span>
-                </button>
-                <button class="menu-btn level-btn amateur" onclick="selectLevel('amateur')">
-                    <span class="level-icon">⭐⭐</span>
-                    <span class="level-name">Amateur</span>
-                    <span class="level-desc">Bulat (10-99 ÷ 1-9)</span>
-                </button>
-                <button class="menu-btn level-btn pro" onclick="selectLevel('pro')">
-                    <span class="level-icon">⭐⭐⭐</span>
-                    <span class="level-name">Pro</span>
-                    <span class="level-desc">Bulat / Desimal (10-99 ÷ 2-10)</span>
-                </button>
-            </div>
-            <button class="back-btn" onclick="backToMainMenu()">← Kembali</button>
+            <button class="back-btn" onclick="backToGameTypeMenu()">← Simpan & Kembali</button>
         </div>
     </div>
 
@@ -251,77 +143,35 @@
     <div id="gameScreenTarikTambang" class="game-container">
         <!-- Bagian Pemain Kiri -->
         <div class="player-section left-player">
-            <div class="question-box">1 + 8 = ?</div>
-            <div class="answer-box"></div>
-            <div class="keypad">
-                <div class="keypad-row">
-                    <button class="number-btn">1</button>
-                    <button class="number-btn">2</button>
-                    <button class="number-btn">3</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">4</button>
-                    <button class="number-btn">5</button>
-                    <button class="number-btn">6</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">7</button>
-                    <button class="number-btn">8</button>
-                    <button class="number-btn">9</button>
-                </div>
-                <div class="keypad-row keypad-row-4">
-                    <button class="minus-btn">−</button>
-                    <button class="decimal-btn">.</button>
-                    <button class="number-btn">0</button>
-                    <button class="clear-btn">C</button>
-                    <button class="go-btn">Go</button>
-                </div>
-                <div class="keypad-row keypad-row-5">
-                    <button class="go-btn-alt">Go</button>
-                </div>
+            <div class="question-box">Memuat soal...</div>
+            <div class="answer-box">Pilih Jawaban</div>
+            <div class="options-pad">
+                <button class="option-btn" data-option="A"><span class="opt-badge">A</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="B"><span class="opt-badge">B</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
         </div>
 
         <!-- Bagian Tengah -->
         <div class="center-section">
-            <h1>Tarik Tambang Matematika</h1>
+            <h1>Tarik Tambang Kuis</h1>
             <div class="game-field">
                 <div class="tug-of-war-scene"></div>
                 <div class="center-line"></div>
             </div>
-            <p class="instruction">Jawab soal untuk menarik tali!</p>
+            <p class="instruction">Jawab soal dengan benar untuk menarik tali!</p>
         </div>
 
         <!-- Bagian Pemain Kanan -->
         <div class="player-section right-player">
-            <div class="question-box">9 + 4 = ?</div>
-            <div class="answer-box"></div>
-            <div class="keypad">
-                <div class="keypad-row">
-                    <button class="number-btn">1</button>
-                    <button class="number-btn">2</button>
-                    <button class="number-btn">3</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">4</button>
-                    <button class="number-btn">5</button>
-                    <button class="number-btn">6</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">7</button>
-                    <button class="number-btn">8</button>
-                    <button class="number-btn">9</button>
-                </div>
-                <div class="keypad-row keypad-row-4">
-                    <button class="minus-btn">−</button>
-                    <button class="decimal-btn">.</button>
-                    <button class="number-btn">0</button>
-                    <button class="clear-btn">C</button>
-                    <button class="go-btn">Go</button>
-                </div>
-                <div class="keypad-row keypad-row-5">
-                    <button class="go-btn-alt">Go</button>
-                </div>
+            <div class="question-box">Memuat soal...</div>
+            <div class="answer-box">Pilih Jawaban</div>
+            <div class="options-pad">
+                <button class="option-btn" data-option="A"><span class="opt-badge">A</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="B"><span class="opt-badge">B</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
         </div>
     </div>
@@ -330,41 +180,20 @@
     <div id="gameScreenPanjatPinang" class="game-container panjat-pinang-game">
         <!-- Bagian Pemain Kiri -->
         <div class="player-section left-player">
-            <div class="question-box">1 + 8 = ?</div>
-            <div class="answer-box"></div>
-            <div class="keypad">
-                <div class="keypad-row">
-                    <button class="number-btn">1</button>
-                    <button class="number-btn">2</button>
-                    <button class="number-btn">3</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">4</button>
-                    <button class="number-btn">5</button>
-                    <button class="number-btn">6</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">7</button>
-                    <button class="number-btn">8</button>
-                    <button class="number-btn">9</button>
-                </div>
-                <div class="keypad-row keypad-row-4">
-                    <button class="minus-btn">−</button>
-                    <button class="decimal-btn">.</button>
-                    <button class="number-btn">0</button>
-                    <button class="clear-btn">C</button>
-                    <button class="go-btn">Go</button>
-                </div>
-                <div class="keypad-row keypad-row-5">
-                    <button class="go-btn-alt">Go</button>
-                </div>
+            <div class="question-box">Memuat soal...</div>
+            <div class="answer-box">Pilih Jawaban</div>
+            <div class="options-pad">
+                <button class="option-btn" data-option="A"><span class="opt-badge">A</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="B"><span class="opt-badge">B</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
             <div class="score-indicator">Benar: <span class="score-value">0/7</span></div>
         </div>
 
         <!-- Bagian Tengah -->
         <div class="center-section panjat-pinang-center">
-            <h1>Panjat Pinang Matematika</h1>
+            <h1>Panjat Pinang Kuis</h1>
             <div class="game-field panjat-pinang-field">
                 <!-- Tiang Kiri -->
                 <div class="pole-container left-pole">
@@ -389,34 +218,13 @@
 
         <!-- Bagian Pemain Kanan -->
         <div class="player-section right-player">
-            <div class="question-box">9 + 4 = ?</div>
-            <div class="answer-box"></div>
-            <div class="keypad">
-                <div class="keypad-row">
-                    <button class="number-btn">1</button>
-                    <button class="number-btn">2</button>
-                    <button class="number-btn">3</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">4</button>
-                    <button class="number-btn">5</button>
-                    <button class="number-btn">6</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">7</button>
-                    <button class="number-btn">8</button>
-                    <button class="number-btn">9</button>
-                </div>
-                <div class="keypad-row keypad-row-4">
-                    <button class="minus-btn">−</button>
-                    <button class="decimal-btn">.</button>
-                    <button class="number-btn">0</button>
-                    <button class="clear-btn">C</button>
-                    <button class="go-btn">Go</button>
-                </div>
-                <div class="keypad-row keypad-row-5">
-                    <button class="go-btn-alt">Go</button>
-                </div>
+            <div class="question-box">Memuat soal...</div>
+            <div class="answer-box">Pilih Jawaban</div>
+            <div class="options-pad">
+                <button class="option-btn" data-option="A"><span class="opt-badge">A</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="B"><span class="opt-badge">B</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
             <div class="score-indicator">Benar: <span class="score-value">0/7</span></div>
         </div>
@@ -426,41 +234,20 @@
     <div id="gameScreenBalapKarung" class="game-container balap-karung-game">
         <!-- Bagian Pemain Kiri -->
         <div class="player-section left-player">
-            <div class="question-box">1 + 8 = ?</div>
-            <div class="answer-box"></div>
-            <div class="keypad">
-                <div class="keypad-row">
-                    <button class="number-btn">1</button>
-                    <button class="number-btn">2</button>
-                    <button class="number-btn">3</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">4</button>
-                    <button class="number-btn">5</button>
-                    <button class="number-btn">6</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">7</button>
-                    <button class="number-btn">8</button>
-                    <button class="number-btn">9</button>
-                </div>
-                <div class="keypad-row keypad-row-4">
-                    <button class="minus-btn">−</button>
-                    <button class="decimal-btn">.</button>
-                    <button class="number-btn">0</button>
-                    <button class="clear-btn">C</button>
-                    <button class="go-btn">Go</button>
-                </div>
-                <div class="keypad-row keypad-row-5">
-                    <button class="go-btn-alt">Go</button>
-                </div>
+            <div class="question-box">Memuat soal...</div>
+            <div class="answer-box">Pilih Jawaban</div>
+            <div class="options-pad">
+                <button class="option-btn" data-option="A"><span class="opt-badge">A</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="B"><span class="opt-badge">B</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
             <div class="score-indicator">Posisi: <span class="score-value">0/10</span></div>
         </div>
 
         <!-- Bagian Tengah -->
         <div class="center-section balap-karung-center">
-            <h1>Balap Karung Matematika</h1>
+            <h1>Balap Karung Kuis</h1>
             <div class="game-field balap-karung-field">
                 <!-- Track -->
                 <div class="race-track">
@@ -484,34 +271,13 @@
 
         <!-- Bagian Pemain Kanan -->
         <div class="player-section right-player">
-            <div class="question-box">9 + 4 = ?</div>
-            <div class="answer-box"></div>
-            <div class="keypad">
-                <div class="keypad-row">
-                    <button class="number-btn">1</button>
-                    <button class="number-btn">2</button>
-                    <button class="number-btn">3</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">4</button>
-                    <button class="number-btn">5</button>
-                    <button class="number-btn">6</button>
-                </div>
-                <div class="keypad-row">
-                    <button class="number-btn">7</button>
-                    <button class="number-btn">8</button>
-                    <button class="number-btn">9</button>
-                </div>
-                <div class="keypad-row keypad-row-4">
-                    <button class="minus-btn">−</button>
-                    <button class="decimal-btn">.</button>
-                    <button class="number-btn">0</button>
-                    <button class="clear-btn">C</button>
-                    <button class="go-btn">Go</button>
-                </div>
-                <div class="keypad-row keypad-row-5">
-                    <button class="go-btn-alt">Go</button>
-                </div>
+            <div class="question-box">Memuat soal...</div>
+            <div class="answer-box">Pilih Jawaban</div>
+            <div class="options-pad">
+                <button class="option-btn" data-option="A"><span class="opt-badge">A</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="B"><span class="opt-badge">B</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
+                <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
             <div class="score-indicator">Posisi: <span class="score-value">0/10</span></div>
         </div>

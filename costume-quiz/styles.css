@@ -3200,3 +3200,398 @@ html {
         font-size: 0.95em;
     }
 }
+
+/* ============================================ */
+/* CUSTOM SOAL & MULTIPLE CHOICE OPTIONS STYLES */
+/* ============================================ */
+
+.custom-soal-btn {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    margin-top: clamp(4px, 0.8vh, 10px);
+}
+
+.custom-soal-btn:hover {
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+}
+
+.custom-soal-container {
+    max-width: min(92vw, 950px) !important;
+    width: 92vw !important;
+    max-height: 92vh !important;
+    padding: clamp(16px, 2.5vh, 30px) clamp(18px, 3vw, 40px) !important;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 1.5vh, 16px);
+}
+
+.custom-soal-content {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: clamp(12px, 2vw, 24px);
+    text-align: left;
+    overflow: hidden;
+    flex: 1;
+    min-height: 0;
+}
+
+@media screen and (max-width: 820px) {
+    .custom-soal-content {
+        grid-template-columns: 1fr;
+        overflow-y: auto;
+        touch-action: pan-y;
+    }
+}
+
+.soal-form-card,
+.soal-list-card {
+    background: rgba(255, 255, 255, 0.72);
+    border-radius: 18px;
+    padding: clamp(12px, 1.8vh, 20px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+}
+
+.soal-form-card h3,
+.soal-list-card h3 {
+    font-size: clamp(0.95rem, 1.6vw, 1.15rem);
+    color: #1a237e;
+    margin: 0;
+}
+
+.soal-input,
+.soal-select,
+.bulk-textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(26, 35, 126, 0.25);
+    background: rgba(255, 255, 255, 0.95);
+    font-size: 0.9rem;
+    color: #1e293b;
+    outline: none;
+    -webkit-user-select: text;
+    user-select: text;
+    touch-action: auto;
+}
+
+.soal-input:focus,
+.soal-select:focus,
+.bulk-textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.options-input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.form-bottom-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 2px;
+}
+
+.form-bottom-row label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+}
+
+.form-bottom-row .soal-select {
+    width: 75px;
+    flex-shrink: 0;
+    font-weight: 700;
+}
+
+.add-soal-btn {
+    flex: 1;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.add-soal-btn:hover {
+    background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+.soal-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.soal-actions-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.mini-action-btn {
+    height: auto;
+    flex: none;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    border-radius: 8px;
+    background: #e2e8f0;
+    color: #1e293b;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.mini-action-btn.import-btn {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.mini-action-btn.reset-default-btn {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.mini-action-btn.clear-all-btn {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.bulk-import-box {
+    background: rgba(241, 245, 249, 0.95);
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px dashed #64748b;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bulk-hint {
+    font-size: 0.78rem;
+    color: #334155;
+    margin: 0;
+}
+
+.bulk-textarea {
+    min-height: 85px;
+    resize: vertical;
+    font-size: 0.82rem;
+}
+
+.bulk-btn-row {
+    display: flex;
+    gap: 8px;
+}
+
+.custom-question-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+    max-height: 320px;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+}
+
+.soal-item {
+    background: white;
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.soal-item-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.soal-item-q {
+    font-size: 0.88rem;
+    color: #0f172a;
+    margin-bottom: 5px;
+    word-wrap: break-word;
+}
+
+.soal-item-opts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 10px;
+    font-size: 0.78rem;
+    color: #475569;
+}
+
+.soal-item-opts .opt-correct {
+    color: #059669;
+    font-weight: 700;
+}
+
+.delete-soal-btn {
+    flex: none;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    min-height: 30px;
+    border-radius: 8px;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 0.85rem;
+    padding: 0;
+    box-shadow: none;
+}
+
+.empty-soal-msg {
+    text-align: center;
+    padding: 25px 10px;
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+/* Override question-box & answer-box for text-based lesson questions */
+.player-section .question-box {
+    font-size: clamp(0.9rem, 1.45vw, 1.25rem);
+    letter-spacing: 0.2px;
+    line-height: 1.35;
+    padding: clamp(12px, 1.8vh, 20px) clamp(12px, 1.4vw, 18px);
+    min-height: clamp(75px, 13vh, 130px);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.player-section .answer-box {
+    height: clamp(38px, 5.5vh, 52px);
+    font-size: clamp(0.82rem, 1.25vw, 1.05rem);
+    letter-spacing: 0.3px;
+    padding: 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Options Pad (A, B, C, D) replacing numeric keypad */
+.options-pad {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 1.2vh, 14px);
+    width: 100%;
+    padding: clamp(10px, 1.5vh, 18px);
+    background: rgba(255, 255, 255, 0.28);
+    border-radius: clamp(12px, 1.5vw, 22px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.option-btn {
+    width: 100%;
+    height: auto;
+    min-height: clamp(46px, 6.8vh, 68px);
+    padding: clamp(8px, 1.2vh, 14px) clamp(12px, 1.4vw, 18px);
+    border-radius: clamp(10px, 1.4vw, 18px);
+    background: #ffffff;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    text-align: left;
+    font-size: clamp(0.85rem, 1.35vw, 1.15rem);
+    font-weight: 600;
+    line-height: 1.25;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    transition: transform 0.12s ease, background-color 0.15s ease;
+}
+
+.option-btn:hover {
+    background: #f1f5f9;
+    transform: none !important;
+}
+
+.option-btn:active {
+    transform: scale(0.97) !important;
+}
+
+.opt-badge {
+    width: clamp(28px, 2.6vw, 38px);
+    height: clamp(28px, 2.6vw, 38px);
+    border-radius: 50%;
+    background: var(--player-color, #1a237e);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95em;
+    flex-shrink: 0;
+}
+
+.opt-text {
+    flex: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.option-btn.opt-btn-correct {
+    background: linear-gradient(135deg, #4caf50 0%, #43a047 100%) !important;
+    color: #ffffff !important;
+}
+
+.option-btn.opt-btn-correct .opt-badge {
+    background: #ffffff;
+    color: #2e7d32;
+}
+
+.option-btn.opt-btn-wrong {
+    background: linear-gradient(135deg, #f44336 0%, #e53935 100%) !important;
+    color: #ffffff !important;
+    animation: shake 0.45s;
+}
+
+.option-btn.opt-btn-wrong .opt-badge {
+    background: #ffffff;
+    color: #c62828;
+}
+
+@media screen and (max-height: 600px) and (orientation: landscape) {
+    .player-section .question-box {
+        min-height: 52px;
+        font-size: 0.85rem;
+        padding: 8px;
+    }
+    .player-section .answer-box {
+        height: 32px;
+        font-size: 0.78rem;
+    }
+    .options-pad {
+        gap: 6px;
+        padding: 8px;
+    }
+    .option-btn {
+        min-height: 36px;
+        padding: 6px 10px;
+        font-size: 0.8rem;
+        gap: 8px;
+    }
+    .opt-badge {
+        width: 24px;
+        height: 24px;
+        font-size: 0.85em;
+    }
+}
