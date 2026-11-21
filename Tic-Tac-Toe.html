@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tic-Tac-Toe 2 Pemain</title>
+  <title>Tic-Tac-Toe: Teman, AI &amp; Scoreboard</title>
   <style>
     body {
       font-family: system-ui, -apple-system, sans-serif;
@@ -15,30 +15,89 @@
       justify-content: center;
       min-height: 100vh;
       margin: 0;
+      padding: 16px;
+      box-sizing: border-box;
     }
     .card {
       background: #1e293b;
-      padding: 24px;
+      padding: 22px;
       border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.45);
       text-align: center;
-      width: 320px;
+      width: 100%;
+      max-width: 360px;
     }
-    input {
-      width: 80%;
-      padding: 12px;
-      font-size: 18px;
-      text-align: center;
-      text-transform: uppercase;
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #0f172a;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+    .form-group {
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 15px;
       border-radius: 8px;
       border: 1px solid #475569;
       background: #0f172a;
       color: white;
+      box-sizing: border-box;
+    }
+    input.code-input {
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+    .mode-switch {
+      display: flex;
+      gap: 8px;
       margin-bottom: 12px;
     }
-    button {
-      padding: 10px 18px;
-      font-size: 15px;
+    .mode-btn {
+      flex: 1;
+      padding: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #cbd5e1;
+      cursor: pointer;
+    }
+    .mode-btn.selected {
+      background: #10b981;
+      color: #06281e;
+      border-color: #10b981;
+    }
+    button.action-btn {
+      padding: 10px 16px;
+      font-size: 14px;
       font-weight: 600;
       border: none;
       border-radius: 8px;
@@ -50,14 +109,16 @@
     .btn-primary:hover { background: #2563eb; }
     .btn-secondary { background: #10b981; color: white; }
     .btn-secondary:hover { background: #059669; }
+    .btn-ghost { background: #334155; color: #e2e8f0; }
+    .btn-ghost:hover { background: #475569; }
     .board {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      margin: 20px 0;
+      margin: 18px 0;
     }
     .cell {
-      height: 85px;
+      height: 86px;
       background: #334155;
       border-radius: 10px;
       display: flex;
@@ -71,33 +132,136 @@
     .cell:hover { background: #475569; }
     .cell.X { color: #38bdf8; }
     .cell.O { color: #f43f5e; }
-    .status { font-size: 16px; margin-bottom: 10px; min-height: 24px; color: #cbd5e1; }
+    .status {
+      font-size: 15px;
+      margin-bottom: 10px;
+      min-height: 24px;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    .players-bar {
+      font-size: 12px;
+      color: #94a3b8;
+      background: #0f172a;
+      padding: 8px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    table.score-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    table.score-table th, table.score-table td {
+      padding: 9px 8px;
+      border-bottom: 1px solid #334155;
+      text-align: left;
+    }
+    table.score-table th {
+      color: #94a3b8;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .rank-badge {
+      display: inline-block;
+      min-width: 22px;
+      text-align: center;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+    .wins-pill {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .msg-error { color: #f87171; font-size: 13px; margin-top: 8px; min-height: 18px; }
     .hidden { display: none; }
   </style>
 </head>
 <body>
 
 <div class="card">
-  <h2 style="margin-top:0;">Duel Tic-Tac-Toe</h2>
+  <h2 style="margin:0 0 12px 0;">Tic-Tac-Toe Arena</h2>
 
-  <!-- Tampilan Lobby -->
-  <div id="lobby">
-    <input type="text" id="roomInput" placeholder="KODE ROOM (MISAL: A12)" maxlength="6">
-    <div>
-      <button class="btn-primary" onclick="initGame('create')">Buat Room</button>
-      <button class="btn-secondary" onclick="initGame('join')">Gabung Room</button>
-    </div>
-    <p id="lobbyMsg" style="color:#f87171; font-size:14px;"></p>
+  <!-- Navigasi Utama -->
+  <div id="topNav" class="nav-tabs">
+    <button id="tabPlay" class="tab-btn active" onclick="switchPage('play')">Main</button>
+    <button id="tabScore" class="tab-btn" onclick="switchPage('score')">Scoreboard</button>
   </div>
 
-  <!-- Tampilan Arena Game -->
-  <div id="arena" class="hidden">
-    <div style="font-size:13px; color:#94a3b8; margin-bottom:6px;">
-      Room: <b id="displayRoom" style="color:white;"></b> | Kamu: <b id="displayRole" style="color:#fbbf24;"></b>
+  <!-- HALAMAN 1: LOBBY / PILIH MODE -->
+  <div id="lobbyPage">
+    <div class="form-group">
+      <label for="playerNameInput">Nama Pemain (Tersimpan &amp; Dikejar di Scoreboard)</label>
+      <input type="text" id="playerNameInput" placeholder="Contoh: Raka" maxlength="18">
     </div>
-    <div class="status" id="statusText">Menghubungkan...</div>
+
+    <label style="text-align:left;">Pilih Mode Bermain</label>
+    <div class="mode-switch">
+      <button type="button" id="modeFriendBtn" class="mode-btn selected" onclick="selectMode('friend')">Lawan Teman</button>
+      <button type="button" id="modeAiBtn" class="mode-btn" onclick="selectMode('ai')">Lawan AI</button>
+    </div>
+
+    <!-- Pengaturan Lawan Teman -->
+    <div id="friendOptions">
+      <div class="form-group">
+        <label for="roomInput">Kode Room</label>
+        <input type="text" id="roomInput" class="code-input" placeholder="MISAL: DUEL01" maxlength="8">
+      </div>
+      <div>
+        <button class="action-btn btn-primary" onclick="initFriendGame('create')">Buat Room</button>
+        <button class="action-btn btn-secondary" onclick="initFriendGame('join')">Gabung Room</button>
+      </div>
+    </div>
+
+    <!-- Pengaturan Lawan AI -->
+    <div id="aiOptions" class="hidden">
+      <div class="form-group">
+        <label for="aiDifficulty">Tingkatan Kesulitan AI</label>
+        <select id="aiDifficulty">
+          <option value="easy">Mudah (Santai / Acak)</option>
+          <option value="medium">Sedang (Menyerang &amp; Memblokir)</option>
+          <option value="impossible">Mustahil (Minimax Penuh)</option>
+        </select>
+      </div>
+      <button class="action-btn btn-secondary" style="width:100%; margin:0;" onclick="startAiGame()">Mulai Lawan AI</button>
+    </div>
+
+    <div id="lobbyMsg" class="msg-error"></div>
+  </div>
+
+  <!-- HALAMAN 2: ARENA PERMAINAN -->
+  <div id="arenaPage" class="hidden">
+    <div id="playersBar" class="players-bar"></div>
+    <div class="status" id="statusText">Menyiapkan...</div>
     <div class="board" id="board"></div>
-    <button id="resetBtn" class="btn-primary hidden" onclick="resetGame()">Main Lagi</button>
+    <div>
+      <button id="resetBtn" class="action-btn btn-primary hidden" onclick="handleReset()">Main Lagi</button>
+      <button class="action-btn btn-ghost" onclick="leaveArena()">Keluar ke Lobby</button>
+    </div>
+  </div>
+
+  <!-- HALAMAN 3: SCOREBOARD (TARGET SKOR PEMAIN) -->
+  <div id="scorePage" class="hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <span style="font-size:13px; color:#94a3b8;">Papan Skor Tersimpan di Server</span>
+      <button class="action-btn btn-ghost" style="padding:5px 10px; font-size:12px; margin:0;" onclick="loadScores()">Refresh</button>
+    </div>
+    <div id="scoreStatus" style="font-size:12px; color:#94a3b8; text-align:left;">Memuat data...</div>
+    <table class="score-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Pemain</th>
+          <th>Menang</th>
+        </tr>
+      </thead>
+      <tbody id="scoreBody"></tbody>
+    </table>
   </div>
 </div>
 
@@ -105,11 +269,53 @@
   // GANTI URL DI BAWAH INI DENGAN URL WEB APP APPS SCRIPT ANDA
   const API_URL = "https://script.google.com/macros/s/AKfycbzcI6XPrU2LT341TTeMqG9fA5k_LKpKqJF-GlKKnJ-R84KG71mvqp7oTBEsY_G8LowC2Q/exec";
 
+  const WIN_LINES = [
+    [0,1,2], [3,4,5], [6,7,8],
+    [0,3,6], [1,4,7], [2,5,8],
+    [0,4,8], [2,4,6]
+  ];
+
+  let selectedMode = "friend";
+  let playerName = localStorage.getItem("ttt_player_name") || "";
   let currentRoom = "";
-  let myRole = "";
+  let myRole = "X";
   let gameState = null;
   let pollInterval = null;
   let isSending = false;
+  let aiDifficulty = "easy";
+  let aiWinRecorded = false;
+
+  document.getElementById("playerNameInput").value = playerName;
+
+  function getValidName() {
+    const val = document.getElementById("playerNameInput").value.replace(/\s+/g, " ").trim().substring(0, 18);
+    if (!val) return "";
+    playerName = val;
+    localStorage.setItem("ttt_player_name", playerName);
+    return playerName;
+  }
+
+  function switchPage(page) {
+    document.getElementById("tabPlay").classList.toggle("active", page === "play");
+    document.getElementById("tabScore").classList.toggle("active", page === "score");
+
+    document.getElementById("lobbyPage").classList.toggle("hidden", page !== "play" || gameState !== null);
+    document.getElementById("arenaPage").classList.toggle("hidden", page !== "play" || gameState === null);
+    document.getElementById("scorePage").classList.toggle("hidden", page !== "score");
+
+    if (page === "score") {
+      loadScores();
+    }
+  }
+
+  function selectMode(mode) {
+    selectedMode = mode;
+    document.getElementById("modeFriendBtn").classList.toggle("selected", mode === "friend");
+    document.getElementById("modeAiBtn").classList.toggle("selected", mode === "ai");
+    document.getElementById("friendOptions").classList.toggle("hidden", mode !== "friend");
+    document.getElementById("aiOptions").classList.toggle("hidden", mode !== "ai");
+    document.getElementById("lobbyMsg").innerText = "";
+  }
 
   async function apiCall(payload) {
     const res = await fetch(API_URL, {
@@ -120,30 +326,72 @@
     return await res.json();
   }
 
-  async function initGame(action) {
+  async function loadScores() {
+    const statusEl = document.getElementById("scoreStatus");
+    const tbody = document.getElementById("scoreBody");
+    statusEl.innerText = "Mengambil skor dari server...";
+    try {
+      const res = await apiCall({ action: "getScores" });
+      if (res.status === "ok") {
+        const list = res.scores || [];
+        tbody.innerHTML = "";
+        if (list.length === 0) {
+          statusEl.innerText = "Belum ada skor tercatat. Jadilah yang pertama!";
+          return;
+        }
+        statusEl.innerText = "Kejar skor tertinggi dan raih peringkat #1!";
+        list.forEach(function(item, index) {
+          const tr = document.createElement("tr");
+          const isMe = playerName && item.name.toLowerCase() === playerName.toLowerCase();
+          tr.innerHTML =
+            "<td><span class='rank-badge'>" + (index + 1) + "</span></td>" +
+            "<td>" + escapeHtml(item.name) + (isMe ? " <span style='color:#38bdf8;font-size:11px;'>(Kamu)</span>" : "") + "</td>" +
+            "<td><span class='wins-pill'>" + item.wins + " Menang</span></td>";
+          tbody.appendChild(tr);
+        });
+      } else {
+        statusEl.innerText = res.message || "Gagal memuat skor.";
+      }
+    } catch (e) {
+      statusEl.innerText = "Gagal terhubung ke server Apps Script.";
+    }
+  }
+
+  async function initFriendGame(action) {
+    const name = getValidName();
     const room = document.getElementById("roomInput").value.trim().toUpperCase();
     const msg = document.getElementById("lobbyMsg");
+
+    if (!name) {
+      msg.innerText = "Masukkan nama pemain terlebih dahulu!";
+      return;
+    }
     if (!room) {
       msg.innerText = "Masukkan kode room terlebih dahulu!";
       return;
     }
-    msg.innerText = "Memproses...";
 
+    msg.innerText = "Menghubungkan ke server...";
     try {
-      const res = await apiCall({ action: action, room: room });
+      const res = await apiCall({
+        action: action,
+        room: room,
+        playerName: name
+      });
       if (res.status === "ok") {
+        selectedMode = "friend";
         currentRoom = room;
         myRole = res.role;
         gameState = res.state;
+        msg.innerText = "";
 
-        document.getElementById("lobby").classList.add("hidden");
-        document.getElementById("arena").classList.remove("hidden");
-        document.getElementById("displayRoom").innerText = currentRoom;
-        document.getElementById("displayRole").innerText = myRole;
+        document.getElementById("topNav").classList.add("hidden");
+        document.getElementById("lobbyPage").classList.add("hidden");
+        document.getElementById("arenaPage").classList.remove("hidden");
 
-        renderBoard();
-        // Cek pembaruan papan setiap 1.5 detik
-        pollInterval = setInterval(fetchState, 1500);
+        renderArena();
+        if (pollInterval) clearInterval(pollInterval);
+        pollInterval = setInterval(fetchFriendState, 1500);
       } else {
         msg.innerText = res.message;
       }
@@ -152,88 +400,305 @@
     }
   }
 
-  async function fetchState() {
-    if (isSending) return;
+  async function fetchFriendState() {
+    if (isSending || selectedMode !== "friend" || !currentRoom) return;
     try {
-      const res = await apiCall({ action: "state", room: currentRoom });
+      const res = await apiCall({
+        action: "state",
+        room: currentRoom,
+        playerName: playerName
+      });
       if (res.status === "ok") {
         gameState = res.state;
-        renderBoard();
+        renderArena();
       }
     } catch (e) {
       console.error("Polling error", e);
     }
   }
 
-  async function makeMove(index) {
-    if (!gameState || gameState.winner || gameState.players < 2) return;
-    if (gameState.turn !== myRole || gameState.board[index] !== "" || isSending) return;
+  function startAiGame() {
+    const name = getValidName();
+    const msg = document.getElementById("lobbyMsg");
+    if (!name) {
+      msg.innerText = "Masukkan nama pemain terlebih dahulu!";
+      return;
+    }
 
-    // Optimistic UI: langsung tampilkan simbol di layar sendiri agar terasa responsif
-    isSending = true;
-    gameState.board[index] = myRole;
-    gameState.turn = myRole === "X" ? "O" : "X";
-    renderBoard();
+    selectedMode = "ai";
+    aiDifficulty = document.getElementById("aiDifficulty").value;
+    myRole = "X";
+    aiWinRecorded = false;
+    gameState = {
+      board: ["", "", "", "", "", "", "", "", ""],
+      turn: "X",
+      players: { X: name, O: "AI (" + difficultyLabel(aiDifficulty) + ")" },
+      winner: null
+    };
 
-    try {
-      const res = await apiCall({
-        action: "move",
-        room: currentRoom,
-        role: myRole,
-        index: index
-      });
-      if (res.status === "ok" || res.status === "invalid") {
-        gameState = res.state;
-        renderBoard();
+    msg.innerText = "";
+    document.getElementById("topNav").classList.add("hidden");
+    document.getElementById("lobbyPage").classList.add("hidden");
+    document.getElementById("arenaPage").classList.remove("hidden");
+    renderArena();
+  }
+
+  function difficultyLabel(diff) {
+    if (diff === "easy") return "Mudah";
+    if (diff === "medium") return "Sedang";
+    return "Mustahil";
+  }
+
+  async function handleCellClick(index) {
+    if (!gameState || gameState.winner || isSending) return;
+    if (gameState.board[index] !== "") return;
+
+    if (selectedMode === "friend") {
+      if (!gameState.players.X || !gameState.players.O) return;
+      if (gameState.turn !== myRole) return;
+
+      isSending = true;
+      gameState.board[index] = myRole;
+      gameState.turn = myRole === "X" ? "O" : "X";
+      renderArena();
+
+      try {
+        const res = await apiCall({
+          action: "move",
+          room: currentRoom,
+          role: myRole,
+          playerName: playerName,
+          index: index
+        });
+        if (res.status === "ok" || res.status === "invalid") {
+          gameState = res.state;
+          renderArena();
+        }
+      } finally {
+        isSending = false;
       }
-    } finally {
-      isSending = false;
+    } else {
+      // Mode AI
+      if (gameState.turn !== "X") return;
+      gameState.board[index] = "X";
+      gameState.winner = checkLocalWinner(gameState.board);
+      if (!gameState.winner) {
+        gameState.turn = "O";
+        renderArena();
+        setTimeout(runAiMove, 260);
+      } else {
+        onAiGameFinished();
+        renderArena();
+      }
     }
   }
 
-  async function resetGame() {
-    isSending = true;
-    try {
-      const res = await apiCall({ action: "reset", room: currentRoom });
-      if (res.status === "ok") {
-        gameState = res.state;
-        renderBoard();
+  function runAiMove() {
+    if (!gameState || gameState.winner || gameState.turn !== "O") return;
+    const moveIdx = computeAiMove(gameState.board.slice(), aiDifficulty);
+    if (moveIdx !== -1) {
+      gameState.board[moveIdx] = "O";
+    }
+    gameState.winner = checkLocalWinner(gameState.board);
+    if (!gameState.winner) {
+      gameState.turn = "X";
+    } else {
+      onAiGameFinished();
+    }
+    renderArena();
+  }
+
+  async function onAiGameFinished() {
+    if (gameState.winner === "X" && !aiWinRecorded) {
+      aiWinRecorded = true;
+      try {
+        await apiCall({ action: "recordAiWin", playerName: playerName });
+      } catch (e) {
+        console.error("Gagal mencatat skor AI", e);
       }
-    } finally {
-      isSending = false;
     }
   }
 
-  function renderBoard() {
+  function computeAiMove(board, diff) {
+    const empty = [];
+    for (let i = 0; i < 9; i++) {
+      if (board[i] === "") empty.push(i);
+    }
+    if (empty.length === 0) return -1;
+
+    if (diff === "easy") {
+      return empty[Math.floor(Math.random() * empty.length)];
+    }
+
+    if (diff === "medium") {
+      // 1. Cek apakah AI bisa langsung menang
+      for (let idx of empty) {
+        const copy = board.slice();
+        copy[idx] = "O";
+        if (checkLocalWinner(copy) === "O") return idx;
+      }
+      // 2. Cek apakah perlu memblokir kemenangan X
+      for (let idx of empty) {
+        const copy = board.slice();
+        copy[idx] = "X";
+        if (checkLocalWinner(copy) === "X") return idx;
+      }
+      // 3. Jika tidak ada ancaman/peluang langsung, pilih acak
+      return empty[Math.floor(Math.random() * empty.length)];
+    }
+
+    // Mode Mustahil: Minimax optimal
+    let bestScore = -Infinity;
+    let bestMove = empty[0];
+    for (let idx of empty) {
+      board[idx] = "O";
+      const score = minimax(board, 0, false);
+      board[idx] = "";
+      if (score > bestScore) {
+        bestScore = score;
+        bestMove = idx;
+      }
+    }
+    return bestMove;
+  }
+
+  function minimax(board, depth, isMaximizing) {
+    const res = checkLocalWinner(board);
+    if (res === "O") return 10 - depth;
+    if (res === "X") return depth - 10;
+    if (res === "DRAW") return 0;
+
+    if (isMaximizing) {
+      let best = -Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === "") {
+          board[i] = "O";
+          best = Math.max(best, minimax(board, depth + 1, false));
+          board[i] = "";
+        }
+      }
+      return best;
+    } else {
+      let best = Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (board[i] === "") {
+          board[i] = "X";
+          best = Math.min(best, minimax(board, depth + 1, true));
+          board[i] = "";
+        }
+      }
+      return best;
+    }
+  }
+
+  function checkLocalWinner(b) {
+    for (let [a, bIdx, c] of WIN_LINES) {
+      if (b[a] && b[a] === b[bIdx] && b[a] === b[c]) return b[a];
+    }
+    return b.includes("") ? null : "DRAW";
+  }
+
+  async function handleReset() {
+    if (selectedMode === "friend") {
+      isSending = true;
+      try {
+        const res = await apiCall({
+          action: "reset",
+          room: currentRoom,
+          playerName: playerName
+        });
+        if (res.status === "ok") {
+          gameState = res.state;
+          renderArena();
+        }
+      } finally {
+        isSending = false;
+      }
+    } else {
+      aiWinRecorded = false;
+      gameState.board = ["", "", "", "", "", "", "", "", ""];
+      gameState.turn = "X";
+      gameState.winner = null;
+      renderArena();
+    }
+  }
+
+  function leaveArena() {
+    if (pollInterval) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+    gameState = null;
+    currentRoom = "";
+    document.getElementById("topNav").classList.remove("hidden");
+    document.getElementById("arenaPage").classList.add("hidden");
+    document.getElementById("lobbyPage").classList.remove("hidden");
+  }
+
+  function renderArena() {
+    if (!gameState) return;
+    const playersBar = document.getElementById("playersBar");
     const boardEl = document.getElementById("board");
     const statusEl = document.getElementById("statusText");
     const resetBtn = document.getElementById("resetBtn");
 
+    const pX = gameState.players.X || "Menunggu...";
+    const pO = gameState.players.O || "Menunggu...";
+
+    if (selectedMode === "friend") {
+      playersBar.innerHTML =
+        "Room: <b style='color:#fff;'>" + escapeHtml(currentRoom) + "</b><br>" +
+        "<span style='color:#38bdf8;'>X: " + escapeHtml(pX) + "</span> vs " +
+        "<span style='color:#f43f5e;'>O: " + escapeHtml(pO) + "</span>";
+    } else {
+      playersBar.innerHTML =
+        "Mode AI (" + escapeHtml(difficultyLabel(aiDifficulty)) + ")<br>" +
+        "<span style='color:#38bdf8;'>X: " + escapeHtml(pX) + "</span> vs " +
+        "<span style='color:#f43f5e;'>O: " + escapeHtml(pO) + "</span>";
+    }
+
     boardEl.innerHTML = "";
-    gameState.board.forEach((val, idx) => {
+    gameState.board.forEach(function(val, idx) {
       const cell = document.createElement("div");
       cell.className = "cell " + val;
       cell.innerText = val;
-      cell.onclick = () => makeMove(idx);
+      cell.onclick = function() { handleCellClick(idx); };
       boardEl.appendChild(cell);
     });
 
-    if (gameState.players < 2) {
-      statusEl.innerText = "Menunggu Pemain O bergabung...";
+    if (selectedMode === "friend" && (!gameState.players.X || !gameState.players.O)) {
+      statusEl.innerText = "Menunggu lawan bergabung ke room " + currentRoom + "...";
       resetBtn.classList.add("hidden");
-    } else if (gameState.winner) {
+      return;
+    }
+
+    if (gameState.winner) {
+      resetBtn.classList.remove("hidden");
       if (gameState.winner === "DRAW") {
         statusEl.innerText = "Permainan Seri!";
       } else if (gameState.winner === myRole) {
-        statusEl.innerText = "🎉 Kamu Menang!";
+        statusEl.innerText = "🎉 " + playerName + " Menang! (+1 Skor)";
       } else {
-        statusEl.innerText = "😢 Kamu Kalah!";
+        statusEl.innerText = "😢 Kamu Kalah ronde ini.";
       }
-      resetBtn.classList.remove("hidden");
     } else {
       resetBtn.classList.add("hidden");
-      statusEl.innerText = gameState.turn === myRole ? "Giliran Kamu (" + myRole + ")" : "Menunggu giliran lawan...";
+      if (gameState.turn === myRole) {
+        statusEl.innerText = "Giliran Kamu (" + myRole + ")";
+      } else {
+        statusEl.innerText = selectedMode === "ai"
+          ? "AI sedang berpikir..."
+          : "Menunggu giliran " + (myRole === "X" ? pO : pX) + "...";
+      }
     }
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 </script>
 </body>
