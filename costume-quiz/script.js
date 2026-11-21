@@ -408,7 +408,7 @@ function renderViewingFolderQuestions() {
     }
 
     if (folder.questions.length === 0) {
-        listContainer.innerHTML = `<div class="empty-soal-msg">Folder <b>${escapeHtml(folder.name)}</b> masih kosong.<br>Tambahkan soal manual di samping atau klik <b>Import File .JSON</b>.</div>`;
+        listContainer.innerHTML = `<div class="empty-soal-msg">Folder <b>${escapeHtml(folder.name)}</b> masih kosong.<br>Tambahkan soal manual di samping atau klik <b>Import File!</b>.</div>`;
         return;
     }
 
