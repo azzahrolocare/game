@@ -478,12 +478,12 @@ body.fullscreen .fullscreen-btn .collapse { display: block; }
 .tug-movable-group {
     position: relative;
     width: 100%;
-    max-width: 560px;
-    height: 210px;
+    max-width: 580px;
+    height: 215px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    padding: 0 36px 20px 36px;
+    padding: 0 32px 20px 32px;
     transform: translateX(0px);
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     z-index: 6;
@@ -494,7 +494,7 @@ body.fullscreen .fullscreen-btn .collapse { display: block; }
     position: absolute;
     left: 14%;
     right: 14%;
-    bottom: 66px;
+    bottom: 68px;
     height: 8px;
     background: linear-gradient(90deg, #78350f, #b45309 50%, #78350f);
     border-radius: 999px;
@@ -518,22 +518,56 @@ body.fullscreen .fullscreen-btn .collapse { display: block; }
 .tug-puller {
     position: relative;
     display: flex;
-    align-items: flex-end;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
     z-index: 7;
 }
 
 .tug-char-img {
-    width: clamp(82px, 11vw, 130px);
+    width: clamp(86px, 11.5vw, 136px);
     height: auto;
-    max-height: 165px;
+    max-height: 168px;
     object-fit: contain;
     display: block;
-    filter: drop-shadow(0 6px 8px rgba(15, 23, 42, 0.18));
+    transition: transform 0.2s ease, filter 0.2s ease;
 }
 
+/* Karakter Kiri: Biru (menghadap ke kanan menarik tali) */
+.tug-char-img.left-char {
+    transform: scaleX(1);
+    filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.75))
+            drop-shadow(0 6px 8px rgba(15, 23, 42, 0.2))
+            hue-rotate(195deg) saturate(1.45);
+}
+
+/* Karakter Kanan: Merah (dicerminkan ke kiri & diberi nuansa merah) */
 .tug-char-img.right-char {
     transform: scaleX(-1);
+    filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.75))
+            drop-shadow(0 6px 8px rgba(15, 23, 42, 0.2))
+            hue-rotate(-25deg) saturate(1.55);
+}
+
+.tug-team-tag {
+    margin-top: 4px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+}
+
+.tug-puller-left .tug-team-tag {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border: 1.5px solid #3b82f6;
+}
+
+.tug-puller-right .tug-team-tag {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1.5px solid #ef4444;
 }
 
 /* ============================================

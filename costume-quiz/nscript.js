@@ -526,6 +526,17 @@ function updateRopePosition() {
     }
 
     movableGroup.style.transform = `translateX(${Math.round(offset)}px)`;
+
+    const leftChar = document.querySelector('#gameScreenTarikTambang .tug-char-img.left-char');
+    const rightChar = document.querySelector('#gameScreenTarikTambang .tug-char-img.right-char');
+    if (leftChar) {
+        const leanLeft = offset < 0 ? -5 : 0;
+        leftChar.style.transform = `scaleX(1) rotate(${leanLeft}deg)`;
+    }
+    if (rightChar) {
+        const leanRight = offset > 0 ? 5 : 0;
+        rightChar.style.transform = `scaleX(-1) rotate(${leanRight}deg)`;
+    }
 }
 
 function updateScoreDisplay(player) {
