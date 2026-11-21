@@ -59,84 +59,121 @@ window.addEventListener('load', () => {
 });
 
 // ============================================
-// SISTEM FOLDER & BANK KOSTUM SOAL (SEMUA MAPEL)
+// SISTEM FOLDER & BANYAK FILE SOAL PER FOLDER
 // ============================================
 
-const STORAGE_KEY_FOLDER_DATA = 'afifedu_quiz_folders_v2';
+const STORAGE_KEY_FOLDER_DATA = 'afifedu_quiz_folders_v3';
+const LEGACY_STORAGE_KEY_V2 = 'afifedu_quiz_folders_v2';
 
 const defaultFolderStore = {
     activeFolderId: 'folder_tik',
+    activeFileId: 'file_tik_7',
     folders: [
         {
             id: 'folder_tik',
             name: 'Informatika (TIK)',
-            questions: [
+            files: [
                 {
-                    question: 'Apa kepanjangan dari CPU pada komputer?',
-                    options: { A: 'Central Process Unit', B: 'Central Processing Unit', C: 'Computer Personal Unit', D: 'Control Processing Unit' },
-                    answer: 'B'
+                    id: 'file_tik_7',
+                    name: 'Kelas 7',
+                    questions: [
+                        {
+                            question: 'Apa kepanjangan dari CPU pada komputer?',
+                            options: { A: 'Central Process Unit', B: 'Central Processing Unit', C: 'Computer Personal Unit', D: 'Control Processing Unit' },
+                            answer: 'B'
+                        },
+                        {
+                            question: 'Perangkat keras yang berfungsi menampilkan output visual ke layar adalah...',
+                            options: { A: 'Keyboard', B: 'Scanner', C: 'Monitor', D: 'Microphone' },
+                            answer: 'C'
+                        },
+                        {
+                            question: 'Tombol pintas (shortcut) pada keyboard untuk menyalin teks adalah...',
+                            options: { A: 'Ctrl + C', B: 'Ctrl + V', C: 'Ctrl + X', D: 'Ctrl + Z' },
+                            answer: 'A'
+                        }
+                    ]
                 },
                 {
-                    question: 'Perangkat lunak yang digunakan untuk mengolah angka adalah...',
-                    options: { A: 'Microsoft Word', B: 'Microsoft PowerPoint', C: 'Microsoft Excel', D: 'CorelDraw' },
-                    answer: 'C'
-                },
-                {
-                    question: 'Tombol pintas (shortcut) pada keyboard untuk menyalin teks adalah...',
-                    options: { A: 'Ctrl + C', B: 'Ctrl + V', C: 'Ctrl + X', D: 'Ctrl + Z' },
-                    answer: 'A'
-                },
-                {
-                    question: 'Perangkat keras yang berfungsi menampilkan output visual ke layar adalah...',
-                    options: { A: 'Keyboard', B: 'Scanner', C: 'Monitor', D: 'Microphone' },
-                    answer: 'C'
+                    id: 'file_tik_8',
+                    name: 'Kelas 8',
+                    questions: [
+                        {
+                            question: 'Perangkat lunak yang digunakan untuk mengolah angka adalah...',
+                            options: { A: 'Microsoft Word', B: 'Microsoft PowerPoint', C: 'Microsoft Excel', D: 'CorelDraw' },
+                            answer: 'C'
+                        },
+                        {
+                            question: 'Jaringan komputer yang mencakup area lokal seperti satu gedung sekolah disebut...',
+                            options: { A: 'WAN', B: 'MAN', C: 'LAN', D: 'PAN' },
+                            answer: 'C'
+                        }
+                    ]
                 }
             ]
         },
         {
             id: 'folder_ipa',
             name: 'IPA (Sains)',
-            questions: [
+            files: [
                 {
-                    question: 'Organ tubuh manusia yang berfungsi memompa darah adalah...',
-                    options: { A: 'Paru-paru', B: 'Hati', C: 'Ginjal', D: 'Jantung' },
-                    answer: 'D'
+                    id: 'file_ipa_7',
+                    name: 'Kelas 7 - Dasar Sains',
+                    questions: [
+                        {
+                            question: 'Perubahan wujud benda dari cair menjadi gas disebut...',
+                            options: { A: 'Membeku', B: 'Menguap', C: 'Menyublim', D: 'Mengembun' },
+                            answer: 'B'
+                        },
+                        {
+                            question: 'Planet terdekat dengan Matahari dalam tata surya adalah...',
+                            options: { A: 'Venus', B: 'Mars', C: 'Merkurius', D: 'Bumi' },
+                            answer: 'C'
+                        }
+                    ]
                 },
                 {
-                    question: 'Gas yang dibutuhkan tumbuhan untuk proses fotosintesis adalah...',
-                    options: { A: 'Oksigen', B: 'Karbon dioksida', C: 'Nitrogen', D: 'Hidrogen' },
-                    answer: 'B'
-                },
-                {
-                    question: 'Planet terdekat dengan Matahari dalam tata surya adalah...',
-                    options: { A: 'Venus', B: 'Mars', C: 'Merkurius', D: 'Bumi' },
-                    answer: 'C'
-                },
-                {
-                    question: 'Perubahan wujud benda dari cair menjadi gas disebut...',
-                    options: { A: 'Membeku', B: 'Menguap', C: 'Menyublim', D: 'Mengembun' },
-                    answer: 'B'
+                    id: 'file_ipa_8',
+                    name: 'Kelas 8 - Biologi Manusia',
+                    questions: [
+                        {
+                            question: 'Organ tubuh manusia yang berfungsi memompa darah adalah...',
+                            options: { A: 'Paru-paru', B: 'Hati', C: 'Ginjal', D: 'Jantung' },
+                            answer: 'D'
+                        },
+                        {
+                            question: 'Gas yang dibutuhkan tumbuhan untuk proses fotosintesis adalah...',
+                            options: { A: 'Oksigen', B: 'Karbon dioksida', C: 'Nitrogen', D: 'Hidrogen' },
+                            answer: 'B'
+                        }
+                    ]
                 }
             ]
         },
         {
             id: 'folder_ips',
             name: 'IPS & PPKn',
-            questions: [
+            files: [
                 {
-                    question: 'Proklamasi Kemerdekaan Indonesia dibacakan pada tanggal...',
-                    options: { A: '17 Agustus 1945', B: '18 Agustus 1945', C: '1 Juni 1945', D: '28 Oktober 1928' },
-                    answer: 'A'
-                },
-                {
-                    question: 'Sila ketiga Pancasila dilambangkan dengan gambar...',
-                    options: { A: 'Bintang', B: 'Rantai', C: 'Pohon Beringin', D: 'Kepala Banteng' },
-                    answer: 'C'
-                },
-                {
-                    question: 'Ibukota negara Jepang adalah...',
-                    options: { A: 'Seoul', B: 'Beijing', C: 'Tokyo', D: 'Bangkok' },
-                    answer: 'C'
+                    id: 'file_ips_umum',
+                    name: 'Paket Umum',
+                    questions: [
+                        {
+                            question: 'Proklamasi Kemerdekaan Indonesia dibacakan pada tanggal...',
+                            options: { A: '17 Agustus 1945', B: '18 Agustus 1945', C: '1 Juni 1945', D: '28 Oktober 1928' },
+                            answer: 'A'
+                        },
+                        {
+                            question: 'Sila ketiga Pancasila dilambangkan dengan gambar...',
+                            options: { A: 'Bintang', B: 'Rantai', C: 'Pohon Beringin', D: 'Kepala Banteng' },
+                            answer: 'C'
+                        },
+                        {
+                            question: 'Ibukota negara Jepang adalah...',
+                            options: { A: 'Seoul', B: 'Beijing', C: 'Tokyo', D: 'Bangkok' },
+                            answer: 'C'
+                        }
+                    ]
                 }
             ]
         }
@@ -145,17 +182,45 @@ const defaultFolderStore = {
 
 let folderStore = {
     activeFolderId: '',
+    activeFileId: '',
     folders: []
 };
 
-// Folder yang sedang dibuka/dilihat di halaman kelola soal
+// Folder dan File yang sedang dibuka/dilihat di halaman kelola soal
 let viewingFolderId = '';
+let viewingFileId = '';
+
+function migrateLegacyV2ToV3(parsedV2) {
+    const migratedFolders = parsedV2.folders.map((f, idx) => {
+        if (Array.isArray(f.files)) {
+            return f;
+        }
+        return {
+            id: f.id || ('folder_' + idx + '_' + Date.now()),
+            name: f.name || 'Mata Pelajaran',
+            files: [
+                {
+                    id: 'file_' + (f.id || idx) + '_default',
+                    name: 'Paket Utama',
+                    questions: Array.isArray(f.questions) ? f.questions : []
+                }
+            ]
+        };
+    });
+
+    const activeF = migratedFolders.find(f => f.id === parsedV2.activeFolderId) || migratedFolders[0];
+    return {
+        activeFolderId: activeF ? activeF.id : '',
+        activeFileId: (activeF && activeF.files[0]) ? activeF.files[0].id : '',
+        folders: migratedFolders
+    };
+}
 
 function loadFolderStore() {
     try {
-        const saved = localStorage.getItem(STORAGE_KEY_FOLDER_DATA);
-        if (saved) {
-            const parsed = JSON.parse(saved);
+        const savedV3 = localStorage.getItem(STORAGE_KEY_FOLDER_DATA);
+        if (savedV3) {
+            const parsed = JSON.parse(savedV3);
             if (parsed && Array.isArray(parsed.folders) && parsed.folders.length > 0) {
                 folderStore = parsed;
             } else {
@@ -163,22 +228,57 @@ function loadFolderStore() {
                 saveFolderStore();
             }
         } else {
-            folderStore = JSON.parse(JSON.stringify(defaultFolderStore));
-            saveFolderStore();
+            const savedV2 = localStorage.getItem(LEGACY_STORAGE_KEY_V2);
+            if (savedV2) {
+                const parsedV2 = JSON.parse(savedV2);
+                if (parsedV2 && Array.isArray(parsedV2.folders) && parsedV2.folders.length > 0) {
+                    folderStore = migrateLegacyV2ToV3(parsedV2);
+                    saveFolderStore();
+                } else {
+                    folderStore = JSON.parse(JSON.stringify(defaultFolderStore));
+                    saveFolderStore();
+                }
+            } else {
+                folderStore = JSON.parse(JSON.stringify(defaultFolderStore));
+                saveFolderStore();
+            }
         }
     } catch (e) {
         console.error('Gagal memuat data folder dari localStorage:', e);
         folderStore = JSON.parse(JSON.stringify(defaultFolderStore));
     }
 
-    // Pastikan activeFolderId valid
-    if (!folderStore.folders.some(f => f.id === folderStore.activeFolderId)) {
-        folderStore.activeFolderId = folderStore.folders[0]?.id || '';
+    // Pastikan setiap folder memiliki array files minimal 1 file
+    folderStore.folders.forEach((f, idx) => {
+        if (!Array.isArray(f.files) || f.files.length === 0) {
+            f.files = [{
+                id: 'file_' + f.id + '_' + idx + '_' + Date.now(),
+                name: 'Paket Soal 1',
+                questions: Array.isArray(f.questions) ? f.questions : []
+            }];
+        }
+    });
+
+    // Pastikan activeFolderId & activeFileId valid
+    let activeFolder = folderStore.folders.find(f => f.id === folderStore.activeFolderId);
+    if (!activeFolder) {
+        activeFolder = folderStore.folders[0];
+        folderStore.activeFolderId = activeFolder ? activeFolder.id : '';
+    }
+    if (activeFolder && !activeFolder.files.some(fl => fl.id === folderStore.activeFileId)) {
+        folderStore.activeFileId = activeFolder.files[0]?.id || '';
     }
 
-    // Pastikan viewingFolderId valid
-    if (!viewingFolderId || !folderStore.folders.some(f => f.id === viewingFolderId)) {
+    // Pastikan viewingFolderId & viewingFileId valid
+    let viewFolder = folderStore.folders.find(f => f.id === viewingFolderId);
+    if (!viewFolder) {
         viewingFolderId = folderStore.activeFolderId || (folderStore.folders[0]?.id || '');
+        viewFolder = folderStore.folders.find(f => f.id === viewingFolderId);
+    }
+    if (viewFolder && !viewFolder.files.some(fl => fl.id === viewingFileId)) {
+        viewingFileId = (viewFolder.id === folderStore.activeFolderId && folderStore.activeFileId)
+            ? folderStore.activeFileId
+            : (viewFolder.files[0]?.id || '');
     }
 
     updateActiveFolderBadgeUI();
@@ -197,27 +297,54 @@ function getActiveFolder() {
     return folderStore.folders.find(f => f.id === folderStore.activeFolderId) || null;
 }
 
+function getActiveFile() {
+    const folder = getActiveFolder();
+    if (!folder) return null;
+    return folder.files.find(fl => fl.id === folderStore.activeFileId) || folder.files[0] || null;
+}
+
 function getViewingFolder() {
     return folderStore.folders.find(f => f.id === viewingFolderId) || null;
 }
 
+function getViewingFile() {
+    const folder = getViewingFolder();
+    if (!folder) return null;
+    return folder.files.find(fl => fl.id === viewingFileId) || folder.files[0] || null;
+}
+
+function getFolderTotalQuestions(folder) {
+    if (!folder || !Array.isArray(folder.files)) return 0;
+    return folder.files.reduce((sum, fl) => sum + (Array.isArray(fl.questions) ? fl.questions.length : 0), 0);
+}
+
 function updateActiveFolderBadgeUI() {
     const activeFolder = getActiveFolder();
+    const activeFile = getActiveFile();
     const badgeName = document.getElementById('activeFolderBadge');
     const badgeCount = document.getElementById('questionCountBadge');
     const headerActiveName = document.getElementById('headerActiveFolderName');
 
     const folderName = activeFolder ? activeFolder.name : 'Belum dipilih';
-    const qCount = activeFolder ? activeFolder.questions.length : 0;
-    const countLabel = `${qCount} Soal`;
+    const fileName = activeFile ? activeFile.name : '-';
+    const qCount = activeFile ? activeFile.questions.length : 0;
+    const fullTopicLabel = activeFolder && activeFile ? `${folderName} - ${fileName}` : folderName;
 
-    if (badgeName) badgeName.textContent = folderName;
-    if (badgeCount) badgeCount.textContent = countLabel;
-    if (headerActiveName) headerActiveName.textContent = `${folderName} (${countLabel})`;
+    if (badgeName) badgeName.textContent = fullTopicLabel;
+    if (badgeCount) badgeCount.textContent = `${qCount} Soal`;
+    if (headerActiveName) headerActiveName.textContent = `${fullTopicLabel} (${qCount} soal)`;
 
-    // Perbarui indikator banyaknya soal di setiap mode permainan & menu mode
+    // Update tampilan banyaknya soal di setiap tombol mode (Menu Utama)
     document.querySelectorAll('.mode-question-count').forEach(el => {
-        el.textContent = countLabel;
+        el.textContent = `${qCount} Soal Tersedia (${fileName})`;
+    });
+
+    // Update tampilan banyaknya soal & topik aktif di dalam setiap layar mode permainan
+    document.querySelectorAll('.mode-total-questions-label').forEach(el => {
+        el.textContent = `${qCount} Soal`;
+    });
+    document.querySelectorAll('.active-topic-label').forEach(el => {
+        el.textContent = fullTopicLabel;
     });
 }
 
@@ -229,11 +356,12 @@ function escapeHtml(str) {
         .replace(/"/g, '&quot;');
 }
 
-// Render semua bagian UI Kelola Folder & Soal
+// Render semua bagian UI Kelola Folder & File Soal
 function renderFolderManagerUI() {
     renderFolderList();
     renderTargetFolderDropdown();
-    renderViewingFolderQuestions();
+    renderTargetFileDropdown();
+    renderViewingFileQuestions();
     updateActiveFolderBadgeUI();
 }
 
@@ -247,26 +375,47 @@ function renderFolderList() {
     }
 
     container.innerHTML = folderStore.folders.map(folder => {
-        const isActive = folder.id === folderStore.activeFolderId;
-        const isViewing = folder.id === viewingFolderId;
+        const isFolderActive = folder.id === folderStore.activeFolderId;
+        const isFolderViewing = folder.id === viewingFolderId;
+        const totalInFolder = getFolderTotalQuestions(folder);
+
+        const filesHtml = folder.files.map(file => {
+            const isFileActive = isFolderActive && file.id === folderStore.activeFileId;
+            const isFileViewing = isFolderViewing && file.id === viewingFileId;
+            return `
+                <div class="subfile-item ${isFileViewing ? 'viewing' : ''} ${isFileActive ? 'active-play' : ''}" onclick="event.stopPropagation(); selectViewingFile('${folder.id}', '${file.id}')">
+                    <div class="subfile-left">
+                        <span class="subfile-icon">📄</span>
+                        <span class="subfile-title">${escapeHtml(file.name)}</span>
+                        <span class="subfile-count">${file.questions.length} soal</span>
+                    </div>
+                    <div class="subfile-actions" onclick="event.stopPropagation()">
+                        ${isFileActive
+                            ? `<span class="active-tag-mini">✅ Aktif</span>`
+                            : `<button type="button" class="folder-use-btn mini" onclick="setActiveFile('${folder.id}', '${file.id}')">Pakai</button>`
+                        }
+                        <button type="button" class="folder-icon-btn mini" onclick="renameQuestionFile('${folder.id}', '${file.id}')" title="Ubah Nama File">✏️</button>
+                        <button type="button" class="folder-icon-btn danger mini" onclick="deleteQuestionFile('${folder.id}', '${file.id}')" title="Hapus File">🗑️</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
         return `
-            <div class="folder-item ${isViewing ? 'viewing' : ''} ${isActive ? 'active-play' : ''}" onclick="selectViewingFolder('${folder.id}')">
+            <div class="folder-item ${isFolderViewing ? 'viewing' : ''} ${isFolderActive ? 'active-play' : ''}" onclick="selectViewingFolder('${folder.id}')">
                 <div class="folder-item-top">
                     <div class="folder-name-wrap">
-                        <span class="folder-icon">${isActive ? '📂' : '📁'}</span>
+                        <span class="folder-icon">${isFolderViewing ? '📂' : '📁'}</span>
                         <span class="folder-title">${escapeHtml(folder.name)}</span>
                     </div>
-                    <span class="folder-count-pill">${folder.questions.length} soal</span>
-                </div>
-                <div class="folder-item-actions" onclick="event.stopPropagation()">
-                    ${isActive 
-                        ? `<span class="active-tag">✅ Aktif Dipakai</span>` 
-                        : `<button type="button" class="folder-use-btn" onclick="setActiveFolder('${folder.id}')">Aktifkan</button>`
-                    }
-                    <div class="folder-mini-btns">
+                    <div class="folder-top-right" onclick="event.stopPropagation()">
+                        <span class="folder-count-pill">${folder.files.length} file • ${totalInFolder} soal</span>
                         <button type="button" class="folder-icon-btn" onclick="renameFolder('${folder.id}')" title="Ubah Nama Folder">✏️</button>
                         <button type="button" class="folder-icon-btn danger" onclick="deleteFolder('${folder.id}')" title="Hapus Folder">🗑️</button>
                     </div>
+                </div>
+                <div class="subfiles-list">
+                    ${filesHtml}
                 </div>
             </div>
         `;
@@ -280,7 +429,25 @@ function renderTargetFolderDropdown() {
     select.innerHTML = folderStore.folders.map(folder => {
         const isActive = folder.id === folderStore.activeFolderId;
         return `<option value="${folder.id}" ${folder.id === viewingFolderId ? 'selected' : ''}>
-            ${escapeHtml(folder.name)} (${folder.questions.length} soal)${isActive ? ' ★ Aktif' : ''}
+            ${escapeHtml(folder.name)} (${folder.files.length} file)${isActive ? ' ★' : ''}
+        </option>`;
+    }).join('');
+}
+
+function renderTargetFileDropdown() {
+    const select = document.getElementById('selectTargetFile');
+    if (!select) return;
+
+    const folder = getViewingFolder();
+    if (!folder || !folder.files) {
+        select.innerHTML = '<option value="">- Tidak ada file -</option>';
+        return;
+    }
+
+    select.innerHTML = folder.files.map(file => {
+        const isActive = (folder.id === folderStore.activeFolderId && file.id === folderStore.activeFileId);
+        return `<option value="${file.id}" ${file.id === viewingFileId ? 'selected' : ''}>
+            ${escapeHtml(file.name)} (${file.questions.length} soal)${isActive ? ' ★ Aktif' : ''}
         </option>`;
     }).join('');
 }
@@ -289,27 +456,55 @@ function onTargetFolderSelectChange() {
     const select = document.getElementById('selectTargetFolder');
     if (!select) return;
     viewingFolderId = select.value;
+    const folder = getViewingFolder();
+    if (folder && folder.files.length > 0) {
+        viewingFileId = folder.files[0].id;
+    } else {
+        viewingFileId = '';
+    }
+    renderFolderManagerUI();
+}
+
+function onTargetFileSelectChange() {
+    const select = document.getElementById('selectTargetFile');
+    if (!select) return;
+    viewingFileId = select.value;
     renderFolderList();
-    renderViewingFolderQuestions();
+    renderViewingFileQuestions();
 }
 
 function selectViewingFolder(folderId) {
     viewingFolderId = folderId;
+    const folder = getViewingFolder();
+    if (folder && !folder.files.some(fl => fl.id === viewingFileId)) {
+        viewingFileId = folder.files[0]?.id || '';
+    }
     renderFolderManagerUI();
 }
 
-function setActiveFolder(folderId) {
-    const target = folderStore.folders.find(f => f.id === folderId);
-    if (!target) return;
-    folderStore.activeFolderId = folderId;
+function selectViewingFile(folderId, fileId) {
     viewingFolderId = folderId;
+    viewingFileId = fileId;
+    renderFolderManagerUI();
+}
+
+function setActiveFile(folderId, fileId) {
+    const folder = folderStore.folders.find(f => f.id === folderId);
+    if (!folder) return;
+    const file = folder.files.find(fl => fl.id === fileId);
+    if (!file) return;
+
+    folderStore.activeFolderId = folderId;
+    folderStore.activeFileId = fileId;
+    viewingFolderId = folderId;
+    viewingFileId = fileId;
     saveFolderStore();
     renderFolderManagerUI();
 }
 
-function activateViewingFolder() {
-    if (!viewingFolderId) return;
-    setActiveFolder(viewingFolderId);
+function activateViewingFile() {
+    if (!viewingFolderId || !viewingFileId) return;
+    setActiveFile(viewingFolderId, viewingFileId);
 }
 
 function createNewFolder() {
@@ -328,19 +523,62 @@ function createNewFolder() {
         return;
     }
 
-    const newId = 'folder_' + Date.now();
+    const newFolderId = 'folder_' + Date.now();
+    const defaultFileId = 'file_' + Date.now() + '_1';
     folderStore.folders.push({
-        id: newId,
+        id: newFolderId,
         name: name,
+        files: [
+            {
+                id: defaultFileId,
+                name: 'Paket Soal 1',
+                questions: []
+            }
+        ]
+    });
+
+    viewingFolderId = newFolderId;
+    viewingFileId = defaultFileId;
+    if (!folderStore.activeFolderId) {
+        folderStore.activeFolderId = newFolderId;
+        folderStore.activeFileId = defaultFileId;
+    }
+
+    input.value = '';
+    saveFolderStore();
+    renderFolderManagerUI();
+}
+
+function createNewQuestionFile() {
+    const folder = getViewingFolder();
+    if (!folder) {
+        alert('Pilih atau buat folder mata pelajaran terlebih dahulu!');
+        return;
+    }
+
+    const input = document.getElementById('inputNewFileName');
+    if (!input) return;
+    const fileName = input.value.trim();
+
+    if (!fileName) {
+        alert('Masukkan nama file soal (misal: Kelas 7, Kelas 8, Bab 1) terlebih dahulu!');
+        return;
+    }
+
+    const exists = folder.files.some(fl => fl.name.toLowerCase() === fileName.toLowerCase());
+    if (exists) {
+        alert(`File soal "${fileName}" sudah ada di dalam folder "${folder.name}"!`);
+        return;
+    }
+
+    const newFileId = 'file_' + Date.now();
+    folder.files.push({
+        id: newFileId,
+        name: fileName,
         questions: []
     });
 
-    // Otomatis pilih folder yang baru dibuat agar mudah langsung diisi
-    viewingFolderId = newId;
-    if (!folderStore.activeFolderId) {
-        folderStore.activeFolderId = newId;
-    }
-
+    viewingFileId = newFileId;
     input.value = '';
     saveFolderStore();
     renderFolderManagerUI();
@@ -363,6 +601,25 @@ function renameFolder(folderId) {
     renderFolderManagerUI();
 }
 
+function renameQuestionFile(folderId, fileId) {
+    const folder = folderStore.folders.find(f => f.id === folderId);
+    if (!folder) return;
+    const file = folder.files.find(fl => fl.id === fileId);
+    if (!file) return;
+
+    const newName = prompt(`Ubah nama file soal dalam folder "${folder.name}":`, file.name);
+    if (newName === null) return;
+    const trimmed = newName.trim();
+    if (!trimmed) {
+        alert('Nama file soal tidak boleh kosong!');
+        return;
+    }
+
+    file.name = trimmed;
+    saveFolderStore();
+    renderFolderManagerUI();
+}
+
 function deleteFolder(folderId) {
     if (folderStore.folders.length <= 1) {
         alert('Minimal harus tersisa 1 folder mata pelajaran!');
@@ -372,53 +629,91 @@ function deleteFolder(folderId) {
     const folder = folderStore.folders.find(f => f.id === folderId);
     if (!folder) return;
 
-    if (!confirm(`Hapus folder "${folder.name}" beserta seluruh ${folder.questions.length} soal di dalamnya?`)) {
+    const totalQ = getFolderTotalQuestions(folder);
+    if (!confirm(`Hapus folder "${folder.name}" beserta seluruh ${folder.files.length} file (${totalQ} soal) di dalamnya?`)) {
         return;
     }
 
     folderStore.folders = folderStore.folders.filter(f => f.id !== folderId);
 
     if (folderStore.activeFolderId === folderId) {
-        folderStore.activeFolderId = folderStore.folders[0].id;
+        const nextFolder = folderStore.folders[0];
+        folderStore.activeFolderId = nextFolder.id;
+        folderStore.activeFileId = nextFolder.files[0]?.id || '';
     }
     if (viewingFolderId === folderId) {
         viewingFolderId = folderStore.activeFolderId;
+        viewingFileId = folderStore.activeFileId;
     }
 
     saveFolderStore();
     renderFolderManagerUI();
 }
 
-function renderViewingFolderQuestions() {
+function deleteQuestionFile(folderId, fileId) {
+    const folder = folderStore.folders.find(f => f.id === folderId);
+    if (!folder) return;
+
+    if (folder.files.length <= 1) {
+        alert(`Minimal harus tersisa 1 file soal di dalam folder "${folder.name}"!`);
+        return;
+    }
+
+    const file = folder.files.find(fl => fl.id === fileId);
+    if (!file) return;
+
+    if (!confirm(`Hapus file "${file.name}" (${file.questions.length} soal) dari folder "${folder.name}"?`)) {
+        return;
+    }
+
+    folder.files = folder.files.filter(fl => fl.id !== fileId);
+
+    if (folderStore.activeFolderId === folderId && folderStore.activeFileId === fileId) {
+        folderStore.activeFileId = folder.files[0].id;
+    }
+    if (viewingFolderId === folderId && viewingFileId === fileId) {
+        viewingFileId = folder.files[0].id;
+    }
+
+    saveFolderStore();
+    renderFolderManagerUI();
+}
+
+function renderViewingFileQuestions() {
     const listContainer = document.getElementById('customQuestionList');
-    const titleEl = document.getElementById('viewingFolderTitle');
+    const folderTitleEl = document.getElementById('viewingFolderTitle');
+    const fileTitleEl = document.getElementById('viewingFileTitle');
     const totalEl = document.getElementById('totalCustomQuestions');
     const activateBtn = document.getElementById('activateViewingFolderBtn');
     if (!listContainer) return;
 
     const folder = getViewingFolder();
-    if (!folder) {
-        if (titleEl) titleEl.textContent = '-';
+    const file = getViewingFile();
+
+    if (!folder || !file) {
+        if (folderTitleEl) folderTitleEl.textContent = '-';
+        if (fileTitleEl) fileTitleEl.textContent = '-';
         if (totalEl) totalEl.textContent = '0';
-        listContainer.innerHTML = '<div class="empty-soal-msg">Pilih atau buat folder terlebih dahulu.</div>';
+        listContainer.innerHTML = '<div class="empty-soal-msg">Pilih atau buat folder dan file soal terlebih dahulu.</div>';
         return;
     }
 
-    if (titleEl) titleEl.textContent = folder.name;
-    if (totalEl) totalEl.textContent = folder.questions.length;
+    if (folderTitleEl) folderTitleEl.textContent = folder.name;
+    if (fileTitleEl) fileTitleEl.textContent = file.name;
+    if (totalEl) totalEl.textContent = file.questions.length;
 
     if (activateBtn) {
-        const isCurrentActive = folder.id === folderStore.activeFolderId;
-        activateBtn.textContent = isCurrentActive ? '✅ Sedang Aktif' : '⚡ Aktifkan Folder Ini';
+        const isCurrentActive = (folder.id === folderStore.activeFolderId && file.id === folderStore.activeFileId);
+        activateBtn.textContent = isCurrentActive ? '✅ Sedang Aktif' : '⚡ Aktifkan File Ini';
         activateBtn.disabled = isCurrentActive;
     }
 
-    if (folder.questions.length === 0) {
-        listContainer.innerHTML = `<div class="empty-soal-msg">Folder <b>${escapeHtml(folder.name)}</b> masih kosong.<br>Tambahkan soal manual di samping atau klik <b>Import File!</b>.</div>`;
+    if (file.questions.length === 0) {
+        listContainer.innerHTML = `<div class="empty-soal-msg">File <b>${escapeHtml(folder.name)} / ${escapeHtml(file.name)}</b> masih kosong.<br>Tambahkan soal manual di samping atau klik <b>Import JSON</b>.</div>`;
         return;
     }
 
-    listContainer.innerHTML = folder.questions.map((item, idx) => `
+    listContainer.innerHTML = file.questions.map((item, idx) => `
         <div class="soal-item">
             <div class="soal-item-main">
                 <div class="soal-item-q"><strong>${idx + 1}.</strong> ${escapeHtml(item.question)}</div>
@@ -430,7 +725,7 @@ function renderViewingFolderQuestions() {
                 </div>
             </div>
             <div class="soal-item-side-btns">
-                <button type="button" class="move-soal-btn" onclick="moveQuestionToAnotherFolder(${idx})" title="Pindahkan ke folder lain">↪️</button>
+                <button type="button" class="move-soal-btn" onclick="moveQuestionToAnotherFile(${idx})" title="Pindahkan ke file lain">↪️</button>
                 <button type="button" class="delete-soal-btn" onclick="deleteCustomQuestion(${idx})" title="Hapus Soal">✕</button>
             </div>
         </div>
@@ -438,12 +733,21 @@ function renderViewingFolderQuestions() {
 }
 
 function addCustomQuestion() {
-    const targetSelect = document.getElementById('selectTargetFolder');
-    const targetFolderId = targetSelect ? targetSelect.value : viewingFolderId;
+    const targetFolderSelect = document.getElementById('selectTargetFolder');
+    const targetFileSelect = document.getElementById('selectTargetFile');
+    const targetFolderId = targetFolderSelect ? targetFolderSelect.value : viewingFolderId;
     const targetFolder = folderStore.folders.find(f => f.id === targetFolderId);
 
     if (!targetFolder) {
         alert('Pilih folder tujuan terlebih dahulu!');
+        return;
+    }
+
+    const targetFileId = targetFileSelect ? targetFileSelect.value : viewingFileId;
+    const targetFile = targetFolder.files.find(fl => fl.id === targetFileId);
+
+    if (!targetFile) {
+        alert('Pilih file soal tujuan terlebih dahulu!');
         return;
     }
 
@@ -466,13 +770,14 @@ function addCustomQuestion() {
         return;
     }
 
-    targetFolder.questions.push({
+    targetFile.questions.push({
         question,
         options: { A, B, C, D },
         answer
     });
 
     viewingFolderId = targetFolder.id;
+    viewingFileId = targetFile.id;
     saveFolderStore();
     renderFolderManagerUI();
 
@@ -484,64 +789,74 @@ function addCustomQuestion() {
     correctSelect.value = 'A';
 }
 
-function moveQuestionToAnotherFolder(questionIndex) {
+function moveQuestionToAnotherFile(questionIndex) {
     const sourceFolder = getViewingFolder();
-    if (!sourceFolder || !sourceFolder.questions[questionIndex]) return;
+    const sourceFile = getViewingFile();
+    if (!sourceFolder || !sourceFile || !sourceFile.questions[questionIndex]) return;
 
-    const otherFolders = folderStore.folders.filter(f => f.id !== sourceFolder.id);
-    if (otherFolders.length === 0) {
-        alert('Buat folder tujuan lain terlebih dahulu untuk memindahkan soal!');
+    const allTargets = [];
+    folderStore.folders.forEach(folder => {
+        folder.files.forEach(file => {
+            if (!(folder.id === sourceFolder.id && file.id === sourceFile.id)) {
+                allTargets.push({ folder, file });
+            }
+        });
+    });
+
+    if (allTargets.length === 0) {
+        alert('Buat file soal atau folder lain terlebih dahulu untuk memindahkan soal!');
         return;
     }
 
-    const choicesText = otherFolders.map((f, i) => `${i + 1}. ${f.name}`).join('
-');
-    const input = prompt(`Pindahkan soal ke folder nomor berapa?
-${choicesText}`);
+    const choicesText = allTargets.map((t, i) => `${i + 1}. ${t.folder.name} -> ${t.file.name}`).join('\n');
+    const input = prompt(`Pindahkan soal ke tujuan nomor berapa?\n${choicesText}`);
     if (input === null) return;
 
     const chosenIdx = parseInt(input.trim(), 10) - 1;
-    if (isNaN(chosenIdx) || chosenIdx < 0 || chosenIdx >= otherFolders.length) {
-        alert('Nomor folder tidak valid!');
+    if (isNaN(chosenIdx) || chosenIdx < 0 || chosenIdx >= allTargets.length) {
+        alert('Nomor tujuan tidak valid!');
         return;
     }
 
-    const [movedQuestion] = sourceFolder.questions.splice(questionIndex, 1);
-    otherFolders[chosenIdx].questions.push(movedQuestion);
+    const [movedQuestion] = sourceFile.questions.splice(questionIndex, 1);
+    allTargets[chosenIdx].file.questions.push(movedQuestion);
 
     saveFolderStore();
     renderFolderManagerUI();
 }
 
 function deleteCustomQuestion(index) {
-    const folder = getViewingFolder();
-    if (!folder) return;
-    folder.questions.splice(index, 1);
+    const file = getViewingFile();
+    if (!file) return;
+    file.questions.splice(index, 1);
     saveFolderStore();
     renderFolderManagerUI();
 }
 
-function clearViewingFolderQuestions() {
+function clearViewingFileQuestions() {
     const folder = getViewingFolder();
-    if (!folder) return;
-    if (folder.questions.length === 0) return;
+    const file = getViewingFile();
+    if (!folder || !file) return;
+    if (file.questions.length === 0) return;
 
-    if (confirm(`Kosongkan semua soal di dalam folder "${folder.name}"?`)) {
-        folder.questions = [];
+    if (confirm(`Kosongkan semua soal di dalam file "${folder.name} / ${file.name}"?`)) {
+        file.questions = [];
         saveFolderStore();
         renderFolderManagerUI();
     }
 }
 
 // ============================================
-// IMPORT & EXPORT FILE JSON PER FOLDER
+// IMPORT & EXPORT FILE JSON PER FILE SOAL
 // ============================================
 
 function triggerJsonUpload() {
-    const targetSelect = document.getElementById('selectTargetFolder');
-    const targetFolderId = targetSelect ? targetSelect.value : viewingFolderId;
-    if (!targetFolderId) {
-        alert('Pilih folder tujuan terlebih dahulu!');
+    const targetFolderSelect = document.getElementById('selectTargetFolder');
+    const targetFileSelect = document.getElementById('selectTargetFile');
+    const targetFolderId = targetFolderSelect ? targetFolderSelect.value : viewingFolderId;
+    const targetFileId = targetFileSelect ? targetFileSelect.value : viewingFileId;
+    if (!targetFolderId || !targetFileId) {
+        alert('Pilih folder dan file soal tujuan terlebih dahulu!');
         return;
     }
     const fileInput = document.getElementById('jsonFileInput');
@@ -592,12 +907,21 @@ function handleJsonFileUpload(event) {
     const file = event.target.files && event.target.files[0];
     if (!file) return;
 
-    const targetSelect = document.getElementById('selectTargetFolder');
-    const targetFolderId = targetSelect ? targetSelect.value : viewingFolderId;
+    const targetFolderSelect = document.getElementById('selectTargetFolder');
+    const targetFileSelect = document.getElementById('selectTargetFile');
+    const targetFolderId = targetFolderSelect ? targetFolderSelect.value : viewingFolderId;
     const targetFolder = folderStore.folders.find(f => f.id === targetFolderId);
 
     if (!targetFolder) {
         alert('Folder tujuan tidak ditemukan!');
+        return;
+    }
+
+    const targetFileId = targetFileSelect ? targetFileSelect.value : viewingFileId;
+    const targetQuestionFile = targetFolder.files.find(fl => fl.id === targetFileId);
+
+    if (!targetQuestionFile) {
+        alert('File soal tujuan tidak ditemukan!');
         return;
     }
 
@@ -628,12 +952,13 @@ function handleJsonFileUpload(event) {
                 return;
             }
 
-            targetFolder.questions.push(...validQuestions);
+            targetQuestionFile.questions.push(...validQuestions);
             viewingFolderId = targetFolder.id;
+            viewingFileId = targetQuestionFile.id;
             saveFolderStore();
             renderFolderManagerUI();
 
-            alert(`Berhasil mengimpor ${validQuestions.length} soal ke folder "${targetFolder.name}"!`);
+            alert(`Berhasil mengimpor ${validQuestions.length} soal ke "${targetFolder.name} / ${targetQuestionFile.name}"!`);
         } catch (err) {
             console.error('Error parsing JSON:', err);
             alert('Gagal membaca file JSON! Pastikan format file JSON benar.\nDetail: ' + err.message);
@@ -678,21 +1003,23 @@ function downloadJsonTemplate() {
     URL.revokeObjectURL(url);
 }
 
-function exportSelectedFolderJson() {
+function exportSelectedFileJson() {
     const folder = getViewingFolder();
-    if (!folder) return;
+    const file = getViewingFile();
+    if (!folder || !file) return;
 
-    if (folder.questions.length === 0) {
-        alert(`Folder "${folder.name}" masih kosong, belum ada soal untuk di-export.`);
+    if (file.questions.length === 0) {
+        alert(`File "${folder.name} / ${file.name}" masih kosong, belum ada soal untuk di-export.`);
         return;
     }
 
-    const safeFileName = folder.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'soal';
-    const blob = new Blob([JSON.stringify(folder.questions, null, 2)], { type: 'application/json' });
+    const safeFolderName = folder.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'mapel';
+    const safeFileName = file.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'paket';
+    const blob = new Blob([JSON.stringify(file.questions, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `soal-${safeFileName}.json`;
+    a.download = `soal-${safeFolderName}-${safeFileName}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1159,12 +1486,12 @@ function closeModal() {
     showCountdown();
 }
 
-// Fungsi untuk mengambil soal acak dari folder yang sedang AKTIF
-function getRandomQuestionFromActiveFolder(excludeIndex) {
-    const activeFolder = getActiveFolder();
-    const pool = (activeFolder && activeFolder.questions.length > 0)
-        ? activeFolder.questions
-        : defaultFolderStore.folders[0].questions;
+// Fungsi untuk mengambil soal acak dari file soal yang sedang AKTIF
+function getRandomQuestionFromActiveFile(excludeIndex) {
+    const activeFile = getActiveFile();
+    const pool = (activeFile && activeFile.questions.length > 0)
+        ? activeFile.questions
+        : defaultFolderStore.folders[0].files[0].questions;
 
     if (pool.length === 1) {
         return { item: pool[0], index: 0 };
@@ -1178,7 +1505,7 @@ function getRandomQuestionFromActiveFolder(excludeIndex) {
     return { item: pool[randomIndex], index: randomIndex };
 }
 
-// Fungsi untuk generate soal baru dari folder yang diaktifkan
+// Fungsi untuk generate soal baru dari file soal yang diaktifkan
 function generateNewQuestion(player) {
     let gameScreen;
     if (gameState.currentGameType === 'tarik-tambang') {
@@ -1193,7 +1520,7 @@ function generateNewQuestion(player) {
     const questionBox = section.querySelector('.question-box');
     const playerState = player === 'left' ? gameState.leftPlayer : gameState.rightPlayer;
 
-    const { item, index } = getRandomQuestionFromActiveFolder(playerState.lastQuestionIndex);
+    const { item, index } = getRandomQuestionFromActiveFile(playerState.lastQuestionIndex);
     
     playerState.lastQuestionIndex = index;
     playerState.currentQuestionObj = item;
@@ -1219,7 +1546,6 @@ function generateNewQuestion(player) {
 
 // Fungsi untuk reset game
 function resetGame() {
-    updateActiveFolderBadgeUI();
     gameState.ropePosition = 50;
     gameState.leftPlayer.answer = '';
     gameState.rightPlayer.answer = '';
@@ -1234,6 +1560,8 @@ function resetGame() {
     gameState.leftPlayer.isLocked = false;
     gameState.rightPlayer.isLocked = false;
     
+    updateActiveFolderBadgeUI();
+
     if (gameState.currentGameType === 'tarik-tambang') {
         updateRopePosition();
     } else if (gameState.currentGameType === 'panjat-pinang') {
@@ -1349,12 +1677,13 @@ function showCustomQuestionMenu() {
     renderFolderManagerUI();
 }
 
-// Fungsi untuk memilih game type dan memastikan folder aktif memiliki soal
+// Fungsi untuk memilih game type dan memastikan file aktif memiliki soal
 function selectGameType(gameType) {
     const activeFolder = getActiveFolder();
-    if (!activeFolder || activeFolder.questions.length === 0) {
-        const folderName = activeFolder ? activeFolder.name : 'yang dipilih';
-        alert(`Folder aktif "${folderName}" masih kosong! Silakan tambahkan soal, import file JSON, atau aktifkan folder lain yang sudah berisi soal.`);
+    const activeFile = getActiveFile();
+    if (!activeFolder || !activeFile || activeFile.questions.length === 0) {
+        const label = activeFolder && activeFile ? `${activeFolder.name} - ${activeFile.name}` : 'yang dipilih';
+        alert(`File soal aktif "${label}" masih kosong! Silakan tambahkan soal, import file JSON, atau aktifkan file soal lain yang sudah terisi.`);
         showCustomQuestionMenu();
         return;
     }

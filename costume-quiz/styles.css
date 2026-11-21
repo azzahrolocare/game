@@ -950,13 +950,13 @@ button {
 .score-indicator {
     width: 100%;
     text-align: center;
-    font-size: clamp(0.85rem, 1.3vw, 1.15rem);
+    font-size: 1.3em;
     font-weight: bold;
     color: #2c3e50;
-    margin-top: clamp(4px, 0.8vh, 12px);
-    padding: clamp(8px, 1.2vh, 12px);
-    background: rgba(255, 255, 255, 0.45);
-    border-radius: 16px;
+    margin-top: 15px;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 18px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08),
                 inset 0 1px 0 rgba(255, 255, 255, 0.5);
     backdrop-filter: blur(8px);
@@ -965,11 +965,7 @@ button {
 
 .score-value {
     color: #2196f3;
-    font-size: 1.05em;
-    font-weight: 700;
-}
-
-.mode-question-count {
+    font-size: 1.15em;
     font-weight: 700;
 }
 
@@ -1704,22 +1700,18 @@ html {
 }
 
 /* Samakan ukuran font untuk semua game type */
-.game-type-btn.tarik-tambang .game-type-title,
-.game-type-btn.panjat-pinang .game-type-title,
-.game-type-btn.balap-karung .game-type-title {
+.game-type-btn.tarik-tambang .game-type-title {
     font-size: 1em !important;
     font-weight: 600 !important;
 }
 
-.game-type-btn.tarik-tambang .game-type-subtitle,
-.game-type-btn.panjat-pinang .game-type-subtitle,
-.game-type-btn.balap-karung .game-type-subtitle {
-    font-size: 0.45em !important;
-    font-weight: 500 !important;
-    font-style: normal !important;
-    line-height: 1.1;
-    margin-top: 2px;
-    padding-top: clamp(2px, 0.4vh, 6px);
+.game-type-btn.tarik-tambang .game-type-subtitle {
+    font-size: 0.4em !important;
+    font-weight: 400 !important;
+    font-style: italic !important;
+    line-height: 1;
+    margin-top: 0;
+    padding-top: clamp(4px, 0.8vh, 12px);
 }
 
 /* Game type text container with title and subtitle */
@@ -1745,10 +1737,10 @@ html {
     font-size: 0.65em !important;
     letter-spacing: 0.5px;
     white-space: nowrap;
-    opacity: 0.9;
-    font-weight: 500;
-    font-style: normal;
-    padding-top: clamp(2px, 0.4vh, 6px);
+    opacity: 0.8;
+    font-weight: 400;
+    font-style: italic;
+    padding-top: clamp(4px, 0.8vh, 12px);
 }
 
 .game-type-btn.tarik-tambang {
@@ -1986,19 +1978,15 @@ html {
         font-size: 1.2em;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title,
-    .game-type-btn.panjat-pinang .game-type-title,
-    .game-type-btn.balap-karung .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle,
-    .game-type-btn.panjat-pinang .game-type-subtitle,
-    .game-type-btn.balap-karung .game-type-subtitle {
-        font-size: 0.45em !important;
-        line-height: 1.1;
-        margin-top: 2px;
-        padding-top: clamp(2px, 0.4vh, 6px);
+    .game-type-btn.tarik-tambang .game-type-subtitle {
+        font-size: 0.4em !important;
+        line-height: 1;
+        margin-top: 0;
+        padding-top: clamp(4px, 0.8vh, 12px);
     }
 
     /* Back Button - jarak responsive */
@@ -2107,19 +2095,15 @@ html {
         font-size: 1.1em;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title,
-    .game-type-btn.panjat-pinang .game-type-title,
-    .game-type-btn.balap-karung .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle,
-    .game-type-btn.panjat-pinang .game-type-subtitle,
-    .game-type-btn.balap-karung .game-type-subtitle {
-        font-size: 0.45em !important;
-        line-height: 1.1;
-        margin-top: 2px;
-        padding-top: clamp(2px, 0.4vh, 6px);
+    .game-type-btn.tarik-tambang .game-type-subtitle {
+        font-size: 0.4em !important;
+        line-height: 1;
+        margin-top: 0;
+        padding-top: clamp(4px, 0.8vh, 12px);
     }
 
     .back-btn {
@@ -2501,7 +2485,7 @@ html {
 
     /* Score indicator */
     .score-indicator {
-        font-size: 0.85em;
+        font-size: 0.9em;
         padding: 6px;
         margin-top: 6px;
     }
@@ -2657,19 +2641,15 @@ html {
         font-size: 1em;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title,
-    .game-type-btn.panjat-pinang .game-type-title,
-    .game-type-btn.balap-karung .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle,
-    .game-type-btn.panjat-pinang .game-type-subtitle,
-    .game-type-btn.balap-karung .game-type-subtitle {
-        font-size: 0.45em !important;
-        line-height: 1.1;
-        margin-top: 2px;
-        padding-top: clamp(2px, 0.4vh, 6px);
+    .game-type-btn.tarik-tambang .game-type-subtitle {
+        font-size: 0.4em !important;
+        line-height: 1;
+        margin-top: 0;
+        padding-top: clamp(4px, 0.8vh, 12px);
     }
 
     .back-btn {
@@ -2798,7 +2778,7 @@ html {
     }
 
     .score-indicator {
-        font-size: 0.8em;
+        font-size: 0.85em;
         padding: 5px;
         margin-top: 4px;
     }
@@ -2925,19 +2905,15 @@ html {
         font-size: 0.95em;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title,
-    .game-type-btn.panjat-pinang .game-type-title,
-    .game-type-btn.balap-karung .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle,
-    .game-type-btn.panjat-pinang .game-type-subtitle,
-    .game-type-btn.balap-karung .game-type-subtitle {
-        font-size: 0.45em !important;
-        line-height: 1.1;
-        margin-top: 2px;
-        padding-top: clamp(2px, 0.4vh, 6px);
+    .game-type-btn.tarik-tambang .game-type-subtitle {
+        font-size: 0.4em !important;
+        line-height: 1;
+        margin-top: 0;
+        padding-top: clamp(4px, 0.8vh, 12px);
     }
 
     .back-btn {
@@ -3012,7 +2988,7 @@ html {
     }
 
     .score-indicator {
-        font-size: 0.75em;
+        font-size: 0.8em;
         padding: 4px;
         margin-top: 3px;
     }
@@ -3174,19 +3150,15 @@ html {
         letter-spacing: 1px;
     }
 
-    .game-type-btn.tarik-tambang .game-type-title,
-    .game-type-btn.panjat-pinang .game-type-title,
-    .game-type-btn.balap-karung .game-type-title {
+    .game-type-btn.tarik-tambang .game-type-title {
         font-size: 1em !important;
     }
 
-    .game-type-btn.tarik-tambang .game-type-subtitle,
-    .game-type-btn.panjat-pinang .game-type-subtitle,
-    .game-type-btn.balap-karung .game-type-subtitle {
-        font-size: 0.45em !important;
+    .game-type-btn.tarik-tambang .game-type-subtitle {
+        font-size: 0.4em !important;
         letter-spacing: 0.3px;
-        line-height: 1.1;
-        margin-top: 1px;
+        line-height: 1;
+        margin-top: -2px;
     }
 
     .back-btn {
@@ -3884,4 +3856,166 @@ html {
         height: 24px;
         font-size: 0.85em;
     }
+}
+
+
+/* ============================================ */
+/* MULTI-FILE SUB-ITEMS & MODE QUESTION BADGES  */
+/* ============================================ */
+
+.game-type-btn.panjat-pinang .game-type-title,
+.game-type-btn.balap-karung .game-type-title {
+    font-size: 1em !important;
+    font-weight: 600 !important;
+}
+
+.game-type-btn.panjat-pinang .game-type-subtitle,
+.game-type-btn.balap-karung .game-type-subtitle {
+    font-size: 0.42em !important;
+    font-weight: 500 !important;
+    font-style: italic !important;
+    line-height: 1;
+    margin-top: 0;
+    padding-top: clamp(4px, 0.8vh, 10px);
+    opacity: 0.92;
+}
+
+.game-info-badge {
+    background: rgba(255, 255, 255, 0.72);
+    color: #1a237e;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.add-file-btn {
+    flex: none;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.folder-top-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.subfiles-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-left: 10px;
+    border-left: 2px solid #cbd5e1;
+    margin-top: 2px;
+}
+
+.subfile-item {
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 9px;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.subfile-item:hover {
+    border-color: #93c5fd;
+    background: #f0f9ff;
+}
+
+.subfile-item.viewing {
+    border-color: #2563eb;
+    background: #dbeafe;
+}
+
+.subfile-item.active-play {
+    border-color: #10b981;
+}
+
+.subfile-left {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    flex: 1;
+}
+
+.subfile-icon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.subfile-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.subfile-count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #475569;
+    background: #e2e8f0;
+    padding: 1px 6px;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.subfile-actions {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+}
+
+.active-tag-mini {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #059669;
+    background: #d1fae5;
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+.folder-use-btn.mini {
+    padding: 2px 7px;
+    font-size: 0.7rem;
+    border-radius: 6px;
+}
+
+.folder-icon-btn.mini {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    font-size: 0.72rem;
+}
+
+.target-file-box {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.target-file-box label {
+    color: #166534;
 }

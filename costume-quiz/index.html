@@ -50,48 +50,48 @@
         <div class="menu-container">
             <h1 class="menu-title">Permainan Kuis Edukasi</h1>
             <p class="menu-subtitle">
-                Folder Aktif: <strong id="activeFolderBadge">-</strong> (<span id="questionCountBadge">0 Soal</span>)
+                Aktif: <strong id="activeFolderBadge">-</strong> (<span id="questionCountBadge">0 Soal</span>)
             </p>
             <div class="menu-buttons">
                 <button class="menu-btn game-type-btn tarik-tambang" onclick="selectGameType('tarik-tambang')">
                     <img src="https://game.afifedu.com/icon_tarik.png" alt="Tarik Tambang" class="menu-icon">
                     <div class="game-type-text">
                         <span class="game-type-title">Tarik Tambang</span>
-                        <span class="game-type-subtitle mode-question-count">0 Soal</span>
+                        <span class="game-type-subtitle mode-question-count">0 Soal Tersedia</span>
                     </div>
                 </button>
                 <button class="menu-btn game-type-btn panjat-pinang" onclick="selectGameType('panjat-pinang')">
                     <img src="https://game.afifedu.com/icon_panjat.png" alt="Panjat Pinang" class="menu-icon">
                     <div class="game-type-text">
                         <span class="game-type-title">Panjat Pinang</span>
-                        <span class="game-type-subtitle mode-question-count">0 Soal</span>
+                        <span class="game-type-subtitle mode-question-count">0 Soal Tersedia</span>
                     </div>
                 </button>
                 <button class="menu-btn game-type-btn balap-karung" onclick="selectGameType('balap-karung')">
                     <img src="https://game.afifedu.com/icon_balap_karung.png" alt="Balap Karung" class="menu-icon">
                     <div class="game-type-text">
                         <span class="game-type-title">Balap Karung</span>
-                        <span class="game-type-subtitle mode-question-count">0 Soal</span>
+                        <span class="game-type-subtitle mode-question-count">0 Soal Tersedia</span>
                     </div>
                 </button>
                 <button class="menu-btn custom-soal-btn" onclick="showCustomQuestionMenu()">
-                    📁 Kelola Folder & Kostum Soal
+                    📁 Kelola Folder & File Soal
                 </button>
             </div>
         </div>
         <div class="copyright-footer">
-            <p>© Az-Zahro Arcade 2026 | <span id="version-indicator">v2.1.0</span></p>
+            <p>© Az-Zahro Arcade 2026 | <span id="version-indicator">v2.2.0</span></p>
             <p style="margin-top: 5px; font-size: 0.9em; opacity: 0.8;">Created By Az-Zahro IT</p>
         </div>
     </div>
 
-    <!-- Menu Kostum Soal Berbasis Folder Mata Pelajaran -->
+    <!-- Menu Kostum Soal Berbasis Folder Mata Pelajaran & File Paket Soal -->
     <div id="customQuestionMenu" class="menu-screen">
         <div class="menu-container custom-soal-container">
             <div class="custom-header-bar">
                 <div>
-                    <h1 class="menu-title">Bank Soal Per Mata Pelajaran!</h1>
-                    <p class="menu-subtitle">Pilih folder mata pelajaran, aktifkan untuk dimainkan, atau import file soal!</p>
+                    <h1 class="menu-title">Bank Soal Per Mata Pelajaran & Paket File!</h1>
+                    <p class="menu-subtitle">Buat folder mapel (misal: Informatika), lalu kelola banyak file soal di dalamnya (misal: Kelas 7, Kelas 8, Kelas 9)!</p>
                 </div>
                 <div class="active-status-pill">
                     <span>Dipakai Main:</span>
@@ -100,35 +100,47 @@
             </div>
             
             <div class="custom-soal-workspace">
-                <!-- Kolom 1: Daftar Folder Mata Pelajaran -->
+                <!-- Kolom 1: Daftar Folder Mata Pelajaran & Sub-File Soal -->
                 <div class="folder-sidebar-card">
                     <div class="card-section-header">
-                        <h3>📁 Folder Pelajaran</h3>
+                        <h3>📁 Folder Mapel & 📄 File Soal</h3>
                     </div>
 
                     <!-- Tambah Folder Baru -->
                     <div class="add-folder-row">
-                        <input type="text" id="inputNewFolderName" class="soal-input" placeholder="Nama Mapel (mis: IPA, B. Inggris)">
+                        <input type="text" id="inputNewFolderName" class="soal-input" placeholder="Folder Mapel (mis: Informatika)">
                         <button type="button" class="add-folder-btn" onclick="createNewFolder()" title="Buat Folder Baru">+ Folder</button>
                     </div>
 
-                    <!-- Daftar Folder -->
+                    <!-- Tambah File Soal Baru di dalam Folder Terpilih -->
+                    <div class="add-folder-row">
+                        <input type="text" id="inputNewFileName" class="soal-input" placeholder="Nama File (mis: Kelas 7, Kelas 8)">
+                        <button type="button" class="add-file-btn" onclick="createNewQuestionFile()" title="Buat File Soal Baru di Folder Terpilih">+ File</button>
+                    </div>
+
+                    <!-- Daftar Folder & File -->
                     <div id="folderListContainer" class="folder-list-container">
-                        <!-- Folder dirender lewat JS -->
+                        <!-- Folder & File dirender lewat JS -->
                     </div>
                 </div>
 
-                <!-- Kolom 2: Form Tambah Soal + Import JSON ke Folder Terpilih -->
+                <!-- Kolom 2: Form Tambah Soal + Import JSON ke File Terpilih -->
                 <div class="soal-form-card">
                     <div class="card-section-header">
                         <h3>✍️ Input & Import File</h3>
                     </div>
 
-                    <!-- Pilih Folder Tujuan Penyimpanan -->
+                    <!-- Pilih Folder & File Tujuan Penyimpanan -->
                     <div class="target-folder-box">
-                        <label for="selectTargetFolder">Simpan ke Folder:</label>
+                        <label for="selectTargetFolder">Folder:</label>
                         <select id="selectTargetFolder" class="soal-select target-folder-select" onchange="onTargetFolderSelectChange()">
                             <!-- Opsi folder dirender lewat JS -->
+                        </select>
+                    </div>
+                    <div class="target-folder-box target-file-box">
+                        <label for="selectTargetFile">File Soal:</label>
+                        <select id="selectTargetFile" class="soal-select target-folder-select" onchange="onTargetFileSelectChange()">
+                            <!-- Opsi file dalam folder dirender lewat JS -->
                         </select>
                     </div>
 
@@ -151,30 +163,32 @@
                         <button type="button" class="add-soal-btn" onclick="addCustomQuestion()">+ Simpan Soal</button>
                     </div>
 
-                    <!-- Area Import & Export File JSON pada Folder Terpilih -->
+                    <!-- Area Import & Export File JSON pada File Terpilih -->
                     <div class="json-io-box">
-                        <div class="json-io-title">📂 Import File Soal (ke folder terpilih di atas)</div>
+                        <div class="json-io-title">📂 Import / Export JSON (ke file soal terpilih)</div>
                         <div class="json-io-actions">
                             <input type="file" id="jsonFileInput" accept=".json,application/json" style="display: none;" onchange="handleJsonFileUpload(event)">
-                            <button type="button" class="json-btn upload-json-btn" onclick="triggerJsonUpload()">📤 Import File Soal</button>
+                            <button type="button" class="json-btn upload-json-btn" onclick="triggerJsonUpload()">📤 Import JSON</button>
+                            <button type="button" class="json-btn export-json-btn" onclick="exportSelectedFileJson()">💾 Export JSON</button>
+                            <button type="button" class="json-btn download-template-btn" onclick="downloadJsonTemplate()">📄 Template</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Kolom 3: Daftar Soal dalam Folder yang Sedang Dibuka -->
+                <!-- Kolom 3: Daftar Soal dalam File yang Sedang Dibuka -->
                 <div class="soal-list-card">
                     <div class="soal-list-header">
                         <div class="viewing-folder-info">
-                            <h3>Isi Folder: <span id="viewingFolderTitle">-</span> (<span id="totalCustomQuestions">0</span>)</h3>
+                            <h3>Isi: <span id="viewingFolderTitle">-</span> / <span id="viewingFileTitle">-</span> (<span id="totalCustomQuestions">0</span>)</h3>
                         </div>
                         <div class="soal-actions-group">
-                            <button type="button" id="activateViewingFolderBtn" class="mini-action-btn activate-btn" onclick="activateViewingFolder()">✅ Aktifkan Folder Ini</button>
-                            <button type="button" class="mini-action-btn clear-all-btn" onclick="clearViewingFolderQuestions()">🗑️ Kosongkan</button>
+                            <button type="button" id="activateViewingFolderBtn" class="mini-action-btn activate-btn" onclick="activateViewingFile()">✅ Aktifkan File Ini</button>
+                            <button type="button" class="mini-action-btn clear-all-btn" onclick="clearViewingFileQuestions()">🗑️ Kosongkan</button>
                         </div>
                     </div>
 
                     <div id="customQuestionList" class="custom-question-list">
-                        <!-- List soal dalam folder dirender lewat JS -->
+                        <!-- List soal dalam file dirender lewat JS -->
                     </div>
                 </div>
             </div>
@@ -195,12 +209,12 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Total Soal: <span class="mode-question-count">0 Soal</span></div>
         </div>
 
         <!-- Bagian Tengah -->
         <div class="center-section">
             <h1>Tarik Tambang Kuis</h1>
+            <div class="game-info-badge">📚 <span class="active-topic-label">-</span> | <span class="mode-total-questions-label">0 Soal</span></div>
             <div class="game-field">
                 <div class="tug-of-war-scene"></div>
                 <div class="center-line"></div>
@@ -218,7 +232,6 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Total Soal: <span class="mode-question-count">0 Soal</span></div>
         </div>
     </div>
 
@@ -234,12 +247,13 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Benar: <span class="score-value">0/7</span> | Soal: <span class="mode-question-count">0 Soal</span></div>
+            <div class="score-indicator">Benar: <span class="score-value">0/7</span> (<span class="mode-total-questions-label">0 Soal</span>)</div>
         </div>
 
         <!-- Bagian Tengah -->
         <div class="center-section panjat-pinang-center">
             <h1>Panjat Pinang Kuis</h1>
+            <div class="game-info-badge">📚 <span class="active-topic-label">-</span> | <span class="mode-total-questions-label">0 Soal</span></div>
             <div class="game-field panjat-pinang-field">
                 <!-- Tiang Kiri -->
                 <div class="pole-container left-pole">
@@ -272,7 +286,7 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Benar: <span class="score-value">0/7</span> | Soal: <span class="mode-question-count">0 Soal</span></div>
+            <div class="score-indicator">Benar: <span class="score-value">0/7</span> (<span class="mode-total-questions-label">0 Soal</span>)</div>
         </div>
     </div>
 
@@ -288,12 +302,13 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Posisi: <span class="score-value">0/10</span> | Soal: <span class="mode-question-count">0 Soal</span></div>
+            <div class="score-indicator">Posisi: <span class="score-value">0/10</span> (<span class="mode-total-questions-label">0 Soal</span>)</div>
         </div>
 
         <!-- Bagian Tengah -->
         <div class="center-section balap-karung-center">
             <h1>Balap Karung Kuis</h1>
+            <div class="game-info-badge">📚 <span class="active-topic-label">-</span> | <span class="mode-total-questions-label">0 Soal</span></div>
             <div class="game-field balap-karung-field">
                 <!-- Track -->
                 <div class="race-track">
@@ -325,7 +340,7 @@
                 <button class="option-btn" data-option="C"><span class="opt-badge">C</span><span class="opt-text">-</span></button>
                 <button class="option-btn" data-option="D"><span class="opt-badge">D</span><span class="opt-text">-</span></button>
             </div>
-            <div class="score-indicator">Posisi: <span class="score-value">0/10</span> | Soal: <span class="mode-question-count">0 Soal</span></div>
+            <div class="score-indicator">Posisi: <span class="score-value">0/10</span> (<span class="mode-total-questions-label">0 Soal</span>)</div>
         </div>
     </div>
 
